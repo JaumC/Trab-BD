@@ -4,7 +4,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "50:5000"
+      - "5050:5000"  # Alterado para a porta 5050
     volumes:
       - ./backend:/app
     environment:
@@ -17,7 +17,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:5173"
+      - "4040:5173"  # Alterado para a porta 4040
     environment:
       - CHOKIDAR_USEPOLLING=true
     stdin_open: true
@@ -30,7 +30,7 @@ services:
   db:
     image: postgres:15
     ports:
-      - "5433:5432"
+      - "3040:5432"  # Alterado para a porta 3040
     environment:
       POSTGRES_DB: nome_do_banco
       POSTGRES_USER: usuario_do_banco
