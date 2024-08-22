@@ -1,0 +1,18 @@
+.greenButton{
+    width: 232px;
+    background-color: #88c9bf;
+    color: #434343;
+    height: 40px;
+    border: 1px solid #43ac9c;
+    box-shadow: 2px 4px 2px rgba(0, 0, 0, 0.2);
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.greenButton:hover{
+    background-color: #6dd3c4;
+    cursor: pointer;
+}
