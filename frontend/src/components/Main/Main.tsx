@@ -4,6 +4,11 @@ import { useAuth } from '../../AuthContext';
 
 export function Main(){
     const { isLogged } = useAuth()
+    const { logout } = useAuth()
+
+    const logouting = () => {
+        logout()
+    }
 
     return(
         <div>
@@ -16,18 +21,21 @@ export function Main(){
                 <a className='actionButton'>ADOTAR</a>
                 <a className='actionButton'>AJUDAR</a>
                 <a className='actionButton'>CADASTRAR ANIMAL</a>
+                <button onClick={logouting}>Deslogar</button>
             </div>
             :
-            <div className='buttonField'>
-                <a href='/signed' className='actionButton'>ADOTAR</a>
-                <a href='/signed' className='actionButton'>AJUDAR</a>
-                <a href='/signed' className='actionButton'>CADASTRAR ANIMAL</a>
-            </div>
+            <>
+                <div className='buttonField'>
+                    <a href='/signed' className='actionButton'>ADOTAR</a>
+                    <a href='/signed' className='actionButton'>AJUDAR</a>
+                    <a href='/signed' className='actionButton'>CADASTRAR ANIMAL</a>
+                </div>
+                <p className='middleText'>
+                    <a href='/login'>Login</a>
+                </p>
+            </>
             }
 
-            <p className='middleText'>
-                <a href='/login'>Login</a>
-            </p>
             <Footer/>
         </div>
     )

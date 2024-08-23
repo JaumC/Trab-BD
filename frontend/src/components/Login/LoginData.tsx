@@ -5,6 +5,7 @@ import { useState } from 'react';
 import api from '../../axiosConfig';
 import { useAuth } from '../../AuthContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export function LoginData(){
     const [logData, setlogData] = useState({
@@ -30,12 +31,23 @@ export function LoginData(){
         }
         try{
             const response = await api.post('/login-data', logData)
-            alert(response.data.message);
-            login();
-            navigate('/')
+
+            if (!response.data.OK) {
+                alert(response.data.DENY);
+            } else {
+                login(); 
+                navigate('/'); 
+                alert(response.data.OK); 
+            }
 
         }catch(error){
-            console.error("Erro ao logar", error);
+            if (axios.isAxiosError(error)){
+                if (error.response) {
+                    alert(error.response.data?.DENY || "Erro ao logar. Tente novamente.");
+                } else {
+                    alert("Erro de rede ou servidor. Tente novamente.");
+                }
+            }
         }
     }
     return(

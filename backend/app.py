@@ -84,17 +84,19 @@ def login_data():
 
         if user:
             user_id, nome_usuario = user
-            response = {'message': 'Login realizado com sucesso!', 'user_id': user_id, 'nome_usuario': nome_usuario}
+            response = {'OK': 'Login realizado com sucesso!', 'user_id': user_id, 'nome_usuario': nome_usuario}
+            return jsonify(response), 200
         else:
-            response = {'message': 'Nome de usuários não encontrados.'}
-        
+            response = {'DENY': 'Nome de usuários não encontrados.'}
+            return jsonify(response), 401
+
     except Exception as e:
-        response = {'message': f'Erro ao realizar login: {e}'}
+        response = {'DENY': f'Erro ao realizar login: {e}'}
+        return jsonify(response), 500
+
     finally:
         cursor.close()
         conn.close()
-
-    return jsonify(response)
 
 
 

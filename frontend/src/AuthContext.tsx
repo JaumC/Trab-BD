@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 
 interface AuthContextType{
     isLogged: boolean;
@@ -13,10 +13,20 @@ interface AuthProviderProps{
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [isLogged, setIsLogged] = useState(false)
+    const [isLogged, setIsLogged] = useState<boolean>(() => {
+        const saveLogin = localStorage.getItem('isLogged')
+        return saveLogin === 'true'
+    })
+
+    useEffect(() => {
+        localStorage.setItem('isLogged', String(isLogged))
+    }, [isLogged])
 
     const login = () => setIsLogged(true);
-    const logout = () => setIsLogged(false)
+    const logout = () => {
+        setIsLogged(false);
+        localStorage.removeItem('isLogged'); 
+    };
 
     return(
         <AuthContext.Provider value={{ isLogged, login, logout }}>
