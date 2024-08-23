@@ -3,6 +3,8 @@ import { GreenButton } from '../GreenButton/GreenButton';
 import { InputData } from '../InputData/InputData';
 import './SignData.css';
 import api from '../../axiosConfig';
+import { ModalMsg } from '../ModalMsg/ModalMsg';
+import axios from 'axios';
 
 type signData = {
     nome_completo: string;
@@ -38,6 +40,9 @@ export function SignData() {
         });
     };
 
+    const [msgSign, setMsgSign] = useState<string>('')
+    const [stateSign , setStateSign] = useState<boolean>(false)
+    
     const handleSubmit = async () => {
         const requiredFields: (keyof signData)[] = [
             'nome_completo',
@@ -52,23 +57,32 @@ export function SignData() {
             'confirmacao_senha'
         ];
 
+
+
         const hasEmptyFields = requiredFields.some(field => !signData[field]);
     
         if (hasEmptyFields) {
-            alert("Existem campos não preenchidos, por favor preencha todos");
+            setMsgSign("Existem campos não preenchidos, por favor preencha todos");
             return;
         }
 
         if (signData.senha !== signData.confirmacao_senha) {
-            alert("As senhas não coincidem!");
+            setMsgSign("As senhas não coincidem!");
             return;
         }
 
         try {
             const response = await api.post('/sign-data', signData)
-            alert(response.data.message);
-        } catch (error) {
-            console.error("Erro ao cadastrar os dados:", error);
+            setMsgSign(response.data.OK)
+            setStateSign(true)
+        }catch(error){
+            if (axios.isAxiosError(error)){
+                if (error.response) {
+                    setMsgSign(error.response.data?.DENY || "Erro ao Cadastrar. Tente novamente.");
+                } else {
+                    setMsgSign("Erro de rede ou servidor. Tente novamente.");
+                }
+            }
         }
     };
 
@@ -102,6 +116,9 @@ export function SignData() {
             <div className="signField">
                 <GreenButton label='FAZER CADASTRO' onClick={handleSubmit}/>
             </div>
+            { msgSign && (
+                <ModalMsg msg={msgSign} state={stateSign}/>
+            )}
         </>
     );
 }

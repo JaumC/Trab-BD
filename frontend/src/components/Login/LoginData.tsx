@@ -15,8 +15,8 @@ export function LoginData(){
 
     });
 
-    const [msg , setMsg] = useState<string>('')
-    const [state , setState] = useState<boolean>(false)
+    const [msgLog , setMsglog] = useState<string>('')
+    const [stateLog , setStateLog] = useState<boolean>(false)
 
     const { login } = useAuth()
     const navigate = useNavigate()
@@ -30,17 +30,17 @@ export function LoginData(){
 
     const handleSubmit = async () => {
         if (logData.senha == '' || logData.nome_completo == '') {
-            alert("Campos vazios! Preencha todos os campos.");
+            setMsglog("Campos vazios! Preencha todos os campos.");
             return;
         }
         try{
             const response = await api.post('/login-data', logData)
 
             if (!response.data.OK) {
-                setMsg(response.data.DENY);
+                setMsglog(response.data.DENY);
             } else {
-                setMsg(response.data.OK)
-                setState(true)
+                setMsglog(response.data.OK)
+                setStateLog(true)
                 setTimeout(() => {
                     login(); 
                     navigate('/'); 
@@ -50,9 +50,9 @@ export function LoginData(){
         }catch(error){
             if (axios.isAxiosError(error)){
                 if (error.response) {
-                    setMsg(error.response.data?.DENY || "Erro ao logar. Tente novamente.");
+                    setMsglog(error.response.data?.DENY || "Erro ao logar. Tente novamente.");
                 } else {
-                    setMsg("Erro de rede ou servidor. Tente novamente.");
+                    setMsglog("Erro de rede ou servidor. Tente novamente.");
                 }
             }
         }
@@ -67,8 +67,8 @@ export function LoginData(){
                 <GreenButton label='ENTRAR' onClick={handleSubmit}/>
                 <a href='/sign'>Não tem conta? Cadastre-se clicando aqui!</a>
             </div>
-            { msg &&(
-                <ModalMsg msg={msg} state={state}/>
+            { msgLog &&(
+                <ModalMsg msg={msgLog} state={stateLog}/>
             )}
         </>
     )
