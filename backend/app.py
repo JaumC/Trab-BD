@@ -28,24 +28,36 @@ def sign_data():
     cursor = conn.cursor()
 
     try:
-        # Inserir os dados no banco de dados
-        cursor.execute("""
-            INSERT INTO usuarios (nome_completo, idade, email, estado, cidade, endereco, telefone, nome_usuario, senha)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (
-            data['nome_completo'],
-            data['idade'],
-            data['email'],
-            data['estado'],
-            data['cidade'],
-            data['endereco'],
-            data['telefone'],
-            data['nome_usuario'],
-            data['senha']
-        ))
+        # Verificar se o e-mail já existe no banco de dados
+        cursor.execute("SELECT id FROM usuarios WHERE email = %s", (data['email'],))
 
-        conn.commit()
-        response = {'message': 'Dados cadastrados com sucesso!'}
+        # Pega a primeira ocorrencia encontrada
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            response = {'message': 'Este e-mail já está cadastrado. Por favor, insira outro'}
+            return jsonify(response)
+
+        else:
+            # Inserir os dados no banco de dados
+            cursor.execute("""
+                INSERT INTO usuarios (nome_completo, idade, email, estado, cidade, endereco, telefone, nome_usuario, senha)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (
+                data['nome_completo'],
+                data['idade'],
+                data['email'],
+                data['estado'],
+                data['cidade'],
+                data['endereco'],
+                data['telefone'],
+                data['nome_usuario'],
+                data['senha']
+            ))
+
+            conn.commit()
+            response = {'message': 'Dados cadastrados com sucesso!'}
+
     except Exception as e:
         conn.rollback()
         response = {'message': f'Erro ao cadastrar os dados: {e}'}
@@ -54,6 +66,38 @@ def sign_data():
         conn.close()
 
     return jsonify(response)
+
+
+@app.route('/login-data', methods=['POST'])
+def login_data():
+    data = request.json  # Recebe os dados do React em formato JSON
+    
+    # Conectar ao banco de dados
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT id, nome_usuario FROM usuarios WHERE nome_completo = %s AND senha = %s", (data['nome_completo'], data['senha']))
+
+        # Pega a primeira ocorrencia encontrada
+        user = cursor.fetchone()
+
+        if user:
+            user_id, nome_usuario = user
+            response = {'message': 'Login realizado com sucesso!', 'user_id': user_id, 'nome_usuario': nome_usuario}
+        else:
+            response = {'message': 'Nome de usuários não encontrados.'}
+        
+    except Exception as e:
+        response = {'message': f'Erro ao realizar login: {e}'}
+    finally:
+        cursor.close()
+        conn.close()
+
+    return jsonify(response)
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

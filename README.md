@@ -22,5 +22,10 @@ sudo docker-compose up --build
 
 ### Para acessar o postgres via terminal:
 ```sh
-sudo docker exec -it adoo-db-1 psql -U usuario_do_banco -d nome_do_banco
+sudo docker exec -it <nome do container docker> psql -U usuario_do_banco -d nome_do_banco
+```
+
+**Substitua <nome do container docker> pelo nome do container referente ao banco de dados, você pode conferir usando:**
+```sh
+sudo docker ps
 ```

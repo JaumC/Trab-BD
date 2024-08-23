@@ -1,17 +1,10 @@
-import { useState } from 'react';
 import { Footer } from '../Footer/Footer'
 import './Main.css'
+import { useAuth } from '../../AuthContext';
 
 export function Main(){
-    const [isLogged, setIsLogged] = useState(false);
+    const { isLogged } = useAuth()
 
-    const enterLogged = () => {
-        setIsLogged(true);
-    };
-
-    const closeLogged = () => {
-        setIsLogged(false);
-    };
     return(
         <div>
             <div className='title'>

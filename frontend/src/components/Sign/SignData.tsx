@@ -4,8 +4,21 @@ import { InputData } from '../InputData/InputData';
 import './SignData.css';
 import api from '../../axiosConfig';
 
+type signData = {
+    nome_completo: string;
+    idade: string;
+    email: string;
+    estado: string;
+    cidade: string;
+    endereco: string;
+    telefone: string;
+    nome_usuario: string;
+    senha: string;
+    confirmacao_senha: string;
+};
+
 export function SignData() {
-    const [formData, setFormData] = useState({
+    const [signData, setsignData] = useState<signData>({
         nome_completo: '',
         idade: '',
         email: '',
@@ -19,20 +32,40 @@ export function SignData() {
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
+        setsignData({
+            ...signData,
             [e.target.name]: e.target.value
         });
     };
 
     const handleSubmit = async () => {
-        if (formData.senha !== formData.confirmacao_senha) {
+        const requiredFields: (keyof signData)[] = [
+            'nome_completo',
+            'idade',
+            'email',
+            'estado',
+            'cidade',
+            'endereco',
+            'telefone',
+            'nome_usuario',
+            'senha',
+            'confirmacao_senha'
+        ];
+
+        const hasEmptyFields = requiredFields.some(field => !signData[field]);
+    
+        if (hasEmptyFields) {
+            alert("Existem campos não preenchidos, por favor preencha todos");
+            return;
+        }
+
+        if (signData.senha !== signData.confirmacao_senha) {
             alert("As senhas não coincidem!");
             return;
         }
 
         try {
-            const response = await api.post('/sign-data', formData)
+            const response = await api.post('/sign-data', signData)
             alert(response.data.message);
         } catch (error) {
             console.error("Erro ao cadastrar os dados:", error);

@@ -2,24 +2,40 @@ import { InputData } from '../InputData/InputData'
 import { GreenButton } from '../GreenButton/GreenButton'
 import './LoginData.css'
 import { useState } from 'react';
+import api from '../../axiosConfig';
+import { useAuth } from '../../AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export function LoginData(){
-    const [formData, setFormData] = useState({
+    const [logData, setlogData] = useState({
         nome_completo: '',
         senha: '',
 
     });
 
+    const { login } = useAuth()
+    const navigate = useNavigate()
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
+        setlogData({
+            ...logData,
             [e.target.name]: e.target.value
         });
     };
+
     const handleSubmit = async () => {
-        if (formData.senha == '' || formData.nome_completo == '') {
-            alert("Campos vazios!");
+        if (logData.senha == '' || logData.nome_completo == '') {
+            alert("Campos vazios! Preencha todos os campos.");
             return;
+        }
+        try{
+            const response = await api.post('/login-data', logData)
+            alert(response.data.message);
+            login();
+            navigate('/')
+
+        }catch(error){
+            console.error("Erro ao logar", error);
         }
     }
     return(
