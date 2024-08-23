@@ -4,11 +4,6 @@ import { useAuth } from '../../AuthContext';
 
 export function Main(){
     const { isLogged } = useAuth()
-    const { logout } = useAuth()
-
-    const logouting = () => {
-        logout()
-    }
 
     return(
         <div>
@@ -21,7 +16,6 @@ export function Main(){
                 <a className='actionButton'>ADOTAR</a>
                 <a className='actionButton'>AJUDAR</a>
                 <a className='actionButton'>CADASTRAR ANIMAL</a>
-                <button onClick={logouting}>Deslogar</button>
             </div>
             :
             <>

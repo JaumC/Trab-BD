@@ -1,11 +1,12 @@
-import { InputData } from '../InputData/InputData'
 import { GreenButton } from '../GreenButton/GreenButton'
-import './LoginData.css'
-import { useState } from 'react';
-import api from '../../axiosConfig';
-import { useAuth } from '../../AuthContext';
+import { InputData } from '../InputData/InputData'
+import { ModalMsg } from '../ModalMsg/ModalMsg';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../AuthContext';
+import api from '../../axiosConfig';
+import { useState } from 'react';
 import axios from 'axios';
+import './LoginData.css'
 
 export function LoginData(){
     const [logData, setlogData] = useState({
@@ -13,6 +14,9 @@ export function LoginData(){
         senha: '',
 
     });
+
+    const [msg , setMsg] = useState<string>('')
+    const [state , setState] = useState<boolean>(false)
 
     const { login } = useAuth()
     const navigate = useNavigate()
@@ -33,19 +37,22 @@ export function LoginData(){
             const response = await api.post('/login-data', logData)
 
             if (!response.data.OK) {
-                alert(response.data.DENY);
+                setMsg(response.data.DENY);
             } else {
-                login(); 
-                navigate('/'); 
-                alert(response.data.OK); 
+                setMsg(response.data.OK)
+                setState(true)
+                setTimeout(() => {
+                    login(); 
+                    navigate('/'); 
+                }, 1000)
             }
 
         }catch(error){
             if (axios.isAxiosError(error)){
                 if (error.response) {
-                    alert(error.response.data?.DENY || "Erro ao logar. Tente novamente.");
+                    setMsg(error.response.data?.DENY || "Erro ao logar. Tente novamente.");
                 } else {
-                    alert("Erro de rede ou servidor. Tente novamente.");
+                    setMsg("Erro de rede ou servidor. Tente novamente.");
                 }
             }
         }
@@ -60,6 +67,9 @@ export function LoginData(){
                 <GreenButton label='ENTRAR' onClick={handleSubmit}/>
                 <a href='/sign'>Não tem conta? Cadastre-se clicando aqui!</a>
             </div>
+            { msg &&(
+                <ModalMsg msg={msg} state={state}/>
+            )}
         </>
     )
 } 

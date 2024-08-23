@@ -1,0 +1,27 @@
+/* ModalMsg.css */
+.modal-msg {
+    position: fixed;
+    top: 10px; 
+    right: 10px; 
+    background-color: #fff; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    padding: 10px 15px; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+    display: flex; 
+    align-items: center; 
+    z-index: 1000; 
+    max-width: 300px; 
+}
+
+.modal-msg img {
+    width: 18px; 
+    height: 18px;
+    margin-right: 10px; 
+}
+
+.modal-msg p {
+    margin: 0;
+    font-size: 14px; 
+    color: #333;
+}
