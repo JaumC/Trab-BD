@@ -29,3 +29,9 @@ sudo docker exec -it <nome do container docker> psql -U usuario_do_banco -d nome
 ```sh
 sudo docker ps
 ```
+
+
+### Para acessar o projeto na web, acesse pelo navegador:
+```sh
+localhost:3000
+```
