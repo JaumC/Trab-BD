@@ -1,4 +1,4 @@
-import { Footer } from '../Footer/Footer'
+import '../../styles/Footer.css';
 import './Logoptions.css'
 
 export function Logoptions(){
@@ -20,7 +20,9 @@ export function Logoptions(){
             <div className='buttonLog'>
                 <a className='logButtons' href='/login'>FAZER LOGIN</a>
             </div>
-            <Footer/>
+            <div className='footer'>
+                <img src="src/assets/Meau_marca_2.png" alt="" />
+            </div>
         </div>
     )
 }

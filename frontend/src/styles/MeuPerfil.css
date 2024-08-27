@@ -1,0 +1,49 @@
+.profile-container{
+    flex: auto ;
+    background-color: #fafafa;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-image{
+    width: 112px;
+    height: 112px;
+    border-radius: 100px;
+    background-color: black;
+    margin-top: 16px;
+
+}
+
+.profile-details p {
+    font-size: 14px;
+    color: #434343;
+    margin-top: 8px;
+}
+
+.modal-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.profile-details .label {
+    font-size: 12;
+    font-family: 'Roboto',sans-serif;
+    color: #589b9b;
+    margin-top: 30px;
+}
+
+.profile-details .dado {
+    font-size: 14;
+    font-family: 'Roboto',sans-serif;
+    color: '#757575';
+    margin-top: 8;
+}

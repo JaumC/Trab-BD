@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './Sidebar.css';
-import { Sidecontent } from '../SideContent/Sidecontent';
+import { Sidecontent } from '../Sidebar/SideContent/Sidecontent';
 
 export function Sidebar() {
     const [isSide, setIsSide] = useState(false);
