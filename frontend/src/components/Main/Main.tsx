@@ -1,4 +1,3 @@
-import { Footer } from '../Footer/Footer'
 import './Main.css'
 import { useAuth } from '../../AuthContext';
 
@@ -29,8 +28,6 @@ export function Main(){
                 </p>
             </>
             }
-
-            <Footer/>
         </div>
     )
 }

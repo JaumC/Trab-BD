@@ -1,0 +1,121 @@
+.side-content {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 304px;
+    height: 100%;
+    background-color: #f7f7f7;
+    z-index: 1000;
+    transition: 2s ease-in-out;
+}
+
+.userSection {
+    display: flex;
+    align-items: center;
+    height: 172px;
+    width: "100%";
+    padding: 16;
+    background-color: #88c9bf;
+  }
+
+.imageContainer img {
+    border-radius: 32;
+    top: 15;
+    height: 64px;
+    width: 64px;
+    margin-left: 16px;
+  }
+
+.userName {
+    font-size: 14px;
+    color: #434343;
+    margin-left: 16px;
+    position: absolute;
+    top: 140px;
+}
+
+.menuContainer {
+    flex-direction: column;
+    display: flex;
+}
+
+.menuContainer a {
+    padding: 12px 20px;
+    color: #434343;
+    border-bottom: 1px solid #e6e7e8;
+}
+
+.menuContainer a:nth-child(4)  {
+    border-bottom: none; /* Removes border from the 4 item*/
+}
+
+.menuContainer a:last-child  {
+    border-bottom: none; /* Removes border from the last item */
+}
+
+
+.collapsibleMenu {
+    padding: 0px 20px;
+    flex-direction: column;
+    display: flex;
+   
+}
+
+.collapsibleMenu a.active {
+    color: red;
+}
+
+.collapsibleMenu a{
+    display: block;
+    padding: 12px 20px;
+    color: #434343;
+    border-bottom: 1px solid #e6e7e8;
+}
+
+.collapsibleMenu a:last-child {
+    border-bottom: none; /* Removes border from the last item */
+}
+
+
+.drawerItem {
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 12px 20px;
+    background-color: #fee29b;
+    border-top-width: 1;
+    border-top-color: #ccc; {/* Cor da linha de separação */}
+}
+
+.drawerItem-blue{
+    background-color: #88c9bf;
+}
+
+.drawerItem-yellow{
+    background-color: #fee29b;
+}
+
+.btnSair{
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    bottom: 0;
+}
+
+.btnSair a{
+    padding: 12px 20px;
+}
+
+.menuContainer {
+    flex-direction: column;
+    display: flex;
+}
+
+.menuContainer a {
+    padding: 12px 20px;
+    color: #434343;
+    border-bottom: 1px solid #e6e7e8;
+}
+
+#Info {
+    color: #88c9bf;
+}
