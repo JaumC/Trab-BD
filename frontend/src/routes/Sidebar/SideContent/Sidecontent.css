@@ -1,7 +1,7 @@
 .side-content {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 0px;
+    left: 0px;
     width: 304px;
     height: 100%;
     background-color: #f7f7f7;
@@ -14,13 +14,13 @@
     align-items: center;
     height: 172px;
     width: "100%";
-    padding: 16;
+    padding: 16px;
     background-color: #88c9bf;
   }
 
 .imageContainer img {
-    border-radius: 32;
-    top: 15;
+    border-radius: 32px;
+    top: 15px;
     height: 64px;
     width: 64px;
     margin-left: 16px;
@@ -82,7 +82,7 @@
     margin-top: 10px;
     padding: 12px 20px;
     background-color: #fee29b;
-    border-top-width: 1;
+    border-top-width: 1px;
     border-top-color: #ccc; {/* Cor da linha de separação */}
 }
 
@@ -103,6 +103,8 @@
 
 .btnSair a{
     padding: 12px 20px;
+    background-color: #88c9bf;
+    width: 100%;
 }
 
 .menuContainer {
