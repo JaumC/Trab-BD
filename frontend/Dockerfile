@@ -7,7 +7,7 @@ WORKDIR /app/frontend
 # Copie os arquivos de dependências para o diretório de trabalho
 COPY ./package.json ./yarn.lock ./
 
-# Instale as dependências
+# Instale as dependências usando Yarn
 RUN yarn install
 
 # Copie o restante dos arquivos da aplicação para o diretório de trabalho
