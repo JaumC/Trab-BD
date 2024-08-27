@@ -2,7 +2,8 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 
 interface AuthContextType{
     isLogged: boolean;
-    login: () => void;
+    userId: string | null;
+    login: (userId: string) => void;
     logout: () => void;
 }
 
@@ -18,18 +19,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return saveLogin === 'true'
     })
 
+    const [userId, setUserId] = useState<string | null>(null)
+
     useEffect(() => {
         localStorage.setItem('isLogged', String(isLogged))
     }, [isLogged])
 
-    const login = () => setIsLogged(true);
+    const login = (userId: string) => {
+        setIsLogged(true);
+        setUserId(userId.toString());
+    }
+    
     const logout = () => {
         setIsLogged(false);
+        setUserId(null)
         localStorage.removeItem('isLogged'); 
     };
 
     return(
-        <AuthContext.Provider value={{ isLogged, login, logout }}>
+        <AuthContext.Provider value={{ userId, isLogged, login, logout }}>
             {children}
         </AuthContext.Provider>
     )

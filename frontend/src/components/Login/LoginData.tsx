@@ -42,7 +42,7 @@ export function LoginData(){
                 setMsglog(response.data.OK)
                 setStateLog(true)
                 setTimeout(() => {
-                    login(); 
+                    login(response.data.user_id); 
                     navigate('/'); 
                 }, 1000)
             }

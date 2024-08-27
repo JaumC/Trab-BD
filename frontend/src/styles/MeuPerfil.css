@@ -16,6 +16,15 @@
 
 }
 
+.profile-details{
+    display: flex;
+    max-width: 90%;
+    width: 200px;
+    text-align: center;
+    gap: 1rem;
+    flex-direction: column;
+}
+
 .profile-details p {
     font-size: 14px;
     color: #434343;
@@ -32,18 +41,4 @@
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.5);
-}
-
-.profile-details .label {
-    font-size: 12;
-    font-family: 'Roboto',sans-serif;
-    color: #589b9b;
-    margin-top: 30px;
-}
-
-.profile-details .dado {
-    font-size: 14;
-    font-family: 'Roboto',sans-serif;
-    color: '#757575';
-    margin-top: 8;
 }

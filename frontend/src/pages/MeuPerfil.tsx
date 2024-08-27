@@ -1,73 +1,89 @@
-import React, { useEffect, useState } from 'react';
-import { Sidebar } from '../routes/Sidebar/Sidebar';
+import { useEffect, useState } from 'react';
 import '../styles/MeuPerfil.css';
-import defaultImage from '../assets/b.jpeg'
-
+import defaultImage from '../assets/b.jpeg';
 import { Navbar } from "../components/Navbar/Navbar";
+import { useAuth } from '../AuthContext';
+import api from '../axiosConfig';
+import { InfoTexts } from '../components/InfoTexts/InfoTexts';
 
+interface UserData {
+    nome_completo: string;
+    idade: number;
+    email: string;
+    estado: string;
+    cidade: string;
+    endereco: string;
+    telefone: string;
+    nome_usuario: string;
+    image?: string;
+}
 
-export function MeuPerfil(){
-    const [dadosUser, setDadosUser] = useState(null);
+export function MeuPerfil() {
+    const { isLogged, userId } = useAuth();
+    const [dadosUser, setDadosUser] = useState<UserData | null>(null);
     const [esperando, setEsperando] = useState(true);
-
 
     useEffect(() => {
         const fetchUserData = async () => {
-            // Simulate fetching data
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Dummy delay
-            setDadosUser({
-                nome_completo: "John Doe",
-                idade: 30,
-                email: "john@example.com",
-                estado: "State",
-                cidade: "City",
-                endereco: "1234 Street",
-                telefone: "123-456-7890",
-                nome_usuario: "john_doe"
-            });
-            setEsperando(false);
+            if (isLogged && userId) {
+                try {
+                    
+                    const response = await api.get(`/user-info/${userId}`);
+                    setDadosUser({
+                        nome_completo: response.data.nome_completo,
+                        idade: response.data.idade,
+                        email: response.data.email,
+                        estado: response.data.estado,
+                        cidade: response.data.cidade,
+                        endereco: response.data.endereco,
+                        telefone: response.data.telefone,
+                        nome_usuario: response.data.nome_usuario,
+                        image: response.data.image || defaultImage  
+                    });
+                } catch (error) {
+                    console.error('Error fetching user info:', error);
+                } finally {
+                    setEsperando(false);
+                }
+            }
         };
-        fetchUserData();
-    }, []);
 
-    if (esperando) {
-        return <div className="modal-loading">Loading...</div>; // Simplified loading modal
+        fetchUserData();
+    }, [isLogged, userId]);
+
+    if (!dadosUser) {
+        return <div className="modal-error">Erro ao carregar dados do usuário.</div>;
     }
 
-    return(
+    return (
         <>
-        <Navbar title={dadosUser.nome_completo}/>
-        <div className="profile-container">
-            <img src={dadosUser && dadosUser.image ? dadosUser.image : defaultImage} alt="Profile" className="profile-image"/>
-            <div className="profile-details">
-                <p className='label'> NOME COMPLETO</p>
-                <p className='dado'>Name: {dadosUser.nome_completo}</p>
+            <Navbar title='Seu Perfil' />
+            <div className="profile-container">
+                <img src={dadosUser.image} alt="Profile" className="profile-image"/>
+                <div className="profile-details">
+                    <div>
+                        <InfoTexts label='NOME COMPLETO' text={dadosUser.nome_completo}/>
+                        <InfoTexts label='IDADE' text={dadosUser.idade.toString()}/>
+                        <InfoTexts label='EMAIL' text={dadosUser.email}/>
+                    
+                    </div>
+                    <div>
+                        <InfoTexts label='ESTADO' text={dadosUser.estado}/>
+                        <InfoTexts label='CIDADE' text={dadosUser.cidade}/>
+                        <InfoTexts label='ENDEREÇO' text={dadosUser.endereco}/>
 
-                <p className='label'>IDADE</p>
-                <p className='dado'>Age: {dadosUser.idade} years</p>
+                    </div>
+                    <div>
+                        <InfoTexts label='TELEFONE' text={dadosUser.telefone}/>
 
-                <p className='label'>EMAIL</p>
-                <p className='dado'>Email: {dadosUser.email}</p>
+                    </div>
+                    <div>
 
-                <p className='label'>ESTADO</p>
-                <p className='dado'>State: {dadosUser.estado}</p>
-
-                <p className='label'>CIDADE</p>
-                <p className='dado'>City: {dadosUser.cidade}</p>
-
-                <p className='label'>ENDEREÇO</p>
-                <p className='dado'>Address: {dadosUser.endereco}</p>
-
-                <p className='label'>TELEFONE</p>
-                <p className='dado'>Phone: {dadosUser.telefone}</p>
-
-                <p className='label'>NOME DO USUÁRIO</p>
-                <p className='dado'>Username: {dadosUser.nome_usuario}</p>
-
-                <p className='label'>Historico</p>
-                <p className='dado'>Adotou 1 gato</p>
+                        <InfoTexts label='NOME DO USUÁRIO' text={dadosUser.nome_usuario}/>
+                        <InfoTexts label='Histótico' text='Adotou 1 gato'/>
+                    </div>
+                </div>
             </div>
-        </div>
         </>
-    )
+    );
 }

@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
-import psycopg2
 from flask_cors import CORS
+import psycopg2
+
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +19,8 @@ db_config = {
 def get_db_connection():
     conn = psycopg2.connect(**db_config)
     return conn
+
+
 
 @app.route('/sign-data', methods=['POST'])
 def sign_data():
@@ -68,10 +71,11 @@ def sign_data():
     return jsonify(response)
 
 
+
 @app.route('/login-data', methods=['POST'])
 def login_data():
     data = request.json  # Recebe os dados do React em formato JSON
-    
+
     # Conectar ao banco de dados
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -93,6 +97,36 @@ def login_data():
     except Exception as e:
         response = {'DENY': f'Erro ao realizar login: {e}'}
         return jsonify(response), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
+@app.route('/user-info/<int:user_id>', methods=['GET'])
+def user_info(user_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        return jsonify({'DENY': 'User ID inválido'}), 400
+
+
+    try:
+        cursor.execute("SELECT * FROM usuarios WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+
+        if user:
+            return jsonify({'user_id': user[0], 'nome_completo': user[1], 'idade': user[2], 'email': user[3], 'estado': user[4], 'cidade': user[5], 'endereco': user[6], 'telefone': user[7], 'nome_usuario': user[8],}), 200
+        else:
+            return jsonify({'DENY': 'Usuário não encontrado'}), 404
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro ao buscar informações do usuário: {e}'}), 500
 
     finally:
         cursor.close()
