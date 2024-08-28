@@ -56,7 +56,7 @@ export function Sidecontent() {
                         </div>
                         {isMenuOpen && (
                             <div className="collapsibleMenu">
-                                <NavLink to="/Login">Cadastrar um pet</NavLink>
+                                <NavLink to="/PreencherCadastroPets">Cadastrar um pet</NavLink>
                                 <NavLink to="/Home">Adotar um Pet</NavLink>
                                 <NavLink to="/Home">Ajudar um pet</NavLink>
                                 <NavLink to="/Home">Apadrinhar um pet</NavLink>
@@ -92,6 +92,7 @@ export function Sidecontent() {
                     <div className="menuContainer">
                         <NavLink to="/login">Login</NavLink>
                         <NavLink to="/sign">Cadastre-se</NavLink>
+                        <NavLink to="/PreencherCadastroPets">Cadastrar um pet</NavLink>
                     </div>
                 </>
             }
