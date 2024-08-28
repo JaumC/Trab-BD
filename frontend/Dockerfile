@@ -5,10 +5,10 @@ FROM node:18
 WORKDIR /app/frontend
 
 # Copie os arquivos de dependências para o diretório de trabalho
-COPY ./package.json ./yarn.lock ./
+COPY package.json yarn.lock ./
 
 # Instala as dependências
-RUN npm install
+RUN npm install --frozen-lockfile
 
 # Instale as dependências usando Yarn
 RUN yarn install
@@ -17,4 +17,4 @@ RUN yarn install
 COPY . .
 
 # Comando para rodar o servidor de desenvolvimento
-CMD ["npm","start","yarn", "dev", "--host"]
+CMD ["yarn", "dev", "--host"]

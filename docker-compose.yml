@@ -25,7 +25,7 @@ services:
     volumes:
       - ./frontend:/app/frontend
       - node_modules:/app/frontend/node_modules
-    command: sh -c "npm install && npm start"
+    command: sh -c "yarn install && yarn dev --host"
     depends_on:
       - backend
 

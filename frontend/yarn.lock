@@ -780,6 +780,16 @@ json-stable-stringify-without-jsonify@^1.0.1:
   resolved "https://registry.npmjs.org/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz"
   integrity sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==
 
+"kanbanets@file:":
+  version "0.0.0"
+  resolved "file:"
+  dependencies:
+    axios "^1.7.2"
+    kanbanets "file:"
+    react "^18.3.1"
+    react-dom "^18.3.1"
+    react-router-dom "^6.25.1"
+
 keyv@^4.5.3:
   version "4.5.4"
   resolved "https://registry.npmjs.org/keyv/-/keyv-4.5.4.tgz"
