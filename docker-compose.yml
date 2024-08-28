@@ -25,7 +25,7 @@ services:
     volumes:
       - ./frontend:/app/frontend
       - node_modules:/app/frontend/node_modules
-    command: sh -c "yarn install && yarn dev --host"
+    command: sh -c "yarn install && if [ ! -d /app/frontend/node_modules ]; then cp -r node_modules /app/frontend/node_modules; else echo 'node_modules already exists'; fi && yarn dev --host"
     depends_on:
       - backend
 

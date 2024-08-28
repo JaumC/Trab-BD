@@ -5,6 +5,7 @@ import { ModalMsg } from '../components/ModalMsg/ModalMsg';
 import { GreenButton } from "../components/GreenButton/GreenButton";
 import api from '../axiosConfig';
 import axios from 'axios';
+import RadioButtons from "../components/BotaoRedondo/BotaoRedondo";
 
 type AnimalData = {
     nomeAnimal: string;
@@ -45,11 +46,14 @@ export function PreencherPet(){
         tempoAcompanhamento: '',
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAnimalData({
-            ...AnimalData,
-            [e.target.name]: e.target.value
-        });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | string[], fieldName?: string) => {
+        const value = Array.isArray(e) ? e.join(', ') : e.target.value;
+        const name = fieldName || e.target.name;
+        
+        setAnimalData(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const handleSubmit = async () => {
@@ -106,7 +110,7 @@ export function PreencherPet(){
             <div className="inputsinfo">
                 <p>Ajudar</p>
                 <InputData type='text' name='nomeAnimal' placeholder='Nome do Animal' onChange={handleChange}/>
-                <InputData type='text' name='especie' placeholder='Idade' onChange={handleChange}/>
+                {/*<InputData type='text' name='especie' placeholder='Idade' onChange={handleChange}/>
                 <InputData type='text' name='sexo' placeholder='E-mail' onChange={handleChange}/>
                 <InputData type='text' name='porte' placeholder='Estado' onChange={handleChange}/>
                 <InputData type='text' name='idade' placeholder='Cidade' onChange={handleChange}/>
@@ -118,8 +122,15 @@ export function PreencherPet(){
                 <InputData type='text' name='exigenciaFotosCasa' placeholder='Telefone' onChange={handleChange}/>
                 <InputData type='text' name='visitaPrevia' placeholder='Telefone' onChange={handleChange}/>
                 <InputData type='text' name='acompanhamento' placeholder='Telefone' onChange={handleChange}/>
-                <InputData type='text' name='tempoAcompanhamento' placeholder='Telefone' onChange={handleChange}/>
+                <InputData type='text' name='tempoAcompanhamento' placeholder='Telefone' onChange={handleChange}/> */}
             </div>
+            <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
+                ESPÉCIE
+            </div>
+            <RadioButtons
+                options={['Male', 'Female', 'Unknown']}
+                setParentState={(value: string) => handleChange(value, 'sexo')}
+            />
             <div className="inputsinfo">
                 <p>INFORMAÇÕES DE PERFIL</p>
                 <InputData type='text' name='nomeAnimal' placeholder='Nome do Animal' onChange={handleChange}/>
