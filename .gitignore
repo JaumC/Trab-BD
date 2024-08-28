@@ -1,1 +1,4 @@
 __pycache__/
+
+#Ignore node_modules
+frontend/node_modules/

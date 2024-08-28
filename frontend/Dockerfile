@@ -7,6 +7,9 @@ WORKDIR /app/frontend
 # Copie os arquivos de dependências para o diretório de trabalho
 COPY ./package.json ./yarn.lock ./
 
+# Instala as dependências
+RUN npm install
+
 # Instale as dependências usando Yarn
 RUN yarn install
 
@@ -14,4 +17,4 @@ RUN yarn install
 COPY . .
 
 # Comando para rodar o servidor de desenvolvimento
-CMD ["yarn", "dev", "--host"]
+CMD ["npm","start","yarn", "dev", "--host"]
