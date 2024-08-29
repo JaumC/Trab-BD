@@ -5,7 +5,7 @@ interface NavbarProps{
     color?: string;
 }
 
-export function Navbar({title, color}: NavbarProps){
+export function Navbar({title, color="#88c9bf"}: NavbarProps){
     const goBack = () => {
         window.history.back();
     };
