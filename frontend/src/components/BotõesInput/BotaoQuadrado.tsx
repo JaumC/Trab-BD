@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import './BotaoRedondo.css';
+import { useState } from 'react';
+import './Botao.css';
 
-function RadioButtons({ options, setParentState }) {
+function BotaoQuadrado({ options, setParentState, columns }) {
   const [selectedValue, setSelectedValue] = useState('');
 
   const handleChange = (event) => {
@@ -11,12 +11,14 @@ function RadioButtons({ options, setParentState }) {
 
   const renderRadioButtons = () => {
     return options.map((option, index) => (
-      <label key={index}>
+      <label key={index} className="radioLabel"
+      style={{ '--columns': columns }}>
         <input
-          type="radio"
+          type="checkbox"
           value={option}
           checked={selectedValue === option}
           onChange={handleChange}
+          className="radioInput square"
         />
         {option}
       </label>
@@ -24,10 +26,12 @@ function RadioButtons({ options, setParentState }) {
   };
 
   return (
-    <div>
+    <div className='radioGroup'
+    style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, 1fr)`, gap: '7px' }}
+    >
       {renderRadioButtons()}
     </div>
   );
 }
 
-export default RadioButtons;
+export default BotaoQuadrado;
