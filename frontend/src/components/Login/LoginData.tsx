@@ -10,7 +10,7 @@ import './LoginData.css'
 
 export function LoginData(){
     const [logData, setlogData] = useState({
-        nome_completo: '',
+        nome_usuario: '',
         senha: '',
 
     });
@@ -29,7 +29,7 @@ export function LoginData(){
     };
 
     const handleSubmit = async () => {
-        if (logData.senha == '' || logData.nome_completo == '') {
+        if (logData.senha == '' || logData.nome_usuario == '') {
             setMsglog("Campos vazios! Preencha todos os campos.");
             return;
         }
@@ -60,7 +60,7 @@ export function LoginData(){
     return(
         <>     
             <div className="inputs-login">
-                <InputData type='text' name='nome_completo' placeholder='Nome Sobrenome' onChange={handleChange}/>
+                <InputData type='text' name='nome_usuario' placeholder='Nome do Usuário' onChange={handleChange}/>
                 <InputData type='password' name='senha' placeholder='*************' onChange={handleChange}/>
             </div>
             <div className="enterField">

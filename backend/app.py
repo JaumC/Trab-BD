@@ -76,12 +76,14 @@ def sign_data():
 def login_data():
     data = request.json  # Recebe os dados do React em formato JSON
 
+    app.logger.info(f'Received login data: {data}')
+
     # Conectar ao banco de dados
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
-        cursor.execute("SELECT id, nome_usuario FROM usuarios WHERE nome_completo = %s AND senha = %s", (data['nome_completo'], data['senha']))
+        cursor.execute("SELECT id, nome_usuario FROM usuarios WHERE nome_usuario = %s AND senha = %s", (data['nome_usuario'], data['senha']))
 
         # Pega a primeira ocorrencia encontrada
         user = cursor.fetchone()
@@ -95,6 +97,7 @@ def login_data():
             return jsonify(response), 401
 
     except Exception as e:
+        app.logger.error(f'Error during login: {str(e)}') #Loggin Error
         response = {'DENY': f'Erro ao realizar login: {e}'}
         return jsonify(response), 500
 

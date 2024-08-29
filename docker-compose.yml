@@ -24,8 +24,8 @@ services:
     tty: true
     volumes:
       - ./frontend:/app/frontend
-      - node_modules:/app/frontend/node_modules
-    command: sh -c "yarn install && if [ ! -d /app/frontend/node_modules ]; then cp -r node_modules /app/frontend/node_modules; else echo 'node_modules already exists'; fi && yarn dev --host"
+      - node_modules_volume:/app/frontend/node_modules
+    command: sh -c "yarn install && yarn dev --host" #Instala node_modules e roda o programa na web
     depends_on:
       - backend
 
@@ -42,4 +42,4 @@ services:
 
 volumes:
   postgres_data:
-  node_modules:
+  node_modules_volume: #Ao definir, estamos salvando para que fique persistente.
