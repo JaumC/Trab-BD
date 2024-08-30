@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS animais (
     temperamento VARCHAR(100),
     saude VARCHAR(100),
     sobreAnimal TEXT,
-    animalFoto VARCHAR(255),
+    animalFoto BYTEA,
     usuario_id INTEGER,
     CONSTRAINT fk_usuario
         FOREIGN KEY (usuario_id) 

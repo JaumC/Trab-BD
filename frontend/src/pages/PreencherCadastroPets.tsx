@@ -26,8 +26,7 @@ export function PreencherPet(){
 
     const [msgSign, setMsgSign] = useState<string>('')
     const [stateSign , setStateSign] = useState<boolean>(false)
-    const [imageSrc, setImageSrc] = useState(null); // Estado para armazenar a URL da imagem
-
+    const [imageSrc, setImageSrc] = useState(''); // Estado para armazenar a URL da imagem
 
     const [AnimalData, setAnimalData] = useState<AnimalData>({
         nomeAnimal: '',
@@ -41,13 +40,14 @@ export function PreencherPet(){
         animalFoto: '',
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | string[], fieldName?: string) => {
-        const value = Array.isArray(e) ? e.join(', ') : e.target.value;
-        const name = fieldName || e.target.name;
+    const handleChange = (value: string |string[], fieldName?: string) => {
+        // Se o valor é um array, mantém como array; se não, converte para um array com um único elemento
+        const newValue = Array.isArray(value) ? value : [value];
+        const name = fieldName || value.target.name;
         
         setAnimalData(prev => ({
             ...prev,
-            [name]: value
+            [name]: newValue
         }));
     };
 
@@ -62,20 +62,34 @@ export function PreencherPet(){
             'temperamento',
             'saude',
             'sobreAnimal',
-            'animalFoto',
         ];
 
+        const hasEmptyFields = requiredFields.filter(field => !AnimalData[field]);
+        
+        const formData = new FormData();
+        // Adiciona os dados do formulário ao FormData
+        Object.keys(AnimalData).forEach(key => {
+            if (key === 'animalFoto' && AnimalData[key] instanceof File){
+                console.log('Adicionando arquivo:', AnimalData[key].name);
+                formData.append('animalFoto', AnimalData[key]);
+            } else {
+                formData.append(key, AnimalData[key]);
+            }
+        });
+        
+        
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+        }
 
-
-        const hasEmptyFields = requiredFields.some(field => !AnimalData[field]);
-    
-        if (hasEmptyFields) {
-            setMsgSign("Existem campos não preenchidos, por favor preencha todos");
+        if (hasEmptyFields.length > 0 || !imageSrc)  {
+            console.log("Campos vazios: ", hasEmptyFields);
+            setMsgSign("Existem campos não preenchidos:",hasEmptyFields.join(', ') );
             return;
         }
         try {
-            const response = await api.post('/register-animal', AnimalData)
-            setMsgSign(response.data.OK)
+            const response = await axios.post('http://localhost:50/register-animal', formData);
+            setMsgSign(response.data.OK || response.data.message)
             setStateSign(true)
 
         }catch(error){
@@ -98,12 +112,13 @@ export function PreencherPet(){
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            console.log('Arquivo selecionado:', file.name);
             const reader = new FileReader();
             reader.onload = (event) => {
                 setImageSrc(event.target.result); // Define a imagem a ser mostrada
             };
             reader.readAsDataURL(file); //Lê o arquivo como URL de dados
+            setImageSrc(URL.createObjectURL(file)); //Armazena o arquivo no estado
+            setAnimalData({...AnimalData, animalFoto: file});
         }
     };
 
@@ -175,7 +190,7 @@ export function PreencherPet(){
             <div className="containerBotao ">
                 <BotaoQuadrado
                 options={['Brincalhão', 'Tímido', 'Calmo', 'Guarda', 'Amoroso', 'Preguiçoso' ]}
-                setParentState={(value: string) => handleChange(value, 'temperamento')}
+                setParentState={(value: string[]) => handleChange(value, 'temperamento')}
                 columns={3}
                 />
             </div>
@@ -185,7 +200,7 @@ export function PreencherPet(){
             <div className="containerBotao ">
                 <BotaoQuadrado
                 options={['Vacinado', 'Vermifugado', 'Castrado', 'Doente']}
-                setParentState={(value: string) => handleChange(value, 'saude')}
+                setParentState={(value: string[]) => handleChange(value, 'saude')}
                 columns={2}
                 />
             </div>

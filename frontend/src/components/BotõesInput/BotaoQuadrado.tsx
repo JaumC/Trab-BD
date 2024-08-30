@@ -2,17 +2,17 @@ import { useState } from 'react';
 import './Botao.css';
 
 function BotaoQuadrado({ options, setParentState, columns }) {
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedValue, setSelectedValue] = useState([]);
 
   const handleChange = (event) => {
-    setSelectedValue(event.target.value);
-    setParentState(event.target.value);
+    const newValue = event.target.value;
+        setSelectedValue(newValue); // Atualiza o estado interno com o novo valor selecionado
+        setParentState(newValue); // Atualiza o estado no componente pai
   };
 
   const renderRadioButtons = () => {
     return options.map((option, index) => (
-      <label key={index} className="radioLabel"
-      style={{ '--columns': columns }}>
+      <label key={index} className="radioLabel" style={{ '--columns': columns }}>
         <input
           type="checkbox"
           value={option}

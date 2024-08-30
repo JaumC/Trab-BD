@@ -1,7 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 import psycopg2
+import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Caminho absoluto para o diretório onde app.py está localizado
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 
 app = Flask(__name__)
 CORS(app)
@@ -19,8 +23,6 @@ db_config = {
 def get_db_connection():
     conn = psycopg2.connect(**db_config)
     return conn
-
-
 
 @app.route('/sign-data', methods=['POST'])
 def sign_data():
@@ -79,10 +81,24 @@ def register_animal():
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    nomeAnimal = request.form['nomeAnimal']
+    especie = request.form['especie']
+    sexo = request.form['sexo']
+    porte = request.form['porte']
+    idade = request.form['idade']
+    temperamento = request.form['temperamento']
+    saude = request.form['saude']
+    sobreAnimal = request.form['sobreAnimal']
+    animalFoto = request.files['animalFoto']
+
+    if animalFoto:
+        file_content = animalFoto.read()
+
     try:
-        cursor.execute("INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto) VALUES (%s, %s, %s, %s, %s,%s, %s, %s)",
-                       (data['nomeAnimal'], data['especie'], data['sexo'], data['porte'], data['idade'], data['temperamento'], data['saude'],data['sobreAnimal'], data['animalFoto']
-                       ))
+        cursor.execute("""
+            INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, file_content))
         conn.commit()
         return jsonify({'message': 'Animal cadastrado com sucesso!'})
     except Exception as e:
