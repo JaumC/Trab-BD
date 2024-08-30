@@ -18,3 +18,5 @@ ENV FLASK_APP=app.py
 
 # Comando para rodar o Flask
 CMD ["flask", "run", "--host=0.0.0.0"]
+
+# Inicia o banco de dados com as tabelas criadas e definidas no arquivo init-db.sql

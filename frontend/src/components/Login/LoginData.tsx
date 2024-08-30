@@ -9,11 +9,7 @@ import axios from 'axios';
 import './LoginData.css'
 
 export function LoginData(){
-    const [logData, setlogData] = useState({
-        nome_usuario: '',
-        senha: '',
-
-    });
+    const [logData, setlogData] = useState({nome_usuario: '', senha: '',});
 
     const [msgLog , setMsglog] = useState<string>('')
     const [stateLog , setStateLog] = useState<boolean>(false)

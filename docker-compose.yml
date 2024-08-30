@@ -39,7 +39,7 @@ services:
       POSTGRES_PASSWORD: senha_do_banco
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./backend/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql # Ao inicializar o docker pela primeira vez: cria as tabelas definidas em init-db.sql
 
 volumes:
   postgres_data:
