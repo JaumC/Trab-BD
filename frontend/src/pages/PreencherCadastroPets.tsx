@@ -18,13 +18,8 @@ type AnimalData = {
     idade: string;
     temperamento: string;
     saude: string;
-    doencasAnimal: string;
     sobreAnimal: string;
-    termosAdocao: string;
-    exigenciaFotosCasa: string;
-    visitaPrevia: string;
-    acompanhamento: string;
-    tempoAcompanhamento: string;
+    animalFoto: string;
 };
 
 export function PreencherPet(){
@@ -40,13 +35,8 @@ export function PreencherPet(){
         idade: '',
         temperamento: '',
         saude: '',
-        doencasAnimal: '',
         sobreAnimal: '',
-        termosAdocao: '',
-        exigenciaFotosCasa: '',
-        visitaPrevia: '',
-        acompanhamento: '',
-        tempoAcompanhamento: '',
+        animalFoto: '',
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement> | string[], fieldName?: string) => {
@@ -68,13 +58,8 @@ export function PreencherPet(){
             'idade',
             'temperamento',
             'saude',
-            'doencasAnimal',
             'sobreAnimal',
-            'termosAdocao',
-            'exigenciaFotosCasa',
-            'visitaPrevia',
-            'acompanhamento',
-            'tempoAcompanhamento'
+            'animalFoto',
         ];
 
 
@@ -86,7 +71,7 @@ export function PreencherPet(){
             return;
         }
         try {
-            const response = await api.post('/sign-data', AnimalData)
+            const response = await api.post('/register-animal', AnimalData)
             setMsgSign(response.data.OK)
             setStateSign(true)
 
@@ -111,26 +96,13 @@ export function PreencherPet(){
                 <InputData type='text' name='nomeAnimal' placeholder='Nome do Animal' onChange={handleChange}/>
                 </div>
                 </div>
-                {/*<InputData type='text' name='especie' placeholder='Idade' onChange={handleChange}/>
-                <InputData type='text' name='sexo' placeholder='E-mail' onChange={handleChange}/>
-                <InputData type='text' name='porte' placeholder='Estado' onChange={handleChange}/>
-                <InputData type='text' name='idade' placeholder='Cidade' onChange={handleChange}/>
-                <InputData type='text' name='saude' placeholder='Cidade' onChange={handleChange}/>
-                <InputData type='text' name='temperamento' placeholder='Endereço' onChange={handleChange}/>
-                <InputData type='text' name='doencasAnimal' placeholder='Telefone' onChange={handleChange}/>
-                <InputData type='text' name='sobreAnimal' placeholder='Telefone' onChange={handleChange}/>
-                <InputData type='text' name='termosAdocao' placeholder='Telefone' onChange={handleChange}/>
-                <InputData type='text' name='exigenciaFotosCasa' placeholder='Telefone' onChange={handleChange}/>
-                <InputData type='text' name='visitaPrevia' placeholder='Telefone' onChange={handleChange}/>
-                <InputData type='text' name='acompanhamento' placeholder='Telefone' onChange={handleChange}/>
-                <InputData type='text' name='tempoAcompanhamento' placeholder='Telefone' onChange={handleChange}/> */}
             <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
                 ESPÉCIE
             </div>
             <div className="containerBotao ">
                 <RadioButtons
                 options={['Cachorro', 'Gato']}
-                setParentState={(value: string) => handleChange(value, 'sexo')}
+                setParentState={(value: string) => handleChange(value, 'especie')}
                 />
             </div>
             <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
@@ -148,7 +120,7 @@ export function PreencherPet(){
             <div className="containerBotao ">
                 <RadioButtons
                 options={['Pequeno', 'Médio', 'Grande']}
-                setParentState={(value: string) => handleChange(value, 'sexo')}
+                setParentState={(value: string) => handleChange(value, 'porte')}
                 />
             </div>
             <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
@@ -157,7 +129,7 @@ export function PreencherPet(){
             <div className="containerBotao ">
                 <RadioButtons
                 options={['Filhote', 'Adulto', 'Idoso']}
-                setParentState={(value: string) => handleChange(value, 'sexo')}
+                setParentState={(value: string) => handleChange(value, 'idade')}
                 />
             </div>
             <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
@@ -166,7 +138,7 @@ export function PreencherPet(){
             <div className="containerBotao ">
                 <BotaoQuadrado
                 options={['Brincalhão', 'Tímido', 'Calmo', 'Guarda', 'Amoroso', 'Preguiçoso' ]}
-                setParentState={(value: string) => handleChange(value, 'sexo')}
+                setParentState={(value: string) => handleChange(value, 'temperamento')}
                 columns={3}
                 />
             </div>
@@ -176,25 +148,15 @@ export function PreencherPet(){
             <div className="containerBotao ">
                 <BotaoQuadrado
                 options={['Vacinado', 'Vermifugado', 'Castrado', 'Doente']}
-                setParentState={(value: string) => handleChange(value, 'sexo')}
+                setParentState={(value: string) => handleChange(value, 'saude')}
                 columns={2}
-                />
-            </div>
-            <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
-                NECESSIDADES DO ANIMAL
-            </div>
-            <div className="containerBotao ">
-                <BotaoQuadrado
-                options={['Alimento', 'Auxílio financeiro', 'Medicamento','Objetos']}
-                setParentState={(value: string) => handleChange(value, 'sexo')}
-                columns={1}
                 />
             </div>
             <div className="inputsinfo">
                 <p>SOBRE O ANIMAL</p>
-                <InputData type='text' name='nomeAnimal' placeholder='Compartilhe a história do animal' onChange={handleChange}/>
+                <InputData type='text' name='sobreAnimal' placeholder='Compartilhe a história do animal' onChange={handleChange}/>
             <div className="signField">
-                <GreenButton label='CADASTRAR ANIMAL' onClick={handleSubmit}/>
+                <GreenButton label='REGISTRAR ANIMAL' onClick={handleSubmit}/>
             </div>
             </div>
 

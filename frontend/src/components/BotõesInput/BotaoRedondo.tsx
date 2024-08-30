@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Botao.css';
 
 function RadioButtons({ options, setParentState }) {
+  
   const [selectedValue, setSelectedValue] = useState('');
 
   const handleChange = (event) => {

@@ -1,1 +1,0 @@
-SELECT id, nome_usuario FROM usuarios WHERE nome_usuario = 'luiz' and senha = 'admin1';

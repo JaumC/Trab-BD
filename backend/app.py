@@ -70,6 +70,28 @@ def sign_data():
 
     return jsonify(response)
 
+@app.route('/register-animal', methods=['POST'])
+def register_animal():
+    data = request.json  # Recebe os dados do React em formato JSON
+
+    # Conectar ao banco de dados
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto) VALUES (%s, %s, %s, %s, %s,%s, %s, %s)",
+                       (data['nomeAnimal'], data['especie'], data['sexo'], data['porte'], data['idade'], data['temperamento'], data['saude'],data['sobreAnimal'], data['animalFoto']
+                       ))
+        conn.commit()
+        return jsonify({'message': 'Animal cadastrado com sucesso!'})
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'message': f'Erro ao cadastrar animal: {e}'})
+    finally:
+        cursor.close()
+        conn.close()
+
 
 
 @app.route('/login-data', methods=['POST'])
