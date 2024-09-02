@@ -21,7 +21,6 @@ interface UserData {
 export function MeuPerfil() {
     const { isLogged, userId } = useAuth();
     const [dadosUser, setDadosUser] = useState<UserData | null>(null);
-    const [esperando, setEsperando] = useState(true);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -42,8 +41,6 @@ export function MeuPerfil() {
                     });
                 } catch (error) {
                     console.error('Error fetching user info:', error);
-                } finally {
-                    setEsperando(false);
                 }
             }
         };

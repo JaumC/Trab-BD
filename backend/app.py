@@ -1,7 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 import psycopg2
+import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Caminho absoluto para o diretório onde app.py está localizado
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 
 app = Flask(__name__)
 CORS(app)
@@ -19,8 +23,6 @@ db_config = {
 def get_db_connection():
     conn = psycopg2.connect(**db_config)
     return conn
-
-
 
 @app.route('/sign-data', methods=['POST'])
 def sign_data():
@@ -70,18 +72,56 @@ def sign_data():
 
     return jsonify(response)
 
+@app.route('/register-animal', methods=['POST'])
+def register_animal():
+    data = request.json  # Recebe os dados do React em formato JSON
+
+    # Conectar ao banco de dados
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    nomeAnimal = request.form['nomeAnimal']
+    especie = request.form['especie']
+    sexo = request.form['sexo']
+    porte = request.form['porte']
+    idade = request.form['idade']
+    temperamento = request.form['temperamento']
+    saude = request.form['saude']
+    sobreAnimal = request.form['sobreAnimal']
+    animalFoto = request.files['animalFoto']
+
+    if animalFoto:
+        file_content = animalFoto.read()
+
+    try:
+        cursor.execute("""
+            INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, file_content))
+        conn.commit()
+        return jsonify({'message': 'Animal cadastrado com sucesso!'})
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'message': f'Erro ao cadastrar animal: {e}'})
+    finally:
+        cursor.close()
+        conn.close()
+
 
 
 @app.route('/login-data', methods=['POST'])
 def login_data():
     data = request.json  # Recebe os dados do React em formato JSON
 
+    app.logger.info(f'Received login data: {data}')
+
     # Conectar ao banco de dados
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
-        cursor.execute("SELECT id, nome_usuario FROM usuarios WHERE nome_completo = %s AND senha = %s", (data['nome_completo'], data['senha']))
+        cursor.execute("SELECT id, nome_usuario FROM usuarios WHERE nome_usuario = %s AND senha = %s", (data['nome_usuario'], data['senha']))
 
         # Pega a primeira ocorrencia encontrada
         user = cursor.fetchone()
@@ -95,6 +135,7 @@ def login_data():
             return jsonify(response), 401
 
     except Exception as e:
+        app.logger.error(f'Error during login: {str(e)}') #Loggin Error
         response = {'DENY': f'Erro ao realizar login: {e}'}
         return jsonify(response), 500
 

@@ -4,6 +4,7 @@ import { Signed } from "../pages/Signed";
 import { Login } from "../pages/Login";
 import { Sign } from "../pages/Sign";
 import { MeuPerfil } from "../pages/MeuPerfil";
+import { PreencherPet } from "../pages/PreencherCadastroPets";
 
 export function AppRoutes(){
     return(
@@ -13,6 +14,7 @@ export function AppRoutes(){
             <Route path="/login" element={<Login />} />
             <Route path="/sign" element={<Sign />} />
             <Route path="/MeuPerfil" element={<MeuPerfil/>} />
+            <Route path="/PreencherCadastroPets" element={<PreencherPet/>} />
         </Routes>
     )
 }

@@ -1,0 +1,30 @@
+.radioInput{
+    width: 17px;
+    height: 17px;
+    margin-right: 3px; /* Espaço entre o input e o texto */
+    cursor: pointer;
+}
+
+.radioGroup {
+    display: flex;
+    flex-direction: row; /* Coloca os botões de rádio lado a lado */
+    flex-wrap: wrap; /* Permite que os botões de rádio se movam para a linha seguinte se o espaço for insuficiente */
+    gap: 7px; /* Espaçamento entre os botões de rádio */
+}
+
+.radioLabel {
+    display: flex;
+    align-items: center; /* Alinha o texto e o input verticalmente */
+    gap: 1px; /* Espaçamento entre o input e o texto */
+}
+
+/* CSS para o botão de rádio circular */
+.circular {
+    border-radius: 50%; /* Circular */
+}
+
+.square{
+    border-radius: 6px; /* Quadrado com bordas levemente arredondadas */
+    border-width: 2.5px;
+    justify-content: center;
+}
