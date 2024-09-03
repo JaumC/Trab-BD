@@ -1,4 +1,5 @@
 import { Navbar } from "../components/Navbar/Navbar";
+import { useNavigate } from 'react-router-dom';
 import { InputData } from '../components/InputData/InputData';
 import { useState } from "react";
 import { ModalMsg } from '../components/ModalMsg/ModalMsg';
@@ -25,6 +26,8 @@ type AnimalData = {
 };
 
 export function PreencherPet(){
+
+    const navigate = useNavigate();
 
     const { userId } = useAuth();
     const [msgSign, setMsgSign] = useState<string>('')
@@ -120,6 +123,7 @@ export function PreencherPet(){
             console.log('Animal cadastrado com sucesso!');
             setMsgSign(data.message || "Animal registrado com sucesso!")
             setStateSign(true)
+            navigate('/AvisoCadastroAnimal')
 
         }catch(error){
             if (axios.isAxiosError(error)){

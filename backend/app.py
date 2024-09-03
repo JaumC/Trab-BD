@@ -103,6 +103,10 @@ def register_animal():
 
     imagem_base64 = data.get('animalFoto')
 
+    userId = data.get('usuario_id')  # Obtém o ID do usuário do React
+
+    image_bytes = None
+
     if imagem_base64:
         image_data = image_base64.split(",")[1]
         image_bytes = base64.b64decode(image_data) # Remove o prefixo da string Base64
@@ -123,7 +127,7 @@ def register_animal():
         cursor.execute("""
             INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, userId)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, imagem_base64, userId))
+        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, file_url, userId))
         conn.commit()
         return jsonify({'message': 'Animal cadastrado com sucesso!'})
     except Exception as e:

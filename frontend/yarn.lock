@@ -1009,7 +1009,7 @@ json-stable-stringify-without-jsonify@^1.0.1:
   version "0.0.0"
   dependencies:
     axios "^1.7.2"
-    kanbanets "file:../../../../AppData/Local/Yarn/Cache/v6/npm-kanbanets-0.0.0-6f3028a0-f7db-4f86-b663-a1d88cc7c311-1724850406316/node_modules/kanbanets"
+    kanbanets "file:../../usr/local/share/.cache/yarn/v6/npm-kanbanets-0.0.0-d1a0bd95-119e-4702-83ba-f3a47c9aeecd-1725392192428/node_modules/kanbanets"
     react "^18.3.1"
     react-dom "^18.3.1"
     react-router-dom "^6.25.1"
@@ -1208,6 +1208,11 @@ react-dom@^18.3.1:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.2"
+
+react-icons@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-5.3.0.tgz#ccad07a30aebd40a89f8cfa7d82e466019203f1c"
+  integrity sha512-DnUk8aFbTyQPSkCfF8dbX6kQjXA9DktMeJqfjrg6cK9vwQVMxmcA3BfP4QoiztVmEHtwlTgLFsPuH2NskKT6eg==
 
 react-router-dom@^6.25.1:
   version "6.25.1"
