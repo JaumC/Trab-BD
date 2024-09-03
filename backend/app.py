@@ -74,31 +74,29 @@ def sign_data():
 
 @app.route('/register-animal', methods=['POST'])
 def register_animal():
-    data = request.json  # Recebe os dados do React em formato JSON
+    data = request.form  # Recebe os dados do React em formato form-data
 
-    # Conectar ao banco de dados
+    nomeAnimal = data.get('nomeAnimal')
+    especie = data.get('especie')
+    sexo = data.get('sexo')
+    porte = data.get('porte')
+    idade = data.get('idade')
+    temperamento = data.getlist('temperamento')  # Recebe uma lista de valores
+    saude = data.getlist('saude')  # Recebe uma lista de valores
+    sobreAnimal = data.get('sobreAnimal')
+    
+    animalFoto = request.files.get('animalFoto')  # Obtém o arquivo de imagem
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    nomeAnimal = request.form['nomeAnimal']
-    especie = request.form['especie']
-    sexo = request.form['sexo']
-    porte = request.form['porte']
-    idade = request.form['idade']
-    temperamento = request.form['temperamento']
-    saude = request.form['saude']
-    sobreAnimal = request.form['sobreAnimal']
-    animalFoto = request.files['animalFoto']
-
-    if animalFoto:
-        file_content = animalFoto.read()
-
     try:
+        file_content = animalFoto.read() if animalFoto else None
+
         cursor.execute("""
             INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, file_content))
+        """, (nomeAnimal, especie, sexo, porte, idade, ','.join(temperamento), ','.join(saude), sobreAnimal, file_content))
         conn.commit()
         return jsonify({'message': 'Animal cadastrado com sucesso!'})
     except Exception as e:
