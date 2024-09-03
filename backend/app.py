@@ -4,11 +4,19 @@ from werkzeug.utils import secure_filename
 import psycopg2
 import os
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Caminho absoluto para o diretório onde app.py está localizado
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
-
+# Configuração básica do Flask
 app = Flask(__name__)
 CORS(app)
+
+# Diretório para salvar arquivos
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Caminho absoluto para o diretório onde app.py está localizado
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Cria o diretório se ele não existir
+
+# Limitar o tamanho do upload e configurar o diretório de upload
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000  # por exemplo, limitando o tamanho do arquivo para 16MB
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 # Configurações do banco de dados
 db_config = {
@@ -81,28 +89,46 @@ def register_animal():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    nomeAnimal = request.form['nomeAnimal']
-    especie = request.form['especie']
-    sexo = request.form['sexo']
-    porte = request.form['porte']
-    idade = request.form['idade']
-    temperamento = request.form['temperamento']
-    saude = request.form['saude']
-    sobreAnimal = request.form['sobreAnimal']
-    animalFoto = request.files['animalFoto']
+# Recebe dados do formulário, exceto o arquivo
+    
+    nomeAnimal = data.get('nomeAnimal')
+    especie = data.get('especie')
+    sexo = data.get('sexo')
+    porte = data.get('porte')
+    idade = data.get('idade')
+    temperamento = data.get('temperamento')
+    saude = data.get('saude')
+    sobreAnimal = data.get('sobreAnimal')
 
-    if animalFoto:
-        file_content = animalFoto.read()
+
+    imagem_base64 = data.get('animalFoto')
+
+    if imagem_base64:
+        image_data = image_base64.split(",")[1]
+        image_bytes = base64.b64decode(image_data) # Remove o prefixo da string Base64
+
+        
+        # Salva a imagem em um diretório de uploads
+        filename = 'uploaded_image.jpeg'
+        safe_filename = secure_filename(filename)
+        file_path = os.path.join(UPLOAD_FOLDER, safe_filename)
+
+        with open(file_path, 'wb') as f:
+            f.write(image_bytes)
+        file_url = file_path
+    else:
+        file_url = ''  # ou o caminho necessário para o arquivo sem imagem
 
     try:
         cursor.execute("""
-            INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, file_content))
+            INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, userId)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, imagem_base64, userId))
         conn.commit()
         return jsonify({'message': 'Animal cadastrado com sucesso!'})
     except Exception as e:
         conn.rollback()
+        print(f'Erro ao cadastrar animal:{e}', flush=True)
         return jsonify({'message': f'Erro ao cadastrar animal: {e}'})
     finally:
         cursor.close()

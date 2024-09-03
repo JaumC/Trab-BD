@@ -5,7 +5,8 @@ import { ModalMsg } from '../components/ModalMsg/ModalMsg';
 import { GreenButton } from "../components/GreenButton/GreenButton";
 import "../styles/PreencherCadastroPets.css"
 
-import api from '../axiosConfig';
+import { apiImage } from '../axiosConfig';
+import { useAuth } from '../AuthContext';
 import axios from 'axios';
 import RadioButtons from "../components/BotõesInput/BotaoRedondo";
 import BotaoQuadrado from "../components/BotõesInput/BotaoQuadrado";
@@ -20,10 +21,12 @@ type AnimalData = {
     saude: string;
     sobreAnimal: string;
     animalFoto: string;
+    usuario_id: string;
 };
 
 export function PreencherPet(){
 
+    const { userId } = useAuth();
     const [msgSign, setMsgSign] = useState<string>('')
     const [stateSign , setStateSign] = useState<boolean>(false)
     const [imageSrc, setImageSrc] = useState(''); // Estado para armazenar a URL da imagem
@@ -38,12 +41,25 @@ export function PreencherPet(){
         saude: '',
         sobreAnimal: '',
         animalFoto: '',
+        usuario_id: userId,
     });
 
-    const handleChange = (value: string |string[], fieldName?: string) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | string | string[], fieldName?: string) => {
         // Se o valor é um array, mantém como array; se não, converte para um array com um único elemento
+    
+        let value;
+        let name;
+
+        if (e && typeof e === 'object' && 'target' in e) {
+            name = e.target.name;
+            value = e.target.value;
+        } else {
+            // Caso contrário, é uma chamada direta com valor e possivelmente um nome de campo
+            name = fieldName;
+            value = e;
+        }
+
         const newValue = Array.isArray(value) ? value : [value];
-        const name = fieldName || value.target.name;
         
         setAnimalData(prev => ({
             ...prev,
@@ -51,7 +67,9 @@ export function PreencherPet(){
         }));
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+
+        e.preventDefault();
 
         const requiredFields: (keyof AnimalData)[] = [
             'nomeAnimal',
@@ -66,7 +84,7 @@ export function PreencherPet(){
 
         const hasEmptyFields = requiredFields.filter(field => !AnimalData[field]);
         
-        const formData = new FormData();
+        /*const formData = new FormData(e.target);
         // Adiciona os dados do formulário ao FormData
         Object.keys(AnimalData).forEach(key => {
             if (key === 'animalFoto' && AnimalData[key] instanceof File){
@@ -75,27 +93,39 @@ export function PreencherPet(){
             } else {
                 formData.append(key, AnimalData[key]);
             }
-        });
+        }); 
         
         
         for (let [key, value] of formData.entries()) {
             console.log(`${key}:`, value);
         }
-
+        */
         if (hasEmptyFields.length > 0 || !imageSrc)  {
             console.log("Campos vazios: ", hasEmptyFields);
             setMsgSign("Existem campos não preenchidos:",hasEmptyFields.join(', ') );
             return;
         }
         try {
-            const response = await axios.post('http://localhost:50/register-animal', formData);
-            setMsgSign(response.data.OK || response.data.message)
+            const response = await fetch('http://localhost:50/register-animal', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(AnimalData),
+            });
+
+            const data = await response.json();
+            console.log("Data:", data);
+            console.log('Animal cadastrado com sucesso!');
+            setMsgSign(data.message || "Animal registrado com sucesso!")
             setStateSign(true)
 
         }catch(error){
             if (axios.isAxiosError(error)){
                 if (error.response) {
-                    setMsgSign(error.response.data?.DENY || "Erro ao Cadastrar. Tente novamente.");
+                    console.log('Erro ao Cadastrar:', error);
+                    setMsgSign(error.response.data?.DENY || "Erro ao Cadastrar. Tente novamente." );
                 } else {
                     setMsgSign("Erro de rede ou servidor. Tente novamente.");
                 }
@@ -113,12 +143,13 @@ export function PreencherPet(){
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = (event) => {
-                setImageSrc(event.target.result); // Define a imagem a ser mostrada
-            };
+            const base64String = reader.result;
+            reader.onloadend = () => {
+                console.log("Arquivo para upload: ", file);
+                setAnimalData({...AnimalData, animalFoto: base64String});
+            }
             reader.readAsDataURL(file); //Lê o arquivo como URL de dados
             setImageSrc(URL.createObjectURL(file)); //Armazena o arquivo no estado
-            setAnimalData({...AnimalData, animalFoto: file});
         }
     };
 
@@ -146,7 +177,7 @@ export function PreencherPet(){
                     </div>
 
                 )}
-                <input type="file" id="file-upload" style={{ display: 'none' }} onChange={handleFileChange} />
+                <input type="file" id="file-upload" style={{ display: 'none' }} onChange={handleFileChange} /> {/* nput oculto que é acionado por um botão customizado para carregar imagens. Isso é uma prática comum para personalizar a aparência do botão de upload.*/}
             </div>
             <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
                 ESPÉCIE

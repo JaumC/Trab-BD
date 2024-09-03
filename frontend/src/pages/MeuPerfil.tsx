@@ -3,7 +3,7 @@ import '../styles/MeuPerfil.css';
 import defaultImage from '../assets/b.jpeg';
 import { Navbar } from "../components/Navbar/Navbar";
 import { useAuth } from '../AuthContext';
-import api from '../axiosConfig';
+import {api} from '../axiosConfig';
 import { InfoTexts } from '../components/InfoTexts/InfoTexts';
 
 interface UserData {
