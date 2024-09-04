@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import psycopg2
+import base64
 import os
 
 # Configuração básica do Flask
@@ -108,7 +109,7 @@ def register_animal():
     image_bytes = None
 
     if imagem_base64:
-        image_data = image_base64.split(",")[1]
+        image_data = imagem_base64.split(",")[1]
         image_bytes = base64.b64decode(image_data) # Remove o prefixo da string Base64
 
         

@@ -1,6 +1,4 @@
-import { useNavigate } from 'react-router-dom';
 import { useState } from "react";
-import { apiImage } from '../axiosConfig';
 import { useAuth } from '../AuthContext';
 import axios from 'axios';
 import RadioButtons from "../components/BotõesInput/BotaoRedondo";

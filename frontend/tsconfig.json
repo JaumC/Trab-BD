@@ -9,6 +9,8 @@
     }
   ],
   "compilerOptions": {
+    "noImplicitAny": false,
+    "strict": false,
     "baseUrl": "./",
     "paths": {
       "*": ["node_modules/*"]
