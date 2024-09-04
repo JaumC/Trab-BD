@@ -92,7 +92,6 @@ export function Sidecontent() {
                     <div className="menuContainer">
                         <NavLink to="/login">Login</NavLink>
                         <NavLink to="/sign">Cadastre-se</NavLink>
-                        <NavLink to="/PreencherCadastroPets">Cadastrar um pet</NavLink>
                     </div>
                 </>
             }
