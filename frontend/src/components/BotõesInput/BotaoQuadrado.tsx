@@ -1,22 +1,39 @@
 import { useState } from 'react';
 import './Botao.css';
 
-function BotaoQuadrado({ options, setParentState, columns }) {
-  const [selectedValue, setSelectedValue] = useState([]);
+// Definição dos tipos para os props do componente
+interface BotaoQuadradoProps {
+  options: string[];
+  setParentState: (values: string[]) => void;
+  columns: number;
+}
 
-  const handleChange = (event) => {
+function BotaoQuadrado({ options, setParentState, columns }: BotaoQuadradoProps) {
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
-        setSelectedValue(newValue); // Atualiza o estado interno com o novo valor selecionado
-        setParentState(newValue); // Atualiza o estado no componente pai
+    let updatedValues: string[];
+
+    if (selectedValues.includes(newValue)) {
+      // Se a opção já está selecionada, removê-la da lista
+      updatedValues = selectedValues.filter(value => value !== newValue);
+    } else {
+      // Se a opção não está selecionada, adicioná-la à lista
+      updatedValues = [...selectedValues, newValue];
+    }
+
+    setSelectedValues(updatedValues); // Atualiza o estado interno com os valores selecionados
+    setParentState(updatedValues); // Atualiza o estado no componente pai com os valores selecionados
   };
 
-  const renderRadioButtons = () => {
+  const renderCheckboxes = () => {
     return options.map((option, index) => (
-      <label key={index} className="radioLabel" style={{ '--columns': columns }}>
+      <label key={index} className="radioLabel" style={{ '--columns': columns } as React.CSSProperties}>
         <input
           type="checkbox"
           value={option}
-          checked={selectedValue === option}
+          checked={selectedValues.includes(option)}
           onChange={handleChange}
           className="radioInput square"
         />
@@ -26,10 +43,11 @@ function BotaoQuadrado({ options, setParentState, columns }) {
   };
 
   return (
-    <div className='radioGroup'
-    style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, 1fr)`, gap: '7px' }}
+    <div
+      className='radioGroup'
+      style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, 1fr)`, gap: '7px' } as React.CSSProperties}
     >
-      {renderRadioButtons()}
+      {renderCheckboxes()}
     </div>
   );
 }
