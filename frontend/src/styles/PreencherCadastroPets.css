@@ -1,22 +1,45 @@
+.mainSignAnimal {
+    width: 100%;
+    box-sizing: border-box; /* Inclui o padding na largura total */
+}
+
+.titlesSignAnimal {
+    padding: 0 16px; /* Adiciona padding nas laterais para evitar estouros */
+    font-size: 16px;
+    margin-top: 20px;
+    color: #f7a800;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    margin-left: 0; /* Removido para centralizar o conteúdo dentro do container */
+}
+
 .containerBotao {
     display: flex;
     flex-direction: row;
-    margin-top: 8px;
-    margin-left: 24px;
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: flex-start;
+    margin-top: 8px;
+    padding: 0 16px; /* Adiciona padding nas laterais para evitar estouros */
+    width: 100%;
 }
-.photo-upload-container{
-    margin-top: 16px;
-    margin-left: 25px;
 
+.photo-upload-container {
+    margin-top: 16px;
+    display: flex;
+    width: 100%;
+    height: 128px;
+    justify-content: center;
+    align-items: center;
 }
 
 .photo-upload-button {
-    width: 312px; /* 312dp adaptado para web */
-    height: 128px; /* 128dp adaptado para web */
-    background-color: #F1F2F2;
+    width: 100%; /* Ajusta para 100% dentro do container */
+    max-width: 312px; /* Limita a largura máxima */
+    height: 100%;
+    background-color: #c5caca;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -25,32 +48,57 @@
     border: none;
 }
 
+.photo-upload-button:hover {
+    background-color: #e0e1e1;
+}
+
 .icon-container {
     width: 24px;
     height: 24px;
-    margin-bottom: 8px; /* Espaço entre o ícone e o texto */
-}
-
-.image-container {
-    width: 312px; /* Largura para coincidir com o botão */
-    height: 128px; /* Altura para coincidir com o botão */
-    margin-top: 8px; /* Espaço entre a imagem e o texto */
-    border: 1px solid #e0e1e1;
-    border-radius: 8px;
-    overflow: hidden; /* Evita que a imagem seja redimensionada */
+    margin-bottom: 8px;
 }
 
 .upload-text {
     font-size: 14pt;
     color: #757575;
+    text-align: center; /* Centraliza o texto */
 }
 
-.photo-upload-button:hover {
-    background-color: #e0e1e1;
+.radiosInfo {
+    padding: 0 16px; /* Adiciona padding nas laterais para evitar estouros */
+    width: 100%;
+}
+
+.image-container {
+    width: 100%;
+    max-width: 312px; /* Limita a largura máxima */
+    height: auto;
+    margin-top: 8px;
+    border: 1px solid #e0e1e1;
+    border-radius: 8px;
 }
 
 .uploaded-image {
-    width: 312px; /* Largura para coincidir com o botão */
-    height: 128px; /* Altura para coincidir com o botão */
-    object-fit: cover; /* Garante que a imagem cubra o espaço sem distorcer */
+    width: 100%;
+    height: 128px;
+    object-fit: cover;
+}
+
+.inputsinfo {
+    padding: 0 16px; /* Adiciona padding nas laterais para evitar estouros */
+    margin-top: 25px;
+    width: 100%;
+}
+
+.inputsinfo p {
+    font-size: 16px;
+    color: #f7a800;
+    margin-left: 0; /* Removido para centralizar o conteúdo */
+    text-align: left; /* Para garantir o alinhamento do texto */
+}
+
+.inputsinfo .signField {
+    margin-top: 10px;
+    width: 100%; /* Para ocupar a largura total do container */
+    text-align: center; /* Centraliza o botão dentro do container */
 }

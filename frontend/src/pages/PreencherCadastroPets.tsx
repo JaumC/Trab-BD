@@ -158,13 +158,12 @@ export function PreencherPet(){
     };
 
     return (
-        <> <Navbar title='Cadastro do Animal' color="#FFD358"/>
+        <div className="mainSignAnimal"> 
+            <Navbar title='Cadastro do Animal' color="#FFD358"/>
 
-
-            <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginLeft: '24px' }}>
-                NOME DO ANIMAL
+            <div className='titlesSignAnimal'>NOME DO ANIMAL
                 <div style={{paddingTop: '10px'}}>
-                <InputData type='text' name='nomeAnimal' placeholder='Nome do Animal' onChange={handleChange}/>
+                <InputData type='text' name='nomeAnimal' placeholder='Digite o Nome' onChange={handleChange}/>
                 </div>
             </div>
             <div className="photo-upload-container">
@@ -181,75 +180,73 @@ export function PreencherPet(){
                     </div>
 
                 )}
-                <input type="file" id="file-upload" style={{ display: 'none' }} onChange={handleFileChange} /> {/* nput oculto que é acionado por um botão customizado para carregar imagens. Isso é uma prática comum para personalizar a aparência do botão de upload.*/}
+
+                <input type="file" id="file-upload" style={{ display: 'none' }} onChange={handleFileChange} />
             </div>
-            <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
-                ESPÉCIE
-            </div>
-            <div className="containerBotao ">
-                <RadioButtons
-                options={['Cachorro', 'Gato']}
-                setParentState={(value: string) => handleChange(value, 'especie')}
-                />
-            </div>
-            <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
-                SEXO
-            </div>
-            <div className="containerBotao ">
-                <RadioButtons
-                options={['Macho', 'Femêa']}
-                setParentState={(value: string) => handleChange(value, 'sexo')}
-                />
-            </div>
-            <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
-                PORTE
-            </div>
-            <div className="containerBotao ">
-                <RadioButtons
-                options={['Pequeno', 'Médio', 'Grande']}
-                setParentState={(value: string) => handleChange(value, 'porte')}
-                />
-            </div>
-            <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
-                IDADE
-            </div>
-            <div className="containerBotao ">
-                <RadioButtons
-                options={['Filhote', 'Adulto', 'Idoso']}
-                setParentState={(value: string) => handleChange(value, 'idade')}
-                />
-            </div>
-            <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
-                TEMPERAMENTO
-            </div>
-            <div className="containerBotao ">
-                <BotaoQuadrado
-                options={['Brincalhão', 'Tímido', 'Calmo', 'Guarda', 'Amoroso', 'Preguiçoso' ]}
-                setParentState={(value: string[]) => handleChange(value, 'temperamento')}
-                columns={3}
-                />
-            </div>
-            <div style={{ fontSize: '16px', marginTop: '20px', color: '#f7a800', marginBottom: '8px', marginLeft: '24px' }}>
-                SAUDE
-            </div>
-            <div className="containerBotao ">
-                <BotaoQuadrado
-                options={['Vacinado', 'Vermifugado', 'Castrado', 'Doente']}
-                setParentState={(value: string[]) => handleChange(value, 'saude')}
-                columns={2}
-                />
-            </div>
-            <div className="inputsinfo">
-                <p>SOBRE O ANIMAL</p>
-                <InputData type='text' name='sobreAnimal' placeholder='Compartilhe a história do animal' onChange={handleChange}/>
-            <div className="signField">
-                <GreenButton label='REGISTRAR ANIMAL' onClick={handleSubmit}/>
-            </div>
+
+            <div className="radiosInfo">
+                <div className='titlesSignAnimal'>ESPÉCIE</div>
+                <div className="containerBotao ">
+                    <RadioButtons
+                    options={['Cachorro', 'Gato']}
+                    setParentState={(value: string) => handleChange(value, 'especie')}
+                    />
+                </div>
+
+                <div className='titlesSignAnimal'>SEXO</div>
+                <div className="containerBotao ">
+                    <RadioButtons
+                    options={['Macho', 'Femêa']}
+                    setParentState={(value: string) => handleChange(value, 'sexo')}
+                    />
+                </div>
+
+                <div className='titlesSignAnimal'>PORTE</div>
+                <div className="containerBotao ">
+                    <RadioButtons
+                    options={['Pequeno', 'Médio', 'Grande']}
+                    setParentState={(value: string) => handleChange(value, 'porte')}
+                    />
+                </div>
+
+                <div className='titlesSignAnimal'>IDADE</div>
+                <div className="containerBotao ">
+                    <RadioButtons
+                    options={['Filhote', 'Adulto', 'Idoso']}
+                    setParentState={(value: string) => handleChange(value, 'idade')}
+                    />
+                </div>
+
+                <div className='titlesSignAnimal'>TEMPERAMENTO</div>
+                <div className="containerBotao ">
+                    <BotaoQuadrado
+                    options={['Brincalhão', 'Tímido', 'Calmo', 'Guarda', 'Amoroso', 'Preguiçoso' ]}
+                    setParentState={(value: string[]) => handleChange(value, 'temperamento')}
+                    columns={3}
+                    />
+                </div>
+
+                <div className='titlesSignAnimal'>SAUDE</div>
+                <div className="containerBotao ">
+                    <BotaoQuadrado
+                    options={['Vacinado', 'Vermifugado', 'Castrado', 'Doente']}
+                    setParentState={(value: string[]) => handleChange(value, 'saude')}
+                    columns={2}
+                    />
+                </div>
+
+                <div className="inputsinfo">
+                    <p>SOBRE O ANIMAL</p>
+                    <InputData type='text' name='sobreAnimal' placeholder='Compartilhe a história do animal' onChange={handleChange}/>
+                    <div className="signField">
+                        <GreenButton label='REGISTRAR ANIMAL' onClick={handleSubmit}/>
+                    </div>
+                </div>
             </div>
 
             { msgSign && (
                 <ModalMsg msg={msgSign} state={stateSign}/>
             )}
-        </>
+        </div>
     );
 }
