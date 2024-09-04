@@ -5,6 +5,7 @@ import { Navbar } from "../components/Navbar/Navbar";
 import { useAuth } from '../AuthContext';
 import { api } from '../axiosConfig';
 import { InfoTexts } from '../components/InfoTexts/InfoTexts';
+import { InputData } from '../components/InputData/InputData';
 import { FaPencilAlt, FaCheck } from 'react-icons/fa'; // Ícones para edição e confirmação
 
 
@@ -71,7 +72,9 @@ export function MeuPerfil() {
             // Adicione uma mensagem de confirmação ou lógica similar aqui
         } catch (error) {
             console.error('Error updating user info:', error);
+            toggleEditMode();
         }
+
     };
 
     if (!dadosUser) {
@@ -85,27 +88,39 @@ export function MeuPerfil() {
                 <img src={dadosUser.image} alt="Profile" className="profile-image"/>
                 {modoEdicao ? <FaCheck onClick={handleSave} /> : <FaPencilAlt onClick={toggleEditMode}/>}
                 <div className="profile-details">
-                    <div>
-                        <InfoTexts label='NOME COMPLETO' text={dadosUser.nome_completo}/>
-                        <InfoTexts label='IDADE' text={dadosUser.idade.toString()}/>
-                        <InfoTexts label='EMAIL' text={dadosUser.email}/>
-                    
-                    </div>
-                    <div>
-                        <InfoTexts label='ESTADO' text={dadosUser.estado}/>
-                        <InfoTexts label='CIDADE' text={dadosUser.cidade}/>
-                        <InfoTexts label='ENDEREÇO' text={dadosUser.endereco}/>
+                    { modoEdicao ? (
+                        <>
+                        <InputData type='text' name='nome_usuario' placeholder='Nome do Usuário' onChange={handleChange} style={{ marginLeft: '-20px' }}/>
+                            <input type="text" name="idade" value={dadosUser.idade} onChange={handleChange} />
+                            {/* Continue para outros campos conforme necessário */}
+                        </>
 
-                    </div>
-                    <div>
-                        <InfoTexts label='TELEFONE' text={dadosUser.telefone}/>
+                    ) :(
+                        <>
+                        <div>
+                                <InfoTexts label='NOME COMPLETO' text={dadosUser.nome_completo}/>
+                                <InfoTexts label='IDADE' text={dadosUser.idade.toString()}/>
+                                <InfoTexts label='EMAIL' text={dadosUser.email}/>
+                            
+                            </div>
+                            <div>
+                                <InfoTexts label='ESTADO' text={dadosUser.estado}/>
+                                <InfoTexts label='CIDADE' text={dadosUser.cidade}/>
+                                <InfoTexts label='ENDEREÇO' text={dadosUser.endereco}/>
 
-                    </div>
-                    <div>
+                            </div>
+                            <div>
+                                <InfoTexts label='TELEFONE' text={dadosUser.telefone}/>
 
-                        <InfoTexts label='NOME DO USUÁRIO' text={dadosUser.nome_usuario}/>
-                        <InfoTexts label='Histótico' text='Adotou 1 gato'/>
-                    </div>
+                            </div>
+                            <div>
+
+                                <InfoTexts label='NOME DO USUÁRIO' text={dadosUser.nome_usuario}/>
+                                <InfoTexts label='Histótico' text='Adotou 1 gato'/>
+                            </div>
+                        </> 
+                    )
+                     }
                 </div>
             </div>
         </>
