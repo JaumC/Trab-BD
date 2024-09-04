@@ -105,7 +105,7 @@ export function PreencherPet(){
         */
         if (hasEmptyFields.length > 0 || !imageSrc)  {
             console.log("Campos vazios: ", hasEmptyFields);
-            setMsgSign("Existem campos não preenchidos:",hasEmptyFields.join(', ') );
+            setMsgSign("Existem campos não preenchidos:\n",hasEmptyFields.join(', ') );
             return;
         }
         try {
@@ -119,11 +119,9 @@ export function PreencherPet(){
             });
 
             const data = await response.json();
-            console.log("Data:", data);
-            console.log('Animal cadastrado com sucesso!');
             setMsgSign(data.message || "Animal registrado com sucesso!")
             setStateSign(true)
-            navigate('/AvisoCadastroAnimal')
+            // navigate('/AvisoCadastroAnimal')
 
         }catch(error){
             if (axios.isAxiosError(error)){

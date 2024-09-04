@@ -48,7 +48,7 @@ def sign_data():
         existing_user = cursor.fetchone()
 
         if existing_user:
-            response = {'message': 'Este e-mail já está cadastrado. Por favor, insira outro'}
+            response = {'DENY': 'Este e-mail já está cadastrado. Por favor, insira outro'}
             return jsonify(response)
 
         else:
@@ -69,11 +69,11 @@ def sign_data():
             ))
 
             conn.commit()
-            response = {'message': 'Dados cadastrados com sucesso!'}
+            response = {'OK': 'Dados cadastrados com sucesso!'}
 
     except Exception as e:
         conn.rollback()
-        response = {'message': f'Erro ao cadastrar os dados: {e}'}
+        response = {'DENY': f'Erro ao cadastrar os dados: {e}'}
     finally:
         cursor.close()
         conn.close()
@@ -129,11 +129,11 @@ def register_animal():
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, file_url, userId))
         conn.commit()
-        return jsonify({'message': 'Animal cadastrado com sucesso!'})
+        return jsonify({'OK': 'Animal cadastrado com sucesso!'})
     except Exception as e:
         conn.rollback()
         print(f'Erro ao cadastrar animal:{e}', flush=True)
-        return jsonify({'message': f'Erro ao cadastrar animal: {e}'})
+        return jsonify({'DENY': f'Erro ao cadastrar animal: {e}'})
     finally:
         cursor.close()
         conn.close()
@@ -197,7 +197,7 @@ def user_info(user_id):
             return jsonify({'DENY': 'Usuário não encontrado'}), 404
         
     except Exception as e:
-        return jsonify({'error': f'Erro ao buscar informações do usuário: {e}'}), 500
+        return jsonify({'DENY': f'Erro ao buscar informações do usuário: {e}'}), 500
 
     finally:
         cursor.close()
