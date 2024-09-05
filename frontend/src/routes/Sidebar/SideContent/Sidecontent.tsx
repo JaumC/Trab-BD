@@ -48,7 +48,7 @@ export function Sidecontent() {
 
                     <div className="menuContainer">
                         <NavLink to="/MeuPerfil">Meu perfil</NavLink>
-                        <NavLink to="/Login">Meus Pets</NavLink>
+                        <NavLink to="/MeusPets">Meus Pets</NavLink>
                         <NavLink to="/Login">Favoritos</NavLink>
                         <NavLink to="/Login">Organização</NavLink>
                         <div className="drawerItem drawerItem-yellow" onClick={toggleMenus}>

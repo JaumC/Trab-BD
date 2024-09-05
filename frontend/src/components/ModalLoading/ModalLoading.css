@@ -1,0 +1,22 @@
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);  /* Fundo transparente */
+    z-index: 9999;  /* Coloca o modal acima de outros elementos */
+}
+
+.modal-content {
+    width: 80%;
+    height: 200px;
+    background-color: rgba(43, 43, 43, 0.8);  /* Fundo do modal */
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

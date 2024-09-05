@@ -1,1 +1,1 @@
-SELECT * FROM animais;
+SELECT * FROM animais WHERE userId = 1;
