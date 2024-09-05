@@ -297,7 +297,7 @@ def meus_pets(user_id):
                     'especie': pet[2],
                     'sexo': pet[3],
                     'porte': pet[4],
-                    'idade': pet[5],
+                    'idade': pet[5].strip('{}'),
                     'temperamento': pet[6],
                     'saude': pet[7],
                     'sobreAnimal': pet[8],

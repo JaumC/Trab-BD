@@ -2,28 +2,16 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../../AuthContext';
 import './Sidecontent.css';
 import { NavLink } from 'react-router-dom';
-import {api} from '../../../axiosConfig';
+
 
 export function Sidecontent() {
-    const { isLogged, userId, logout } = useAuth();
+    const { isLogged, logout, userInfo } = useAuth();
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [isInfoOpen, setInfoOpen] = useState(false);
-    const [userInfo, setUserInfo] = useState<{ nome_completo: string; user_id: number | null }>({ nome_completo: '', user_id: null });
 
-    const fetchUserInfo = async (userId: string) => {
-        try {
-            const response = await api.get(`/user-info/${userId}`);
-            setUserInfo(response.data);
-        } catch (error) {
-            console.error('Error fetching user info:', error);
-        }
-    };
+    console.log('isLogged: ',isLogged);
+    console.log('isLogged: ',userInfo);
 
-    useEffect(() => {
-        if (isLogged && userId) {
-            fetchUserInfo(userId);
-        }
-    }, [isLogged, userId]);
 
     const toggleMenus = () => setMenuOpen(!isMenuOpen);
     const toggleInfo = () => setInfoOpen(!isInfoOpen);
@@ -42,7 +30,7 @@ export function Sidecontent() {
                             <img src="src/assets/user.jpg" alt="User" />
                         </div>
                         <div className='userName'>
-                            <p>{userInfo.nome_completo || 'Carregando...'}</p>
+                            {userInfo ? <p>{userInfo.nome_usuario }</p> : <p>Carregando...</p>}
                         </div>
                     </div>
 

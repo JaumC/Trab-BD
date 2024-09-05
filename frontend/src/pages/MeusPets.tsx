@@ -14,7 +14,8 @@ export default function MeusPets() {
     const fetchMyPets = async (userId) => {
         try {
             const response = await api.get(`/meus-pets/${userId}`);
-            const data = await response.json();
+            const data = await response.data;
+            console.log('Meus pets:', data.pets);  // Assumindo que a resposta é um objeto com uma chave 'pets'
             setMeusPets(data.pets); // Assumindo que a resposta é um objeto com uma chave 'pets'
             setLoading(false);
         } catch (error) {
@@ -40,7 +41,13 @@ export default function MeusPets() {
     } else {
         return (
             <div style={{ backgroundColor: '#fafafa', padding: 20 }}>
-                <p><strong>Nome: </strong>{meusPets.idade}</p>
+                {meusPets.length >0 ? (
+                    meusPets.map(pet => (
+                        <div key={pet.id}>
+                            <p><strong>Nome: </strong>{pet.idade}</p>
+                        </div>
+                    ))
+                ): (<p>Nenhum</p>)}
             </div>
         );
     }
