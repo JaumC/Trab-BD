@@ -206,6 +206,7 @@ def user_info(user_id):
 
 @app.route('/user-update/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
+    print(user_id, flush=True)
     data = request.json
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -232,6 +233,33 @@ def update_user(user_id):
     except Exception as e:
         conn.rollback()
         return jsonify({'message': 'Erro ao atualizar os dados do usuário.', 'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/user-delete/<int:user_id>', methods=['DELETE'])
+def user_delete(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT id, nome_usuario FROM usuarios WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+
+        if user:
+            user_id, nome_usuario = user
+            cursor.execute("DELETE FROM usuarios WHERE id = %s", (user_id,))
+            conn.commit()
+
+            response = {'OK': f'{nome_usuario} excluído! Redirecionando...'}
+            return jsonify(response), 200
+        
+        else:
+            return jsonify({'DENY': 'Usuário não encontrado!'}), 404
+        
+    except Exception as e:
+        return jsonify({'Erro': f'Ocorreu um erro: {str(e)}'}), 500
     finally:
         cursor.close()
         conn.close()
