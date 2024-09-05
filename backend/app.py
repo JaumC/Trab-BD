@@ -2,13 +2,22 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import psycopg2
+import base64
 import os
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Caminho absoluto para o diretório onde app.py está localizado
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
-
+# Configuração básica do Flask
 app = Flask(__name__)
 CORS(app)
+
+# Diretório para salvar arquivos
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Caminho absoluto para o diretório onde app.py está localizado
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Cria o diretório se ele não existir
+
+# Limitar o tamanho do upload e configurar o diretório de upload
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000  # por exemplo, limitando o tamanho do arquivo para 16MB
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 # Configurações do banco de dados
 db_config = {
@@ -40,7 +49,7 @@ def sign_data():
         existing_user = cursor.fetchone()
 
         if existing_user:
-            response = {'message': 'Este e-mail já está cadastrado. Por favor, insira outro'}
+            response = {'DENY': 'Este e-mail já está cadastrado. Por favor, insira outro'}
             return jsonify(response)
 
         else:
@@ -61,11 +70,11 @@ def sign_data():
             ))
 
             conn.commit()
-            response = {'message': 'Dados cadastrados com sucesso!'}
+            response = {'OK': 'Dados cadastrados com sucesso!'}
 
     except Exception as e:
         conn.rollback()
-        response = {'message': f'Erro ao cadastrar os dados: {e}'}
+        response = {'DENY': f'Erro ao cadastrar os dados: {e}'}
     finally:
         cursor.close()
         conn.close()
@@ -74,34 +83,58 @@ def sign_data():
 
 @app.route('/register-animal', methods=['POST'])
 def register_animal():
-    data = request.form  # Recebe os dados do React em formato form-data
+    data = request.json  # Recebe os dados do React em formato JSON
 
+    # Conectar ao banco de dados
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+# Recebe dados do formulário, exceto o arquivo
+    
     nomeAnimal = data.get('nomeAnimal')
     especie = data.get('especie')
     sexo = data.get('sexo')
     porte = data.get('porte')
     idade = data.get('idade')
-    temperamento = data.getlist('temperamento')  # Recebe uma lista de valores
-    saude = data.getlist('saude')  # Recebe uma lista de valores
+    temperamento = data.get('temperamento')
+    saude = data.get('saude')
     sobreAnimal = data.get('sobreAnimal')
-    
-    animalFoto = request.files.get('animalFoto')  # Obtém o arquivo de imagem
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
+
+    imagem_base64 = data.get('animalFoto')
+
+    userId = data.get('usuario_id')  # Obtém o ID do usuário do React
+
+    image_bytes = None
+
+    if imagem_base64:
+        image_data = imagem_base64.split(",")[1]
+        image_bytes = base64.b64decode(image_data) # Remove o prefixo da string Base64
+
+        
+        # Salva a imagem em um diretório de uploads
+        filename = 'uploaded_image.jpeg'
+        safe_filename = secure_filename(filename)
+        file_path = os.path.join(UPLOAD_FOLDER, safe_filename)
+
+        with open(file_path, 'wb') as f:
+            f.write(image_bytes)
+        file_url = file_path
+    else:
+        file_url = ''  # ou o caminho necessário para o arquivo sem imagem
 
     try:
-        file_content = animalFoto.read() if animalFoto else None
-
         cursor.execute("""
-            INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nomeAnimal, especie, sexo, porte, idade, ','.join(temperamento), ','.join(saude), sobreAnimal, file_content))
+            INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, userId)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, file_url, userId))
         conn.commit()
-        return jsonify({'message': 'Animal cadastrado com sucesso!'})
+        return jsonify({'OK': 'Animal cadastrado com sucesso!'})
     except Exception as e:
         conn.rollback()
-        return jsonify({'message': f'Erro ao cadastrar animal: {e}'})
+        print(f'Erro ao cadastrar animal:{e}', flush=True)
+        return jsonify({'DENY': f'Erro ao cadastrar animal: {e}'})
     finally:
         cursor.close()
         conn.close()
@@ -165,7 +198,7 @@ def user_info(user_id):
             return jsonify({'DENY': 'Usuário não encontrado'}), 404
         
     except Exception as e:
-        return jsonify({'error': f'Erro ao buscar informações do usuário: {e}'}), 500
+        return jsonify({'DENY': f'Erro ao buscar informações do usuário: {e}'}), 500
 
     finally:
         cursor.close()

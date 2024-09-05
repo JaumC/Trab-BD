@@ -22,9 +22,9 @@ CREATE TABLE IF NOT EXISTS animais (
     saude VARCHAR(100),
     sobreAnimal TEXT,
     animalFoto BYTEA,
-    usuario_id INTEGER,
+    userId INTEGER,
     CONSTRAINT fk_usuario
-        FOREIGN KEY (usuario_id) 
+        FOREIGN KEY (userId) 
         REFERENCES usuarios(id)
         ON DELETE CASCADE
 );

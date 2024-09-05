@@ -7,4 +7,11 @@ const api = axios.create({
     },
 });
 
-export default api;
+const apiImage = axios.create({
+    baseURL: 'http://localhost:50',
+    headers: {
+        'Content-Type': 'multipart/form-data',
+    },
+})
+
+export {api, apiImage};

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { GreenButton } from '../GreenButton/GreenButton';
 import { InputData } from '../InputData/InputData';
 import './SignData.css';
-import api from '../../axiosConfig';
+import { api } from '../../axiosConfig';
 import { ModalMsg } from '../ModalMsg/ModalMsg';
 import axios from 'axios';
 

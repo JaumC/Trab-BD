@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
 import './Botao.css';
 
-// Definição dos tipos para os props do componente
-interface RadioButtonsProps {
-  options: string[];
-  setParentState: (value: string) => void;
-}
+function RadioButtons({ options, setParentState }) {
+  
+  const [selectedValue, setSelectedValue] = useState('');
 
-const RadioButtons: React.FC<RadioButtonsProps> = ({ options, setParentState }) => {
-  const [selectedValue, setSelectedValue] = useState<string>('');
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setSelectedValue(value);
-    setParentState(value);
+  const handleChange = (event) => {
+    setSelectedValue(event.target.value);
+    setParentState(event.target.value);
   };
 
   const renderRadioButtons = () => {
@@ -25,6 +19,7 @@ const RadioButtons: React.FC<RadioButtonsProps> = ({ options, setParentState }) 
           checked={selectedValue === option}
           onChange={handleChange}
           className="radioInput circular"
+          
         />
         {option}
       </label>
@@ -36,6 +31,6 @@ const RadioButtons: React.FC<RadioButtonsProps> = ({ options, setParentState }) 
       {renderRadioButtons()}
     </div>
   );
-};
+}
 
 export default RadioButtons;

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../../AuthContext';
 import './Sidecontent.css';
 import { NavLink } from 'react-router-dom';
-import api from '../../../axiosConfig';
+import {api} from '../../../axiosConfig';
 
 export function Sidecontent() {
     const { isLogged, userId, logout } = useAuth();

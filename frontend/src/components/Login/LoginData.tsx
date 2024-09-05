@@ -3,17 +3,13 @@ import { InputData } from '../InputData/InputData'
 import { ModalMsg } from '../ModalMsg/ModalMsg';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../AuthContext';
-import api from '../../axiosConfig';
+import {api} from '../../axiosConfig';
 import { useState } from 'react';
 import axios from 'axios';
 import './LoginData.css'
 
 export function LoginData(){
-    const [logData, setlogData] = useState({
-        nome_usuario: '',
-        senha: '',
-
-    });
+    const [logData, setlogData] = useState({nome_usuario: '', senha: '',});
 
     const [msgLog , setMsglog] = useState<string>('')
     const [stateLog , setStateLog] = useState<boolean>(false)
