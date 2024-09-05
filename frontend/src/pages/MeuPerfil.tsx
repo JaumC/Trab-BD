@@ -82,47 +82,62 @@ export function MeuPerfil() {
     }
 
     return (
-        <>
-            <Navbar title='Seu Perfil' />
-            <div className="profile-container">
-                <img src={dadosUser.image} alt="Profile" className="profile-image"/>
-                {modoEdicao ? <FaCheck onClick={handleSave} /> : <FaPencilAlt onClick={toggleEditMode}/>}
-                <div className="profile-details">
-                    { modoEdicao ? (
-                        <>
-                        <InputData type='text' name='nome_usuario' placeholder='Nome do Usuário' onChange={handleChange} style={{ marginLeft: '-20px' }}/>
-                            <input type="text" name="idade" value={dadosUser.idade} onChange={handleChange} />
-                            {/* Continue para outros campos conforme necessário */}
-                        </>
+    <>
+        <Navbar title='Seu Perfil' />
+        <div className="profile-container">
+            <img src={dadosUser.image} alt="Profile" className="profile-image"/>
+            <div className="profile-details">
+                { modoEdicao ? (
+                    <>
+                    <p>NOME COMPLETO</p>
+                    <InputData type='text' name='nome_usuario' placeholder={dadosUser.nome_completo} onChange={handleChange} style={{ marginLeft: '-20px' }}/>
+                    <p>IDADE</p>
+                    <InputData type='text' name='idade' placeholder={dadosUser.idade} onChange={handleChange} style={{ marginLeft: '-20px' }}/>
+                    <p>EMAIL</p>
+                    <InputData type='text' name='email' placeholder={dadosUser.email} onChange={handleChange} style={{ marginLeft: '-20px' }}/>
+                    <p>ESTADO</p>
+                    <InputData type='text' name='estado' placeholder={dadosUser.estado} onChange={handleChange} style={{ marginLeft: '-20px' }}/>
+                    <p>CIDADE</p>
+                    <InputData type='text' name='cidade' placeholder={dadosUser.cidade} onChange={handleChange} style={{ marginLeft: '-20px' }}/>
+                    <p>ENDEREÇO</p>
+                    <InputData type='text' name='endereco' placeholder={dadosUser.endereco} onChange={handleChange} style={{ marginLeft: '-20px' }}/>
+                    <p>TELEFONE</p>
+                    <InputData type='text' name='telefone' placeholder={dadosUser.telefone} onChange={handleChange} style={{ marginLeft: '-20px' }}/>
+                    
+                    
+                    </>
 
-                    ) :(
-                        <>
+                ) :(
+                    <>
+                    <div>
+                            <InfoTexts label='NOME COMPLETO' text={dadosUser.nome_completo}/>
+                            <InfoTexts label='IDADE' text={dadosUser.idade.toString()}/>
+                            <InfoTexts label='EMAIL' text={dadosUser.email}/>
+                        
+                        </div>
                         <div>
-                                <InfoTexts label='NOME COMPLETO' text={dadosUser.nome_completo}/>
-                                <InfoTexts label='IDADE' text={dadosUser.idade.toString()}/>
-                                <InfoTexts label='EMAIL' text={dadosUser.email}/>
-                            
-                            </div>
-                            <div>
-                                <InfoTexts label='ESTADO' text={dadosUser.estado}/>
-                                <InfoTexts label='CIDADE' text={dadosUser.cidade}/>
-                                <InfoTexts label='ENDEREÇO' text={dadosUser.endereco}/>
+                            <InfoTexts label='ESTADO' text={dadosUser.estado}/>
+                            <InfoTexts label='CIDADE' text={dadosUser.cidade}/>
+                            <InfoTexts label='ENDEREÇO' text={dadosUser.endereco}/>
 
-                            </div>
-                            <div>
-                                <InfoTexts label='TELEFONE' text={dadosUser.telefone}/>
+                        </div>
+                        <div>
+                            <InfoTexts label='TELEFONE' text={dadosUser.telefone}/>
 
-                            </div>
-                            <div>
+                        </div>
+                        <div>
 
-                                <InfoTexts label='NOME DO USUÁRIO' text={dadosUser.nome_usuario}/>
-                                <InfoTexts label='Histótico' text='Adotou 1 gato'/>
-                            </div>
-                        </> 
-                    )
-                     }
-                </div>
+                            <InfoTexts label='NOME DO USUÁRIO' text={dadosUser.nome_usuario}/>
+                            <InfoTexts label='Histórico' text='Adotou 1 gato'/>
+                        </div>
+                    </> 
+                )
+            }
             </div>
-        </>
+        </div>
+        <div className="icon-wrapper" onClick={modoEdicao ? handleSave : toggleEditMode}>
+            {modoEdicao ? <FaCheck /> : <FaPencilAlt />}
+        </div>
+    </>
     );
 }

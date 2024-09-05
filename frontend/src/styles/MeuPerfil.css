@@ -42,3 +42,21 @@
     align-items: center;
     background-color: rgba(0, 0, 0, 0.5);
 }
+
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 55px;
+    background-color: #88c9bf;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    margin-left: 70%;
+}
+
+.icon-wrapper:hover {
+    background-color: #33a897;
+}

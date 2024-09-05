@@ -204,7 +204,37 @@ def user_info(user_id):
         cursor.close()
         conn.close()
 
+@app.route('/user-update/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    data = request.json
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
+    try:
+        # Construindo a string SQL de atualização com os dados recebidos
+        update_parts = [f"{key} = %s" for key in data.keys()]
+        update_statement = ", ".join(update_parts)
+
+        # Valores a serem inseridos na query
+        values = list(data.values())
+
+        # Executando a atualização no banco de dados
+        cursor.execute(
+            f"UPDATE usuarios SET {update_statement} WHERE id = %s",
+            (*values, user_id)
+        )
+        conn.commit()
+        
+        if cursor.rowcount == 0:
+            return jsonify({'message': 'Usuário não encontrado.'}), 404
+
+        return jsonify({'message': 'Dados do usuário atualizados com sucesso.'}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'message': 'Erro ao atualizar os dados do usuário.', 'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 
 if __name__ == '__main__':
