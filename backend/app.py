@@ -286,10 +286,9 @@ def meus_pets(user_id):
             # Mapeia os resultados em um formato JSON amigável
             pets_list = []
             for pet in pets:
-                #if isinstance(pet[9], memoryview):
-                #    animal_foto_base64 = base64.b64decode(pet[9].tobytes()).decode('utf-8')
-                #else:
-                #    animal_foto_base64 = None  # Caso não tenha uma foto
+                animal_foto_base64 = None
+                if pet[9]:
+                    animal_foto_base64 = base64.b64decode(pet[9])
 
                 pet_data = {
                     'id': pet[0],
@@ -297,11 +296,11 @@ def meus_pets(user_id):
                     'especie': pet[2],
                     'sexo': pet[3],
                     'porte': pet[4],
-                    'idade': pet[5].strip('{}'),
+                    'idade': pet[5],
                     'temperamento': pet[6],
                     'saude': pet[7],
                     'sobreAnimal': pet[8],
-                    #'animalFoto': animal_foto_base64,  # Envia a imagem como Base64
+                    'animalFoto': animal_foto_base64,  # Envia a imagem como Base64
                     'userId': pet[10]
                 }
                 pets_list.append(pet_data)

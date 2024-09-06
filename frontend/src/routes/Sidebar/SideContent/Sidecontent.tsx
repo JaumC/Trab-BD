@@ -5,9 +5,32 @@ import { NavLink } from 'react-router-dom';
 
 
 export function Sidecontent() {
-    const { isLogged, logout, userInfo } = useAuth();
+    const { isLogged, logout, userInfo, fetchUserInfo } = useAuth();
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [isInfoOpen, setInfoOpen] = useState(false);
+    const [shouldRecheck, setShouldRecheck] = useState(false); // Controle de rechecagem
+
+    
+    // useEffect para monitorar mudanças no estado de autenticação
+    useEffect(() => {
+        // A função será chamada sempre que isLogged ou userInfo mudarem
+        if (isLogged) {
+            if(!userInfo|| shouldRecheck){
+                console.log('Tentando buscar as informações recentes...');
+                fetchUserInfo(); 
+                setShouldRecheck(false); //Reset após buscar
+            } else {
+                console.log('Usuário está logado:', userInfo);
+            }
+        } else if (!isLogged && !shouldRecheck) {
+            // Se o usuário não estiver logado, tenta revalidar a autenticação
+            console.log('Usuário não está logado, tentando revalidar');
+            setShouldRecheck(true); // Sinaliza que está rechecando
+            setTimeout(()=>{
+                fetchUserInfo(); // Tenta buscar as informações recentes novamente
+            },1000);
+        }
+    }, [isMenuOpen]); // useEffect é disparado quando isMenuOpen é true
 
     console.log('isLogged: ',isLogged);
     console.log('isLogged: ',userInfo);
