@@ -1,3 +1,4 @@
+import uuid
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -32,6 +33,7 @@ db_config = {
 def get_db_connection():
     conn = psycopg2.connect(**db_config)
     return conn
+
 
 @app.route('/sign-data', methods=['POST'])
 def sign_data():
@@ -81,17 +83,15 @@ def sign_data():
 
     return jsonify(response)
 
+
 @app.route('/register-animal', methods=['POST'])
 def register_animal():
-    data = request.json  # Recebe os dados do React em formato JSON
+    data = request.json
 
     # Conectar ao banco de dados
-
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Recebe dados do formulário, exceto o arquivo
-    
     nomeAnimal = data.get('nomeAnimal')
     especie = data.get('especie')
     sexo = data.get('sexo')
@@ -100,29 +100,23 @@ def register_animal():
     temperamento = data.get('temperamento')
     saude = data.get('saude')
     sobreAnimal = data.get('sobreAnimal')
-
-
     imagem_base64 = data.get('animalFoto')
-
-    userId = data.get('usuario_id')  # Obtém o ID do usuário do React
+    userId = data.get('usuario_id')
 
     image_bytes = None
+    file_url = ''
 
     if imagem_base64:
         image_data = imagem_base64.split(",")[1]
-        image_bytes = base64.b64decode(image_data) # Remove o prefixo da string Base64
+        image_bytes = base64.b64decode(image_data)
 
-        
-        # Salva a imagem em um diretório de uploads
-        filename = 'uploaded_image.jpeg'
-        safe_filename = secure_filename(filename)
-        file_path = os.path.join(UPLOAD_FOLDER, safe_filename)
+        unique_filename = f"{uuid.uuid4().hex}.jpeg"
+        safe_filename = secure_filename(unique_filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_filename)
 
         with open(file_path, 'wb') as f:
             f.write(image_bytes)
-        file_url = file_path
-    else:
-        file_url = ''  # ou o caminho necessário para o arquivo sem imagem
+        file_url = safe_filename
 
     try:
         cursor.execute("""
@@ -133,12 +127,10 @@ def register_animal():
         return jsonify({'OK': 'Animal cadastrado com sucesso!'})
     except Exception as e:
         conn.rollback()
-        print(f'Erro ao cadastrar animal:{e}', flush=True)
         return jsonify({'DENY': f'Erro ao cadastrar animal: {e}'})
     finally:
         cursor.close()
         conn.close()
-
 
 
 @app.route('/login-data', methods=['POST'])
@@ -204,12 +196,13 @@ def user_info(user_id):
         cursor.close()
         conn.close()
 
+
 @app.route('/user-update/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
-    print(user_id, flush=True)
     data = request.json
+
     conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    cursor = conn.cursor()
 
     try:
         # Construindo a string SQL de atualização com os dados recebidos
@@ -219,6 +212,7 @@ def update_user(user_id):
         # Valores a serem inseridos na query
         values = list(data.values())
 
+        print(values, flush=True)
         # Executando a atualização no banco de dados
         cursor.execute(
             f"UPDATE usuarios SET {update_statement} WHERE id = %s",
@@ -227,12 +221,12 @@ def update_user(user_id):
         conn.commit()
         
         if cursor.rowcount == 0:
-            return jsonify({'message': 'Usuário não encontrado.'}), 404
+            return jsonify({'DENY': 'Usuário não encontrado.'}), 404
 
-        return jsonify({'message': 'Dados do usuário atualizados com sucesso.'}), 200
+        return jsonify({'OK': 'Dados do usuário atualizados com sucesso.'}), 200
     except Exception as e:
         conn.rollback()
-        return jsonify({'message': 'Erro ao atualizar os dados do usuário.', 'error': str(e)}), 500
+        return jsonify({'DENY': 'Erro ao atualizar os dados do usuário.', 'error': str(e)}), 500
     finally:
         cursor.close()
         conn.close()
@@ -316,6 +310,83 @@ def meus_pets(user_id):
     finally:
         cursor.close()
         conn.close()
+
+def read_image_as_base64(file_path):
+    try:
+        with open(file_path, "rb") as image_file:
+            image_bytes = image_file.read()
+            return base64.b64encode(image_bytes).decode('utf-8')
+    except FileNotFoundError:
+        return None
+    
+
+def read_image_as_base64(file_path):
+    """ Lê a imagem do caminho e a retorna como uma string base64. """
+    with open(file_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
+
+@app.route('/meus-pets/<int:user_id>', methods=['GET'])
+def meus_pets(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        return jsonify({'DENY': 'User ID inválido'}), 400
+
+    try:
+        cursor.execute("SELECT * FROM animais WHERE userId = %s", (user_id,))
+        pets = cursor.fetchall()
+
+        if pets:
+            pets_list = []
+            for pet in pets:
+                animal_foto_base64 = None
+                image_path = pet[9]  # Acesso ao caminho do arquivo
+
+                if isinstance(image_path, memoryview):
+                    image_path = image_path.tobytes().decode('utf-8')
+
+                # Certifique-se de que o caminho está correto
+                full_image_path = os.path.join('/app/uploads', image_path)
+
+                if os.path.isfile(full_image_path):
+                    animal_foto_base64 = read_image_as_base64(full_image_path)
+                    if animal_foto_base64:
+                        animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
+                else:
+                    print(f'Caminho da imagem inválido: {full_image_path}', flush=True)
+
+                pet_data = {
+                    'id': pet[0],
+                    'nomeAnimal': pet[1],
+                    'especie': pet[2],
+                    'sexo': pet[3],
+                    'porte': pet[4],
+                    'idade': pet[5],
+                    'temperamento': pet[6],
+                    'saude': pet[7],
+                    'sobreAnimal': pet[8],
+                    'animalFoto': animal_foto_base64,
+                    'userId': pet[10]
+                }
+                pets_list.append(pet_data)
+
+            return jsonify({'pets': pets_list}), 200
+        else:
+            return jsonify({'DENY': 'Nenhum pet encontrado para este usuário'}), 404
+
+    except Exception as e:
+        print(f'Erro ao buscar os pets: {e}', flush=True)
+        return jsonify({'DENY': f'Erro ao buscar os pets: {e}'}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

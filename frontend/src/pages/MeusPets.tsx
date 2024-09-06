@@ -1,24 +1,32 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ModalLoading from "../components/ModalLoading/ModalLoading";
-import { useAuth } from "../AuthContext"; // Contexto de autenticação
+import { useAuth } from "../AuthContext"; 
 import { api } from "../axiosConfig";
-
+import { Navbar } from "../components/Navbar/Navbar";
+import { CardAnimal } from "../components/CardAnimal/CardAnimal";
+import '../styles/MeuPets.css';
 
 export default function MeusPets() {
-
     const { userId } = useAuth();
     const [meusPets, setMeusPets] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [imageSrc, setImageSrc] = useState([]);  // Armazena as imagens dos pets
-
-
 
     const fetchMyPets = async (userId) => {
         try {
             const response = await api.get(`/meus-pets/${userId}`);
-            const data = await response.data;
-            console.log('Meus pets:', data.pets);  // Assumindo que a resposta é um objeto com uma chave 'pets'
-            setMeusPets(data.pets); // Assumindo que a resposta é um objeto com uma chave 'pets'
+            const data = response.data;
+
+            // Limpar os dados dos pets removendo as chaves
+            const cleanedPets = data.pets.map(pet => {
+                return {
+                    ...pet,
+                    nomeAnimal: pet.nomeAnimal?.replace(/{|}/g, ''),
+                    animalFoto: pet.animalFoto,
+                    // Adicione aqui o mesmo tratamento para outras propriedades, se necessário
+                };
+            });
+
+            setMeusPets(cleanedPets);
             setLoading(false);
         } catch (error) {
             console.log('Erro ao buscar pets:', error);
@@ -26,61 +34,27 @@ export default function MeusPets() {
         }
     };
 
-    // Função para processar as imagens recebidas em Base64
-    const processImages = (pets) => {
-        pets.forEach((pet, index) => {
-            if (pet.animalFoto) {
-                const btyeCharacters = atob(pet.animalFoto);
-                setImageSrc((prevImages) => {
-                    const newImages = [...prevImages];
-                    newImages[index] = `data:image/jpeg;base64,${pet.animalFoto}`;
-                    return newImages;
-                });
-            }
-        });
-    };
-
-    useEffect(() =>{
-        // Faz a requisição somente se o `userId` estiver definido
+    useEffect(() => {
         if (userId) {
             fetchMyPets(userId);
         } else {
             console.log('userId não definido');
             setLoading(false);
         }
-    }, [userId]);  // Reexecuta quando o userId for atualizado
-
-    // useEffect para processar as imagens após receber os pets
-    useEffect(() => {
-        if (meusPets.length > 0) {
-            processImages(meusPets);
-        }
-    }, [meusPets]);
+    }, [userId]);
 
     if (loading) {
-        return (
-            <ModalLoading spinner={loading} color='#cfe9e5' />
-        );
+        return <ModalLoading spinner={loading} color="#cfe9e5" />;
     } else {
         return (
-            <div style={{ backgroundColor: '#fafafa', padding: 20 }}>
-                {meusPets.length > 0 ? (
-                    meusPets.map((pet, index) => (
-                        <div key={pet.id}>
-                            <p><strong>Nome: </strong>{pet.nomeAnimal}</p>
-                            {pet.animalFoto ? (  // Verifica se animalFoto não está em branco
-                                <>
-                                    <p><strong>Base64 da imagem: </strong>{pet.animalFoto}</p>
-                                    <img src={`data:image/jpeg;base64,${pet.animalFoto}`} alt="Foto do animal" />
-                                </>
-                            ) : (
-                                <p>Sem imagem disponível</p>  // Caso esteja em branco ou indefinido
-                            )}
-                        </div>
-                    ))
-                ): (<p>Nenhum</p>)}
-                <p><strong>Nome: </strong></p>
-            </div>
+            <>
+                <Navbar title="Meus Pets" />
+                <div className='container-pets'>
+                    {meusPets.map((pet, index) => (
+                        <CardAnimal key={index} nomeAnimal={pet.nomeAnimal} animalFoto={pet.animalFoto} />
+                    ))}
+                </div>
+            </>
         );
     }
 }

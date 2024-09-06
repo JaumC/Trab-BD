@@ -8,9 +8,9 @@ WORKDIR /app/frontend
 COPY package.json yarn.lock ./
 
 # Instala as dependências
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
-# Copie o restante dos arquivos da aplicação para o diretório de trabalho
+RUN rm -rf node_modules
 COPY . .
 
 # Comando para rodar o servidor de desenvolvimento

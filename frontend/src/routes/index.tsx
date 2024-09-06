@@ -7,7 +7,6 @@ import { MeuPerfil } from "../pages/MeuPerfil";
 import { PreencherPet } from "../pages/PreencherCadastroPets";
 import MeusPets from "../pages/MeusPets";
 
-
 export function AppRoutes(){
     return(
         <Routes>

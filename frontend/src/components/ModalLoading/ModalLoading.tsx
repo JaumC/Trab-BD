@@ -4,16 +4,16 @@ import './ModalLoading.css';  // Arquivo CSS para os estilos
 
 interface ModalLoadingProps {
     spinner: boolean;
-    cor?: string;
+    color?: string;
 }
 
-export default function ModalLoading({ spinner, cor = "#ffd358" }: ModalLoadingProps) {
+export default function ModalLoading({ spinner, color="#ffd358" }: ModalLoadingProps) {
     if (!spinner) return null;  // Se o spinner for falso, retorna null
 
     return (
         <div className="modal-container">
             <div className="modal-content">
-                <ClipLoader color={cor} loading={spinner} size={50} />
+                <ClipLoader color={color} loading={spinner} size={50} />
             </div>
         </div>
     );

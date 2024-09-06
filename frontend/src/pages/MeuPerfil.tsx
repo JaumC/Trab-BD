@@ -33,6 +33,10 @@ export function MeuPerfil() {
     const [modalConfirm, setModalConfirm] = useState(false);  // Estado para controlar exibição do modal de confirmação
     const [msgDel, setMsgDel] = useState<string>('');
     const [stateDel, setStateDel] = useState<boolean>(false);
+
+    const [msgEdit, setMsgEdit] = useState<string>('');
+    const [stateEdit, setStateEdit] = useState<boolean>(false);
+
     const navigate = useNavigate();
 
     const handleDelete = async () => {
@@ -79,6 +83,20 @@ export function MeuPerfil() {
     };
 
     const toggleEditMode = () => {
+        if (!modoEdicao) {
+            setDadosEditaveis({
+                nome_completo: dadosUser?.nome_completo,
+                idade: dadosUser?.idade,
+                email: dadosUser?.email,
+                estado: dadosUser?.estado,
+                cidade: dadosUser?.cidade,
+                endereco: dadosUser?.endereco,
+                telefone: dadosUser?.telefone,
+                nome_usuario: dadosUser?.nome_usuario,
+                // image: dadosUser?.image || defaultImage  
+
+            });
+        }
         setModoEdicao(!modoEdicao);
     };
 
@@ -90,8 +108,14 @@ export function MeuPerfil() {
     const handleSave = async () => {
         try {
             const response = await api.put(`/user-update/${userId}`, dadosEditaveis);
+            console.log(dadosEditaveis)
+            console.log('alo')
+            setMsgEdit(response.data.OK)
+            setStateEdit(true);
+
             setDadosUser(dadosEditaveis);
             toggleEditMode();
+
         } catch (error) {
             console.error('Error updating user info:', error);
             toggleEditMode();
@@ -109,33 +133,37 @@ export function MeuPerfil() {
                 <img src={dadosUser.image} alt="Profile" className="profile-image" />
                 <div className="profile-details">
                     {modoEdicao ? (
-                        <div className="form-grid">
+                        <div className="edit-user">
                             <div>
-                                <p>NOME COMPLETO</p>
-                                <InputData type="text" name="nome_usuario" placeholder={dadosUser.nome_completo} onChange={handleChange} />
+                                <p>NOME COMPLETO:</p>
+                                <InputData type="text" name="nome_completo" placeholder={dadosUser.nome_completo} onChange={handleChange} />
                             </div>
                             <div>
-                                <p>IDADE</p>
+                                <p>NOME DO USUARIO:</p>
+                                <InputData type="text" name="nome_usuario" placeholder={dadosUser.nome_usuario} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <p>IDADE:</p>
                                 <InputData type="text" name="idade" placeholder={dadosUser.idade.toString()} onChange={handleChange} />
                             </div>
                             <div>
-                                <p>EMAIL</p>
+                                <p>EMAIL:</p>
                                 <InputData type="text" name="email" placeholder={dadosUser.email} onChange={handleChange} />
                             </div>
                             <div>
-                                <p>ESTADO</p>
+                                <p>ESTADO:</p>
                                 <InputData type="text" name="estado" placeholder={dadosUser.estado} onChange={handleChange} />
                             </div>
                             <div>
-                                <p>CIDADE</p>
+                                <p>CIDADE:</p>
                                 <InputData type="text" name="cidade" placeholder={dadosUser.cidade} onChange={handleChange} />
                             </div>
                             <div>
-                                <p>ENDEREÇO</p>
+                                <p>ENDEREÇO:</p>
                                 <InputData type="text" name="endereco" placeholder={dadosUser.endereco} onChange={handleChange} />
                             </div>
                             <div>
-                                <p>TELEFONE</p>
+                                <p>TELEFONE:</p>
                                 <InputData type="text" name="telefone" placeholder={dadosUser.telefone} onChange={handleChange} />
                             </div>
                         </div>
@@ -175,6 +203,9 @@ export function MeuPerfil() {
             />
             {msgDel && (
                 <ModalMsg msg={msgDel} state={stateDel} />
+            )}
+            {msgEdit && (
+                <ModalMsg msg={msgEdit} state={stateEdit} />
             )}
         </>
     );
