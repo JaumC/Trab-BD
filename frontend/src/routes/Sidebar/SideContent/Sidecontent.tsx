@@ -2,28 +2,39 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../../AuthContext';
 import './Sidecontent.css';
 import { NavLink } from 'react-router-dom';
-import {api} from '../../../axiosConfig';
+
 
 export function Sidecontent() {
-    const { isLogged, userId, logout } = useAuth();
+    const { isLogged, logout, userInfo, fetchUserInfo } = useAuth();
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [isInfoOpen, setInfoOpen] = useState(false);
-    const [userInfo, setUserInfo] = useState<{ nome_completo: string; user_id: number | null }>({ nome_completo: '', user_id: null });
+    const [shouldRecheck, setShouldRecheck] = useState(false); // Controle de rechecagem
 
-    const fetchUserInfo = async (userId: string) => {
-        try {
-            const response = await api.get(`/user-info/${userId}`);
-            setUserInfo(response.data);
-        } catch (error) {
-            console.error('Error fetching user info:', error);
-        }
-    };
-
+    
+    // useEffect para monitorar mudanças no estado de autenticação
     useEffect(() => {
-        if (isLogged && userId) {
-            fetchUserInfo(userId);
+        // A função será chamada sempre que isLogged ou userInfo mudarem
+        if (isLogged) {
+            if(!userInfo|| shouldRecheck){
+                console.log('Tentando buscar as informações recentes...');
+                fetchUserInfo(); 
+                setShouldRecheck(false); //Reset após buscar
+            } else {
+                console.log('Usuário está logado:', userInfo);
+            }
+        } else if (!isLogged && !shouldRecheck) {
+            // Se o usuário não estiver logado, tenta revalidar a autenticação
+            console.log('Usuário não está logado, tentando revalidar');
+            setShouldRecheck(true); // Sinaliza que está rechecando
+            setTimeout(()=>{
+                fetchUserInfo(); // Tenta buscar as informações recentes novamente
+            },1000);
         }
-    }, [isLogged, userId]);
+    }, [isMenuOpen]); // useEffect é disparado quando isMenuOpen é true
+
+    console.log('isLogged: ',isLogged);
+    console.log('isLogged: ',userInfo);
+
 
     const toggleMenus = () => setMenuOpen(!isMenuOpen);
     const toggleInfo = () => setInfoOpen(!isInfoOpen);
@@ -42,13 +53,13 @@ export function Sidecontent() {
                             <img src="src/assets/user.jpg" alt="User" />
                         </div>
                         <div className='userName'>
-                            <p>{userInfo.nome_completo || 'Carregando...'}</p>
+                            {userInfo ? <p>{userInfo.nome_usuario }</p> : <p>Carregando...</p>}
                         </div>
                     </div>
 
                     <div className="menuContainer">
                         <NavLink to="/MeuPerfil">Meu perfil</NavLink>
-                        <NavLink to="/Login">Meus Pets</NavLink>
+                        <NavLink to="/MeusPets">Meus Pets</NavLink>
                         <NavLink to="/Login">Favoritos</NavLink>
                         <NavLink to="/Login">Organização</NavLink>
                         <div className="drawerItem drawerItem-yellow" onClick={toggleMenus}>

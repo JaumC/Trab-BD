@@ -36,9 +36,13 @@ export function LoginData(){
                 setMsglog(response.data.DENY);
             } else {
                 setMsglog(response.data.OK)
+
+                const userId = response.data.user_id;
+                const nome_usuario = response.data.nome_usuario;
+
                 setStateLog(true)
                 setTimeout(() => {
-                    login(response.data.user_id); 
+                    login(userId, {nome_usuario: nome_usuario}); 
                     navigate('/'); 
                 }, 1000)
             }
