@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import ModalLoading from "../components/ModalLoading/ModalLoading";
-import { useAuth } from "../AuthContext"; // Contexto de autenticação
+import { useAuth } from "../AuthContext"; 
 import { api } from "../axiosConfig";
 import { Navbar } from "../components/Navbar/Navbar";
+import { CardAnimal } from "../components/CardAnimal/CardAnimal";
+import '../styles/MeuPets.css';
 
 export default function MeusPets() {
     const { userId } = useAuth();
@@ -12,11 +14,19 @@ export default function MeusPets() {
     const fetchMyPets = async (userId) => {
         try {
             const response = await api.get(`/meus-pets/${userId}`);
-            const data = await response.data;
-            data.pets.forEach(pet => {
-                console.log('Foto:', pet.animalFoto);
+            const data = response.data;
+
+            // Limpar os dados dos pets removendo as chaves
+            const cleanedPets = data.pets.map(pet => {
+                return {
+                    ...pet,
+                    nomeAnimal: pet.nomeAnimal?.replace(/{|}/g, ''),
+                    animalFoto: pet.animalFoto,
+                    // Adicione aqui o mesmo tratamento para outras propriedades, se necessário
+                };
             });
-            setMeusPets(data.pets);
+
+            setMeusPets(cleanedPets);
             setLoading(false);
         } catch (error) {
             console.log('Erro ao buscar pets:', error);
@@ -39,25 +49,11 @@ export default function MeusPets() {
         return (
             <>
                 <Navbar title="Meus Pets" />
-                {meusPets.map(pet => (
-                    <div key={pet.id}>
-                        <h2>{pet.nomeAnimal}</h2>
-                        <p>Espécie: {pet.especie}</p>
-                        <p>Sexo: {pet.sexo}</p>
-                        <p>Porte: {pet.porte}</p>
-                        <p>Idade: {pet.idade}</p>
-                        <p>Temperamento: {pet.temperamento}</p>
-                        <p>Saúde: {pet.saude}</p>
-                        <p>Sobre o Animal: {pet.sobreAnimal}</p>
-                        {pet.animalFoto && (
-                            <img 
-                                src={pet.animalFoto} 
-                                alt={pet.nomeAnimal} 
-                                style={{ width: '200px', height: 'auto' }} // Ajuste o estilo conforme necessário
-                            />
-                        )}
-                    </div>
-                ))}
+                <div className='container-pets'>
+                    {meusPets.map((pet, index) => (
+                        <CardAnimal key={index} nomeAnimal={pet.nomeAnimal} animalFoto={pet.animalFoto} />
+                    ))}
+                </div>
             </>
         );
     }
