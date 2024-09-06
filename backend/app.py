@@ -288,7 +288,7 @@ def meus_pets(user_id):
             for pet in pets:
                 animal_foto_base64 = None
                 if pet[9]:
-                    animal_foto_base64 = base64.b64decode(pet[9])
+                    animal_foto_base64 = base64.b64decode(pet[9]).decode('utf-8')
 
                 pet_data = {
                     'id': pet[0],

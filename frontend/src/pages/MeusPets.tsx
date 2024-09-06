@@ -12,6 +12,7 @@ export default function MeusPets() {
     const [imageSrc, setImageSrc] = useState([]);  // Armazena as imagens dos pets
 
 
+
     const fetchMyPets = async (userId) => {
         try {
             const response = await api.get(`/meus-pets/${userId}`);
@@ -29,6 +30,7 @@ export default function MeusPets() {
     const processImages = (pets) => {
         pets.forEach((pet, index) => {
             if (pet.animalFoto) {
+                const btyeCharacters = atob(pet.animalFoto);
                 setImageSrc((prevImages) => {
                     const newImages = [...prevImages];
                     newImages[index] = `data:image/jpeg;base64,${pet.animalFoto}`;
@@ -55,15 +57,6 @@ export default function MeusPets() {
         }
     }, [meusPets]);
 
-    // Função para processar a imagem base64 e armazená-la na lista de imageSrc
-    const handleFileReceive = (base64String, petIndex) => {
-        setImageSrc(prevState => {
-            const updatedImages = [...prevState];
-            updatedImages[petIndex] = `data:image/jpeg;base64,${base64String}`;
-            return updatedImages;
-        });
-    };
-
     if (loading) {
         return (
             <ModalLoading spinner={loading} color='#cfe9e5' />
@@ -74,14 +67,19 @@ export default function MeusPets() {
                 {meusPets.length > 0 ? (
                     meusPets.map((pet, index) => (
                         <div key={pet.id}>
-                            <p><strong>Nome: </strong>{pet.nome}</p>
-                            {imageSrc[index] && (
-                                <img src={imageSrc[index]} alt="Pet" style={{ width: '200px', height: 'auto' }} />
+                            <p><strong>Nome: </strong>{pet.nomeAnimal}</p>
+                            {pet.animalFoto ? (  // Verifica se animalFoto não está em branco
+                                <>
+                                    <p><strong>Base64 da imagem: </strong>{pet.animalFoto}</p>
+                                    <img src={`data:image/jpeg;base64,${pet.animalFoto}`} alt="Foto do animal" />
+                                </>
+                            ) : (
+                                <p>Sem imagem disponível</p>  // Caso esteja em branco ou indefinido
                             )}
                         </div>
                     ))
                 ): (<p>Nenhum</p>)}
-                <p><strong>Nome: </strong>{'algo'}</p>
+                <p><strong>Nome: </strong></p>
             </div>
         );
     }
