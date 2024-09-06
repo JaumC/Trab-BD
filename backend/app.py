@@ -261,10 +261,30 @@ def user_delete(user_id):
         cursor.close()
         conn.close()
 
+def read_image_as_base64(file_path):
+    try:
+        with open(file_path, "rb") as image_file:
+            image_bytes = image_file.read()
+            return base64.b64encode(image_bytes).decode('utf-8')
+    except FileNotFoundError:
+        return None
+
+def read_image_as_base64(file_path):
+    """Lê a imagem do caminho fornecido e retorna o conteúdo em base64."""
+    if not os.path.isfile(file_path):
+        print(f'Arquivo não encontrado: {file_path}', flush=True)
+        return None
+
+    try:
+        with open(file_path, "rb") as image_file:
+            image_bytes = image_file.read()
+            return base64.b64encode(image_bytes).decode('utf-8')
+    except Exception as e:
+        print(f'Erro ao ler o arquivo: {e}', flush=True)
+        return None
 
 @app.route('/meus-pets/<int:user_id>', methods=['GET'])
 def meus_pets(user_id):
-
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -272,19 +292,29 @@ def meus_pets(user_id):
         user_id = int(user_id)
     except ValueError:
         return jsonify({'DENY': 'User ID inválido'}), 400
-    
+
     try:
         # Consulta para buscar os animais associados ao user_id
         cursor.execute("SELECT * FROM animais WHERE userId = %s", (user_id,))
         pets = cursor.fetchall()
 
         if pets:
-            # Mapeia os resultados em um formato JSON amigável
             pets_list = []
             for pet in pets:
                 animal_foto_base64 = None
-                if pet[9]:
-                    animal_foto_base64 = base64.b64encode(pet[9]).decode('utf-8')
+                image_path = pet[9]  # Acesso ao caminho do arquivo
+
+                # Verifica se `image_path` é um memoryview e converte para bytes
+                if isinstance(image_path, memoryview):
+                    image_path = image_path.tobytes().decode('utf-8')  # Converte memoryview para string
+
+                # Verifica se `image_path` é uma string e o arquivo existe
+                if isinstance(image_path, str) and os.path.isfile(image_path):
+                    animal_foto_base64 = read_image_as_base64(image_path)
+                    if animal_foto_base64:
+                        animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"  # Adiciona prefixo de data URI
+                else:
+                    print(f'Caminho da imagem inválido: {image_path}', flush=True)
 
                 pet_data = {
                     'id': pet[0],
