@@ -257,60 +257,7 @@ def user_delete(user_id):
     finally:
         cursor.close()
         conn.close()
-
-@app.route('/meus-pets/<int:user_id>', methods=['GET'])
-def meus_pets(user_id):
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    try:
-        user_id = int(user_id)
-    except ValueError:
-        return jsonify({'DENY': 'User ID inválido'}), 400
-    
-    try:
-        # Consulta para buscar os animais associados ao user_id
-        cursor.execute("SELECT * FROM animais WHERE userId = %s", (user_id,))
-        pets = cursor.fetchall()
-
-        print(f'Resultado da consulta: {pets}', flush=True)
-
-        if pets:
-            # Mapeia os resultados em um formato JSON amigável
-            pets_list = []
-            for pet in pets:
-                animal_foto_base64 = None
-                if pet[9]:
-                    animal_foto_base64 = base64.b64decode(pet[9]).decode('utf-8')
-
-                pet_data = {
-                    'id': pet[0],
-                    'nomeAnimal': pet[1],
-                    'especie': pet[2],
-                    'sexo': pet[3],
-                    'porte': pet[4],
-                    'idade': pet[5],
-                    'temperamento': pet[6],
-                    'saude': pet[7],
-                    'sobreAnimal': pet[8],
-                    'animalFoto': animal_foto_base64,  # Envia a imagem como Base64
-                    'userId': pet[10]
-                }
-                pets_list.append(pet_data)
-
-            return jsonify({'pets': pets_list}), 200
-        else:
-            return jsonify({'DENY': 'Nenhum pet encontrado para este usuário'}), 404
-
-    except Exception as e:
-        print(f'Erro ao buscar os pets: {e}', flush=True)
-        return jsonify({'DENY': f'Erro ao buscar os pets: {e}'}), 500
-
-    finally:
-        cursor.close()
-        conn.close()
-
+        
 def read_image_as_base64(file_path):
     try:
         with open(file_path, "rb") as image_file:
@@ -320,10 +267,10 @@ def read_image_as_base64(file_path):
         return None
     
 
-def read_image_as_base64(file_path):
-    """ Lê a imagem do caminho e a retorna como uma string base64. """
-    with open(file_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
+# def read_image_as_base64(file_path):
+ #   """ Lê a imagem do caminho e a retorna como uma string base64. """
+  #  with open(file_path, "rb") as image_file:
+   #     return base64.b64encode(image_file.read()).decode('utf-8')
 
 
 @app.route('/meus-pets/<int:user_id>', methods=['GET'])

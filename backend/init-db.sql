@@ -39,15 +39,14 @@ CREATE TABLE IF NOT EXISTS endereco (
         FOREIGN KEY (usuarioId) 
         REFERENCES usuarios(id)
         ON DELETE CASCADE
-
         -- Enforce uniqueness of the combination of rua, numero, bairro, cep
-        UNIQUE (rua, numero, bairro, cep)
+        --UNIQUE (rua, numero, bairro, cep)
         -- Enforce uniqueness of the combination of cidade, estado
-        UNIQUE (cidade, estado)
-)
+        --UNIQUE (cidade, estado)
+);
 
 
-CREATE TABLE IF NOT EXISTS adocao{
+CREATE TABLE IF NOT EXISTS adocao(
     id SERIAL PRIMARY KEY,
     dataAdocao DATE NOT NULL,
     status VARCHAR(50) NOT NULL,
@@ -61,10 +60,10 @@ CREATE TABLE IF NOT EXISTS adocao{
         FOREIGN KEY (animalId) 
         REFERENCES animais(id)
         ON DELETE CASCADE,  
-};
+);
 
 
-CREATE TABLE IF NOT EXISTS favoritos{
+CREATE TABLE IF NOT EXISTS favoritos(
     id SERIAL PRIMARY KEY,
     usuarioId INTEGER,
     animalId INTEGER,
@@ -78,7 +77,7 @@ CREATE TABLE IF NOT EXISTS favoritos{
         REFERENCES animais(id)
         ON DELETE CASCADE
     UNIQUE (usuarioId, animalId);
-};
+);
 
 
 CREATE TABLE IF NOT EXISTS chat(
