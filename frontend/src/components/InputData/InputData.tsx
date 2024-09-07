@@ -5,10 +5,11 @@ interface InputDataProps {
     type: string;
     placeholder: string;
     onChange: React.ChangeEventHandler<HTMLInputElement>; 
-    value?: string; 
+    value?: string;
+    style?: React.CSSProperties;  // Estilo customizável do input
 }
 
-export function InputData({name, type, placeholder, onChange, value}: InputDataProps){
+export function InputData({name, type, placeholder, onChange, value,style}: InputDataProps){
     return(
         <input 
             className='inputs-forms'
@@ -17,6 +18,7 @@ export function InputData({name, type, placeholder, onChange, value}: InputDataP
             placeholder={placeholder} 
             onChange={onChange} 
             value={value}
+            style={style} 
         />
     );
 }

@@ -1,0 +1,1 @@
+SELECT * FROM animais WHERE userId = 1;

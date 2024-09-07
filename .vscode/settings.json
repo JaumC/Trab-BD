@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3040,
+            "driver": "PostgreSQL",
+            "name": "MeauBD",
+            "database": "nome_do_banco",
+            "username": "usuario_do_banco",
+            "password": "senha_do_banco"
+        }
+    ]
+}

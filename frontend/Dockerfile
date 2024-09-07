@@ -5,12 +5,12 @@ FROM node:18
 WORKDIR /app/frontend
 
 # Copie os arquivos de dependências para o diretório de trabalho
-COPY ./package.json ./yarn.lock ./
+COPY package.json yarn.lock ./
 
-# Instale as dependências usando Yarn
+# Instala as dependências
 RUN yarn install
 
-# Copie o restante dos arquivos da aplicação para o diretório de trabalho
+RUN rm -rf node_modules
 COPY . .
 
 # Comando para rodar o servidor de desenvolvimento

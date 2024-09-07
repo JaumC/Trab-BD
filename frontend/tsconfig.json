@@ -7,5 +7,15 @@
     {
       "path": "./tsconfig.node.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "strict": false,
+    "baseUrl": "./",
+    "paths": {
+      "*": ["node_modules/*"]
+    },
+    "moduleResolution": "node"
+  },
+  "include": ["src/**/*"]
 }

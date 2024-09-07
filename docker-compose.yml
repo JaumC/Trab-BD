@@ -17,13 +17,17 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:5173"  
+      - "3000:5173"
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - UPLOAD_FOLDER=/app/uploads
     stdin_open: true
     tty: true
     volumes:
       - ./frontend:/app/frontend
+      - ./backend/uploads:/app/uploads
+      - node_modules_volume:/app/frontend/node_modules
+    command: sh -c "yarn install && yarn dev --host"
     depends_on:
       - backend
 
@@ -37,6 +41,8 @@ services:
       POSTGRES_PASSWORD: senha_do_banco
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./backend/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql # Ao inicializar o docker pela primeira vez: cria as tabelas definidas em init-db.sql
 
 volumes:
   postgres_data:
+  node_modules_volume: #Ao definir, estamos salvando para que fique persistente.

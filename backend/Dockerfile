@@ -10,6 +10,12 @@ COPY requirements.txt .
 # Instale as dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Criar o diretório de uploads
+RUN mkdir -p /app/uploads
+
+# Definir variáveis de ambiente
+ENV UPLOAD_FOLDER=/app/uploads
+
 # Copie o código da aplicação para o diretório de trabalho
 COPY . .
 
