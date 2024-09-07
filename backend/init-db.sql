@@ -11,23 +11,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
     senha VARCHAR(255)
 );
 
-CREATE TABLE IF NOT EXISTS endereco (
-    id SERIAL PRIMARY KEY,
-    rua VARCHAR(255) NOT NULL,
-    estado VARCHAR(50) NOT NULL,
-    cidade VARCHAR(50) NOT NULL,
-    usuarioId INTEGER,
-    CONSTRAINT fk_usuario
-        FOREIGN KEY (usuarioId) 
-        REFERENCES usuarios(id)
-        ON DELETE CASCADE
-
-        -- Enforce uniqueness of the combination of rua, numero, bairro, cep
-        UNIQUE (rua, numero, bairro, cep)
-        -- Enforce uniqueness of the combination of cidade, estado
-        UNIQUE (cidade, estado)
-)
-
 CREATE TABLE IF NOT EXISTS animais (
     id SERIAL PRIMARY KEY,
     nomeAnimal VARCHAR(255) NOT NULL,
@@ -45,6 +28,24 @@ CREATE TABLE IF NOT EXISTS animais (
         REFERENCES usuarios(id)
         ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS endereco (
+    id SERIAL PRIMARY KEY,
+    rua VARCHAR(255) NOT NULL,
+    estado VARCHAR(50) NOT NULL,
+    cidade VARCHAR(50) NOT NULL,
+    usuarioId INTEGER,
+    CONSTRAINT fk_usuario
+        FOREIGN KEY (usuarioId) 
+        REFERENCES usuarios(id)
+        ON DELETE CASCADE
+
+        -- Enforce uniqueness of the combination of rua, numero, bairro, cep
+        UNIQUE (rua, numero, bairro, cep)
+        -- Enforce uniqueness of the combination of cidade, estado
+        UNIQUE (cidade, estado)
+)
+
 
 CREATE TABLE IF NOT EXISTS adocao{
     id SERIAL PRIMARY KEY,
