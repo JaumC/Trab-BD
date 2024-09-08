@@ -84,55 +84,6 @@ def sign_data():
     return jsonify(response)
 
 
-@app.route('/register-animal', methods=['POST'])
-def register_animal():
-    data = request.json
-
-    # Conectar ao banco de dados
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    nomeAnimal = data.get('nomeAnimal')
-    especie = data.get('especie')
-    sexo = data.get('sexo')
-    porte = data.get('porte')
-    idade = data.get('idade')
-    temperamento = data.get('temperamento')
-    saude = data.get('saude')
-    sobreAnimal = data.get('sobreAnimal')
-    imagem_base64 = data.get('animalFoto')
-    userId = data.get('usuario_id')
-
-    image_bytes = None
-    file_url = ''
-
-    if imagem_base64:
-        image_data = imagem_base64.split(",")[1]
-        image_bytes = base64.b64decode(image_data)
-
-        unique_filename = f"{uuid.uuid4().hex}.jpeg"
-        safe_filename = secure_filename(unique_filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_filename)
-
-        with open(file_path, 'wb') as f:
-            f.write(image_bytes)
-        file_url = safe_filename
-
-    try:
-        cursor.execute("""
-            INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, userId)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, file_url, userId))
-        conn.commit()
-        return jsonify({'OK': 'Animal cadastrado com sucesso!'})
-    except Exception as e:
-        conn.rollback()
-        return jsonify({'DENY': f'Erro ao cadastrar animal: {e}'})
-    finally:
-        cursor.close()
-        conn.close()
-
-
 @app.route('/login-data', methods=['POST'])
 def login_data():
     data = request.json  # Recebe os dados do React em formato JSON
@@ -268,10 +219,53 @@ def read_image_as_base64(file_path):
         return None
     
 
-# def read_image_as_base64(file_path):
- #   """ Lê a imagem do caminho e a retorna como uma string base64. """
-  #  with open(file_path, "rb") as image_file:
-   #     return base64.b64encode(image_file.read()).decode('utf-8')
+@app.route('/register-animal', methods=['POST'])
+def register_animal():
+    data = request.json
+
+    # Conectar ao banco de dados
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    nomeAnimal = data.get('nomeAnimal')
+    especie = data.get('especie')
+    sexo = data.get('sexo')
+    porte = data.get('porte')
+    idade = data.get('idade')
+    temperamento = data.get('temperamento')
+    saude = data.get('saude')
+    sobreAnimal = data.get('sobreAnimal')
+    imagem_base64 = data.get('animalFoto')
+    userId = data.get('usuario_id')
+
+    image_bytes = None
+    file_url = ''
+
+    if imagem_base64:
+        image_data = imagem_base64.split(",")[1]
+        image_bytes = base64.b64decode(image_data)
+
+        unique_filename = f"{uuid.uuid4().hex}.jpeg"
+        safe_filename = secure_filename(unique_filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_filename)
+
+        with open(file_path, 'wb') as f:
+            f.write(image_bytes)
+        file_url = safe_filename
+
+    try:
+        cursor.execute("""
+            INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, userId)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, file_url, userId))
+        conn.commit()
+        return jsonify({'OK': 'Animal cadastrado com sucesso!'})
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'DENY': f'Erro ao cadastrar animal: {e}'})
+    finally:
+        cursor.close()
+        conn.close()
 
 
 @app.route('/meus-pets/<int:user_id>', methods=['GET'])
@@ -335,21 +329,68 @@ def meus_pets(user_id):
         cursor.close()
         conn.close()
 
-@app.route('/favoritos/<int:user_id>/<int:animal_id>', methods=['GET'])
-def check_favorito(user_id, animal_id):
+
+@app.route('/animal-delete/<int:pet_id>', methods=['DELETE'])
+def pet_delete(pet_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
     try:
-        cursor.execute("SELECT * FROM favoritos WHERE usuarioId = %s AND animalId = %s", (user_id, animal_id))
-        favorito = cursor.fetchone()
+        cursor.execute("SELECT id, nomeAnimal FROM animais WHERE id = %s", (pet_id,))
+        animal = cursor.fetchone()
+
+        if animal:
+            animal_id, nomeAnimal = animal
+            cursor.execute("DELETE FROM animais WHERE id = %s", (animal_id,))
+            conn.commit()
+
+            response = {'OK': f'{nomeAnimal} excluído! Redirecionando...'}
+            return jsonify(response), 200
         
-        return jsonify({'isFavorite': bool(favorito)}), 200
+        else:
+            return jsonify({'DENY': 'Pet não encontrado!'}), 404
+        
     except Exception as e:
-        return jsonify({'DENY': f'Erro ao verificar favorito: {e}'}), 500
+        return jsonify({'Erro': f'Ocorreu um erro: {str(e)}'}), 500
     finally:
         cursor.close()
         conn.close()
+
+
+@app.route('/pet-update/<int:pet_id>', methods=['PUT'])
+def update_user(pet_id):
+    data = request.json
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Construindo a string SQL de atualização com os dados recebidos
+        update_parts = [f"{key} = %s" for key in data.keys()]
+        update_statement = ", ".join(update_parts)
+
+        # Valores a serem inseridos na query
+        values = list(data.values())
+
+        print(values, flush=True)
+        # Executando a atualização no banco de dados
+        cursor.execute(
+            f"UPDATE animais SET {update_statement} WHERE id = %s",
+            (*values, pet_id)
+        )
+        conn.commit()
+        
+        if cursor.rowcount == 0:
+            return jsonify({'DENY': 'Pet não encontrado.'}), 404
+
+        return jsonify({'OK': 'Dados do pet atualizados com sucesso.'}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'DENY': 'Erro ao atualizar os dados do pet.', 'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 
 @app.route('/favoritos', methods=['POST'])
 def add_favorito():
@@ -370,6 +411,24 @@ def add_favorito():
         cursor.close()
         conn.close()
 
+
+@app.route('/favoritos/<int:user_id>/<int:animal_id>', methods=['GET'])
+def check_favorito(user_id, animal_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("SELECT * FROM favoritos WHERE usuarioId = %s AND animalId = %s", (user_id, animal_id))
+        favorito = cursor.fetchone()
+        
+        return jsonify({'isFavorite': bool(favorito)}), 200
+    except Exception as e:
+        return jsonify({'DENY': f'Erro ao verificar favorito: {e}'}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
 @app.route('/favoritos/<int:user_id>/<int:animal_id>', methods=['DELETE'])
 def remove_favorito(user_id, animal_id):
     conn = get_db_connection()
@@ -389,6 +448,7 @@ def remove_favorito(user_id, animal_id):
     finally:
         cursor.close()
         conn.close()
+
 
 @app.route('/favoritos/<int:user_id>', methods=['GET'])
 def get_favoritos(user_id):
