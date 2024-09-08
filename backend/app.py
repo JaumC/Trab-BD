@@ -257,6 +257,7 @@ def user_delete(user_id):
     finally:
         cursor.close()
         conn.close()
+
         
 def read_image_as_base64(file_path):
     try:
@@ -436,7 +437,6 @@ def get_favoritos(user_id):
     finally:
         cursor.close()
         conn.close()
-
 
 
 if __name__ == '__main__':
