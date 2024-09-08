@@ -4,7 +4,8 @@ import { useAuth } from "../AuthContext";
 import { api } from "../axiosConfig";
 import { Navbar } from "../components/Navbar/Navbar";
 import { CardAnimal } from "../components/CardAnimal/CardAnimal";
-import '../styles/MeuPets.css';
+import '../styles/Favoritos.css';
+import { NavLink } from 'react-router-dom';
 
 export function Favoritos() {
     const { userId } = useAuth();
@@ -60,7 +61,9 @@ export function Favoritos() {
                             />
                         ))
                     ) : (
-                        <p>Você ainda não tem favoritos.</p>
+                        <div className='no-fav-message'>
+                            <NavLink to="/MeusPets">Você ainda não tem pets favoritos! Clique para cadastrar um!</NavLink>
+                        </div>
                     )}
                 </div>
             </>

@@ -58,7 +58,7 @@ export default function MeusPets() {
         return (
             <>
                 <Navbar title="Meus Pets" />
-                <div className='container-pets'>
+                <div className='container-favs'>
                     {meusPets != '' ? (
                         meusPets.map((pet, index) => (
                             <CardAnimal key={index} 
