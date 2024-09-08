@@ -60,7 +60,7 @@ export function Sidecontent() {
                     <div className="menuContainer">
                         <NavLink to="/MeuPerfil">Meu perfil</NavLink>
                         <NavLink to="/MeusPets">Meus Pets</NavLink>
-                        <NavLink to="/Login">Favoritos</NavLink>
+                        <NavLink to="/Favoritos">Favoritos</NavLink>
                         <NavLink to="/Login">Organização</NavLink>
                         <div className="drawerItem drawerItem-yellow" onClick={toggleMenus}>
                             Menus <span>{isMenuOpen ? '▲' : '▼'}</span>
@@ -68,7 +68,7 @@ export function Sidecontent() {
                         {isMenuOpen && (
                             <div className="collapsibleMenu">
                                 <NavLink to="/PreencherCadastroPets">Cadastrar um pet</NavLink>
-                                <NavLink to="/Home">Adotar um Pet</NavLink>
+                                <NavLink to="/Adotar">Adotar um Pet</NavLink>
                                 <NavLink to="/Home">Ajudar um pet</NavLink>
                                 <NavLink to="/Home">Apadrinhar um pet</NavLink>
                             </div>

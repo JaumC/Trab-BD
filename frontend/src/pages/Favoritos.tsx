@@ -6,17 +6,17 @@ import { Navbar } from "../components/Navbar/Navbar";
 import { CardAnimal } from "../components/CardAnimal/CardAnimal";
 import '../styles/MeuPets.css';
 
-export default function MeusPets() {
+export function Favoritos() {
     const { userId } = useAuth();
-    const [meusPets, setMeusPets] = useState([]);
+    const [favoritePets, setFavoritePets] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchMyPets = async (userId) => {
+    const fetchFavoritePets = async (userId) => {
         try {
-            const response = await api.get(`/meus-pets/${userId}`);
+            const response = await api.get(`/favoritos/${userId}`);
             const data = response.data;
 
-            // Limpar os dados dos pets removendo as chaves
+            // Clean the pet data by removing curly braces
             const cleanedPets = data.pets.map(pet => {
                 return {
                     ...pet,
@@ -26,17 +26,17 @@ export default function MeusPets() {
                 };
             });
 
-            setMeusPets(cleanedPets);
+            setFavoritePets(cleanedPets);
             setLoading(false);
         } catch (error) {
-            console.log('Erro ao buscar pets:', error);
+            console.log('Erro ao buscar favoritos:', error);
             setLoading(false);
         }
     };
 
     useEffect(() => {
         if (userId) {
-            fetchMyPets(userId);
+            fetchFavoritePets(userId);
         } else {
             console.log('userId não definido');
             setLoading(false);
@@ -48,14 +48,20 @@ export default function MeusPets() {
     } else {
         return (
             <>
-                <Navbar title="Meus Pets" />
+                <Navbar title="Meus Favoritos" />
                 <div className='container-pets'>
-                    {meusPets.map((pet, index) => (
-                        <CardAnimal key={index} 
-                        id={pet.id} 
-                        nomeAnimal={pet.nomeAnimal} 
-                        animalFoto={pet.animalFoto} />
-                    ))}
+                    {favoritePets.length > 0 ? (
+                        favoritePets.map((pet) => (
+                            <CardAnimal 
+                                key={pet.id} 
+                                id={pet.id} 
+                                nomeAnimal={pet.nomeAnimal} 
+                                animalFoto={pet.animalFoto}
+                            />
+                        ))
+                    ) : (
+                        <p>Você ainda não tem favoritos.</p>
+                    )}
                 </div>
             </>
         );

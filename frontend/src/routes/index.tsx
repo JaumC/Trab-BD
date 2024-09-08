@@ -5,7 +5,11 @@ import { Login } from "../pages/Login";
 import { Sign } from "../pages/Sign";
 import { MeuPerfil } from "../pages/MeuPerfil";
 import { PreencherPet } from "../pages/PreencherCadastroPets";
+import { DetalhesAnimal } from "../pages/DetalhesAnimal";
+import { Favoritos } from "../pages/Favoritos";
 import MeusPets from "../pages/MeusPets";
+import Adotar from "../pages/Adotar";
+
 
 export function AppRoutes(){
     return(
@@ -17,6 +21,9 @@ export function AppRoutes(){
             <Route path="/MeuPerfil" element={<MeuPerfil/>} />
             <Route path="/PreencherCadastroPets" element={<PreencherPet/>} />
             <Route path="/MeusPets" element={<MeusPets/>} />
+            <Route path="/Adotar" element={<Adotar/>} />
+            <Route path="/DetalhesAnimal" element={<DetalhesAnimal/>} />
+            <Route path="/Favoritos" element={<Favoritos/>} />
         </Routes>
     )
 }

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import ModalLoading from "../components/ModalLoading/ModalLoading";
-import { useAuth } from "../AuthContext"; 
+import { useAuth } from "../AuthContext";
 import { api } from "../axiosConfig";
 import { Navbar } from "../components/Navbar/Navbar";
 import { CardAnimal } from "../components/CardAnimal/CardAnimal";
 import '../styles/MeuPets.css';
 
-export default function MeusPets() {
+export default function Adotar() {
     const { userId } = useAuth();
-    const [meusPets, setMeusPets] = useState([]);
+    const [pets, setPets] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchMyPets = async (userId) => {
+    const buscarAnimais = async () => {
         try {
-            const response = await api.get(`/meus-pets/${userId}`);
+            const response = await api.get(`/meus-pets/`);
             const data = response.data;
 
             // Limpar os dados dos pets removendo as chaves
@@ -26,7 +26,7 @@ export default function MeusPets() {
                 };
             });
 
-            setMeusPets(cleanedPets);
+            setPets(cleanedPets);
             setLoading(false);
         } catch (error) {
             console.log('Erro ao buscar pets:', error);
@@ -36,7 +36,7 @@ export default function MeusPets() {
 
     useEffect(() => {
         if (userId) {
-            fetchMyPets(userId);
+            buscarAnimais(userId);
         } else {
             console.log('userId não definido');
             setLoading(false);
@@ -48,13 +48,10 @@ export default function MeusPets() {
     } else {
         return (
             <>
-                <Navbar title="Meus Pets" />
+                <Navbar title="Adotar" />
                 <div className='container-pets'>
-                    {meusPets.map((pet, index) => (
-                        <CardAnimal key={index} 
-                        id={pet.id} 
-                        nomeAnimal={pet.nomeAnimal} 
-                        animalFoto={pet.animalFoto} />
+                    {pets.map((pet, index) => (
+                        <CardAnimal key={index} nomeAnimal={pet.nomeAnimal} animalFoto={pet.animalFoto} />
                     ))}
                 </div>
             </>
