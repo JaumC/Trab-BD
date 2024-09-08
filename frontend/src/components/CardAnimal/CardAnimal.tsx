@@ -67,8 +67,8 @@ export function CardAnimal({ key, id, nomeAnimal, animalFoto, color='#cfe9e5', d
     
 
     const emojis = [ 
-        { title: 'Indisponivel', icon: '🚫'},
-        { title: 'Disponivel', icon: '✅'}
+        { title: 'Indisponivel', icon: ' 🚫'},
+        { title: 'Disponivel', icon: ' ✅'}
     ];
 
     return(
@@ -92,7 +92,7 @@ export function CardAnimal({ key, id, nomeAnimal, animalFoto, color='#cfe9e5', d
                 <div className='borderBottomStyle' style={{ backgroundColor: color}}>
                     <span className='disponibilidadeEmoji'>
                         <p>Disponibilidade:
-                        {disponivel ? emojis[1].icon : emojis[0].icon}
+                         {disponivel ? emojis[1].icon : emojis[0].icon}
                         </p>
                     </span>
                 </div>

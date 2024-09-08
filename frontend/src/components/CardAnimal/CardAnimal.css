@@ -24,6 +24,9 @@
 
 .headerStyle p{
     margin-left: 10px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
 }
 
 .imageContainerStyle{
@@ -43,4 +46,28 @@
     width: 100%;
     height: 40px;
     background-color: #cfe9e5; 
+}
+
+.curtirButton{
+    border: none;
+    background-color: transparent;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.curtirButton svg{
+    width: 100%;
+    height: 100%;
+}
+
+.disponibilidadeEmoji{
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-left: 10px;
+}
+
+.disponibilidadeEmoji p{
+    font-weight: 500;
 }
