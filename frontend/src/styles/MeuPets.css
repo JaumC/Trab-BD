@@ -8,3 +8,14 @@
     padding-bottom: 10px;
 
 }
+
+.no-pets-message a{
+    color: rgb(92, 92, 209);
+    position: fixed;
+    right: 0;
+    top: 50%;
+    text-align: center;
+    font-weight: 500;
+    font-size: 20px;
+    cursor: pointer;
+}

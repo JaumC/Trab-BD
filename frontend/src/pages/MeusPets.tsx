@@ -5,6 +5,8 @@ import { api } from "../axiosConfig";
 import { Navbar } from "../components/Navbar/Navbar";
 import { CardAnimal } from "../components/CardAnimal/CardAnimal";
 import '../styles/MeuPets.css';
+import { NavLink } from 'react-router-dom';
+
 
 export default function MeusPets() {
     const { userId } = useAuth();
@@ -14,25 +16,32 @@ export default function MeusPets() {
     const fetchMyPets = async (userId) => {
         try {
             const response = await api.get(`/meus-pets/${userId}`);
-            const data = response.data;
-
-            // Limpar os dados dos pets removendo as chaves
-            const cleanedPets = data.pets.map(pet => {
-                return {
-                    ...pet,
-                    nomeAnimal: pet.nomeAnimal?.replace(/{|}/g, ''),
-                    animalFoto: pet.animalFoto,
-                    // Adicione aqui o mesmo tratamento para outras propriedades, se necessário
-                };
-            });
-
-            setMeusPets(cleanedPets);
-            setLoading(false);
+            console.log('Resposta completa:', response);
+    
+            if (response.status === 200) {
+                const data = response.data;
+                console.log('Dados recebidos:', data);
+    
+                const cleanedPets = data.pets.map(pet => {
+                    return {
+                        ...pet,
+                        nomeAnimal: pet.nomeAnimal?.replace(/{|}/g, ''),
+                        animalFoto: pet.animalFoto,
+                    };
+                });
+    
+                setMeusPets(cleanedPets);
+            } else {
+                console.log('Resposta com status não esperado:', response);
+            }
         } catch (error) {
-            console.log('Erro ao buscar pets:', error);
+            console.error('Erro ao buscar pets:', error);
+            console.error('Detalhes do erro:', error.response ? error.response.data : error.message);
+        } finally {
             setLoading(false);
         }
     };
+    
 
     useEffect(() => {
         if (userId) {
@@ -50,9 +59,18 @@ export default function MeusPets() {
             <>
                 <Navbar title="Meus Pets" />
                 <div className='container-pets'>
-                    {meusPets.map((pet, index) => (
-                        <CardAnimal key={index} nomeAnimal={pet.nomeAnimal} animalFoto={pet.animalFoto} />
-                    ))}
+                    {meusPets != '' ? (
+                        meusPets.map((pet, index) => (
+                            <CardAnimal key={index} 
+                            id={pet.id} 
+                            nomeAnimal={pet.nomeAnimal} 
+                            animalFoto={pet.animalFoto} />
+                        ))
+                    ) : (
+                        <div className='no-pets-message'>
+                            <NavLink to="/PreencherCadastroPets">Você não tem nenhum pet cadastrado! Clique para cadastrar um!</NavLink>
+                        </div>
+                    )}
                 </div>
             </>
         );
