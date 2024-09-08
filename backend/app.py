@@ -57,11 +57,11 @@ def sign_data():
         else:
             # Inserir os dados no banco de dados
             cursor.execute("""
-                INSERT INTO usuarios (nome_completo, idade, email, estado, cidade, endereco, telefone, nome_usuario, senha)
+                INSERT INTO usuarios (nome_completo, data_nasc, email, estado, cidade, endereco, telefone, nome_usuario, senha)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 data['nome_completo'],
-                data['idade'],
+                data['data'],
                 data['email'],
                 data['estado'],
                 data['cidade'],
@@ -132,11 +132,25 @@ def user_info(user_id):
 
 
     try:
-        cursor.execute("SELECT * FROM usuarios WHERE id = %s", (user_id,))
+        cursor.execute("""
+            SELECT *, calcIdade(data_nasc) AS idade
+            FROM usuarios
+            WHERE id = %s
+        """, (user_id,))
         user = cursor.fetchone()
 
         if user:
-            return jsonify({'user_id': user[0], 'nome_completo': user[1], 'idade': user[2], 'email': user[3], 'estado': user[4], 'cidade': user[5], 'endereco': user[6], 'telefone': user[7], 'nome_usuario': user[8],}), 200
+            return jsonify({                
+                'user_id': user[0],
+                'nome_completo': user[1],
+                'data_nasc': user[2],
+                'idade': user[10],
+                'email': user[3],
+                'estado': user[4],
+                'cidade': user[5],
+                'endereco': user[6],
+                'telefone': user[7],
+                'nome_usuario': user[8]}), 200
         else:
             return jsonify({'DENY': 'Usuário não encontrado'}), 404
         
@@ -288,18 +302,21 @@ def meus_pets(user_id):
                 animal_foto_base64 = None
                 image_path = pet[9]  # Acesso ao caminho do arquivo
 
-                if isinstance(image_path, memoryview):
-                    image_path = image_path.tobytes().decode('utf-8')
+                if image_path:
+                    if isinstance(image_path, memoryview):
+                        image_path = image_path.tobytes().decode('utf-8')
 
-                # Certifique-se de que o caminho está correto
-                full_image_path = os.path.join('/app/uploads', image_path)
+                    # Certifique-se de que o caminho está correto
+                    full_image_path = os.path.join('/app/uploads', image_path)
 
-                if os.path.isfile(full_image_path):
-                    animal_foto_base64 = read_image_as_base64(full_image_path)
-                    if animal_foto_base64:
-                        animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
+                    if os.path.isfile(full_image_path):
+                        animal_foto_base64 = read_image_as_base64(full_image_path)
+                        if animal_foto_base64:
+                            animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
+                    else:
+                        print(f'Caminho da imagem inválido: {full_image_path}', flush=True)
                 else:
-                    print(f'Caminho da imagem inválido: {full_image_path}', flush=True)
+                    print(f'Nenhum caminho de imagem fornecido para o pet com ID: {pet[0]}', flush=True)
 
                 pet_data = {
                     'id': pet[0],
@@ -313,7 +330,7 @@ def meus_pets(user_id):
                     'sobreAnimal': pet[8],
                     'animalFoto': animal_foto_base64,
                     'userId': pet[10],
-                    'disponivel' : pet[11]
+                    'disponivel': pet[11]
                 }
                 pets_list.append(pet_data)
 
@@ -358,7 +375,7 @@ def pet_delete(pet_id):
 
 
 @app.route('/pet-update/<int:pet_id>', methods=['PUT'])
-def update_user(pet_id):
+def pet_uptade(pet_id):
     data = request.json
 
     conn = get_db_connection()

@@ -8,7 +8,7 @@ import axios from 'axios';
 
 type signData = {
     nome_completo: string;
-    idade: string;
+    data: string;
     email: string;
     estado: string;
     cidade: string;
@@ -22,7 +22,7 @@ type signData = {
 export function SignData() {
     const [signData, setsignData] = useState<signData>({
         nome_completo: '',
-        idade: '',
+        data: '',
         email: '',
         estado: '',
         cidade: '',
@@ -46,7 +46,7 @@ export function SignData() {
     const handleSubmit = async () => {
         const requiredFields: (keyof signData)[] = [
             'nome_completo',
-            'idade',
+            'data',
             'email',
             'estado',
             'cidade',
@@ -100,7 +100,7 @@ export function SignData() {
             <div className="inputsinfo">
                 <p>INFORMAÇÕES PESSOAIS</p>
                 <InputData type='text' name='nome_completo' placeholder='Nome Completo' onChange={handleChange}/>
-                <InputData type='text' name='idade' placeholder='Idade' onChange={handleChange}/>
+                <InputData type='date' name='data' placeholder='Idade' onChange={handleChange}/>
                 <InputData type='text' name='email' placeholder='E-mail' onChange={handleChange}/>
                 <InputData type='text' name='estado' placeholder='Estado' onChange={handleChange}/>
                 <InputData type='text' name='cidade' placeholder='Cidade' onChange={handleChange}/>

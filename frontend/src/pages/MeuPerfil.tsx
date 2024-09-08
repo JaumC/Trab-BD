@@ -14,7 +14,7 @@ import { ModalConfirm } from '../components/ModalConfirm/ModalConfirm';
 
 interface UserData {
     nome_completo: string;
-    idade: number;
+    data: string;
     email: string;
     estado: string;
     cidade: string;
@@ -68,7 +68,7 @@ export function MeuPerfil() {
             const response = await api.get(`/user-info/${userId}`);
             setDadosUser({
                 nome_completo: response.data.nome_completo,
-                idade: response.data.idade,
+                data: response.data.idade,
                 email: response.data.email,
                 estado: response.data.estado,
                 cidade: response.data.cidade,
@@ -86,7 +86,7 @@ export function MeuPerfil() {
         if (!modoEdicao) {
             setDadosEditaveis({
                 nome_completo: dadosUser?.nome_completo,
-                idade: dadosUser?.idade,
+                data_nasc: dadosUser?.data_nasc,
                 email: dadosUser?.email,
                 estado: dadosUser?.estado,
                 cidade: dadosUser?.cidade,
@@ -108,14 +108,16 @@ export function MeuPerfil() {
     const handleSave = async () => {
         try {
             const response = await api.put(`/user-update/${userId}`, dadosEditaveis);
-            console.log(dadosEditaveis)
-            console.log('alo')
-            setMsgEdit(response.data.OK)
-            setStateEdit(true);
-
+            
             setDadosUser(dadosEditaveis);
             toggleEditMode();
-
+            setTimeout(() => {
+                window.location.reload()
+            }, 500)
+            
+            setMsgEdit(response.data.OK)
+            setStateEdit(true);
+            
         } catch (error) {
             console.error('Error updating user info:', error);
             toggleEditMode();
@@ -144,7 +146,7 @@ export function MeuPerfil() {
                             </div>
                             <div>
                                 <p>IDADE:</p>
-                                <InputData type="text" name="idade" placeholder={dadosUser.idade.toString()} onChange={handleChange} />
+                                <InputData type="date" name="data_nasc" placeholder={dadosUser.data} onChange={handleChange} />
                             </div>
                             <div>
                                 <p>EMAIL:</p>
@@ -176,7 +178,7 @@ export function MeuPerfil() {
                                 <InfoTexts label='E-MAIL' text={dadosUser.email} />
                             </div>
                             <div>
-                                <InfoTexts label='IDADE' text={dadosUser.idade.toString()} />
+                                <InfoTexts label='IDADE' text={dadosUser.data} />
                                 <InfoTexts label='ENDEREÇO' text={dadosUser.endereco} />
                                 <InfoTexts label='TELEFONE' text={dadosUser.telefone} />
                             </div>
