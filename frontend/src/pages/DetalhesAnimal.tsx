@@ -2,12 +2,12 @@ import { useEffect, useState, useRef } from 'react';
 import '../styles/DetalhesAnimal.css';
 import defaultImage from '../assets/b.jpeg';
 import { Navbar } from "../components/Navbar/Navbar";
-import { useAuth } from '../AuthContext';
+
 import { api } from '../axiosConfig';
 import { useNavigate, useParams } from 'react-router-dom';
-import { InfoTexts } from '../components/InfoTexts/InfoTexts';
+
 import { InputData } from '../components/InputData/InputData';
-import { FaPencilAlt, FaCheck } from 'react-icons/fa'; // Ícones para edição e confirmação
+
 import { ModalMsg } from '../components/ModalMsg/ModalMsg';
 import { ModalConfirm } from '../components/ModalConfirm/ModalConfirm';
 import { GreenButton } from '../components/GreenButton/GreenButton';
