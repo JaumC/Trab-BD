@@ -1,5 +1,5 @@
 .inputs-forms{
-    padding-left: 5px;
+    padding-left: 2px;
     border: none;
     border-bottom: 2px solid #88c9bf;
     background-color: transparent;
@@ -12,5 +12,4 @@
     font-size: 14px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     line-height: 1.5;
-
 }

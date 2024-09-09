@@ -1,0 +1,18 @@
+.edit-button {
+    background-color: white; /* Branco como no ícone */
+    border: none;           /* Sem bordas externas */
+    cursor: pointer;        /* Cursor de ponteiro para indicar que é clicável */
+    outline: none;          /* Remove o contorno quando focado */
+    padding: 23px;          /* Espaçamento interno */
+    border-radius: 50%;     /* Borda arredondada para formar um círculo */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra leve para dar um efeito elevado */
+    display: flex;          /* Flex para centralizar o SVG dentro */
+    align-items: center;    /* Centraliza verticalmente o conteúdo */
+    justify-content: center;/* Centraliza horizontalmente o conteúdo */
+    margin-left: 77%;
+    margin-top: -10%;
+}
+
+.edit-button:hover {
+    background-color: #f9f9f9; /* Muda a cor de fundo ao passar o mouse */
+}

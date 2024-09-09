@@ -1,101 +1,82 @@
-import { useEffect, useState } from 'react';
-import '../styles/MeuPerfil.css';
+import { useEffect, useState, useRef } from 'react';
+import '../styles/DetalhesAnimal.css';
 import defaultImage from '../assets/b.jpeg';
 import { Navbar } from "../components/Navbar/Navbar";
 import { useAuth } from '../AuthContext';
 import { api } from '../axiosConfig';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { InfoTexts } from '../components/InfoTexts/InfoTexts';
 import { InputData } from '../components/InputData/InputData';
 import { FaPencilAlt, FaCheck } from 'react-icons/fa'; // Ícones para edição e confirmação
 import { ModalMsg } from '../components/ModalMsg/ModalMsg';
 import { ModalConfirm } from '../components/ModalConfirm/ModalConfirm';
+import { GreenButton } from '../components/GreenButton/GreenButton';
+import EditButton from '../components/EditButton/EditButton';
+import ModalLoading from '../components/ModalLoading/ModalLoading';
 
 
-interface UserData {
-    nome_completo: string;
-    idade: number;
-    email: string;
-    estado: string;
-    cidade: string;
-    endereco: string;
-    telefone: string;
-    nome_usuario: string;
-    image?: string;
+interface AnimalData {
+    id: number;
+    nomeAnimal: string;
+    especie: string;
+    sexo: number;
+    porte: string;
+    idade: string;
+    temperamento: string;
+    saude: string;
+    sobreAnimal: string;
+    animalFoto: string;
+    userId?: string;
+    disponivel: boolean;
 }
 
 export function DetalhesAnimal() {
-    const { isLogged, userId, logout } = useAuth();
-    const [dadosUser, setDadosUser] = useState<UserData | null>(null);
-    const [dadosEditaveis, setDadosEditaveis] = useState(null);
-    const [modoEdicao, setModoEdicao] = useState(false);
+    let { petId } = useParams();
+    const [pet, setPet] = useState<AnimalData | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    const [modalConfirm, setModalConfirm] = useState(false);  // Estado para controlar exibição do modal de confirmação
-    const [msgDel, setMsgDel] = useState<string>('');
-    const [stateDel, setStateDel] = useState<boolean>(false);
+    const [modoEdicao, setModoEdicao] = useState(false);
+    const [dadosEditaveis, setDadosEditaveis] = useState(null);
 
     const [msgEdit, setMsgEdit] = useState<string>('');
     const [stateEdit, setStateEdit] = useState<boolean>(false);
 
+    const formRef = useRef<HTMLFormElement>(null);
+
     const navigate = useNavigate();
 
-    const handleDelete = async () => {
-        setModalConfirm(false);
-        const response = await api.delete(`/user-delete/${userId}`)
-
-        setMsgDel(response.data.OK);
-        setStateDel(true);
-
-        setTimeout(() => {
-            logout();
-            navigate('/'); 
-        }, 1500);
-    };
-
-    // Função para abrir o modal de confirmação
-    const openDeleteConfirm = () => {
-        setModalConfirm(true);
-    };
 
     useEffect(() => {
-        if (isLogged && userId) {
-            fetchUserData();
-        }
-    }, [isLogged, userId]);
+        const fetchPetDetails = async () => {
+            try {
+                const response = await api.get(`/pet-details/${petId}`);
+                setPet({
+                    nomeAnimal: response.data.nomeAnimal,
+                    especie: response.data.especie,
+                    sexo: response.data.sexo,
+                    porte: response.data.porte,
+                    idade: response.data.idade,
+                    temperamento: response.data.temperamento,
+                    saude: response.data.nomeAnimal,
+                    sobreAnimal: response.data.nomeAnimal,
+                    animalFoto: response.data.animalFoto,
+                    userId: response.data.nomeAnimal,
+                    disponivel: response.data.disponivel,
+                });
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching pet details:', error);
+                setLoading(false);
+            }
+        };
 
-    const fetchUserData = async () => {
-        try {
-            const response = await api.get(`/user-info/${userId}`);
-            setDadosUser({
-                nome_completo: response.data.nome_completo,
-                idade: response.data.idade,
-                email: response.data.email,
-                estado: response.data.estado,
-                cidade: response.data.cidade,
-                endereco: response.data.endereco,
-                telefone: response.data.telefone,
-                nome_usuario: response.data.nome_usuario,
-                image: response.data.image || defaultImage  
-            });
-        } catch (error) {
-            console.error('Error fetching user info:', error);
-        }
-    };
+        fetchPetDetails();
+    }, [petId]);
+
 
     const toggleEditMode = () => {
-        if (!modoEdicao) {
-            setDadosEditaveis({
-                nome_completo: dadosUser?.nome_completo,
-                idade: dadosUser?.idade,
-                email: dadosUser?.email,
-                estado: dadosUser?.estado,
-                cidade: dadosUser?.cidade,
-                endereco: dadosUser?.endereco,
-                telefone: dadosUser?.telefone,
-                nome_usuario: dadosUser?.nome_usuario,
-                // image: dadosUser?.image || defaultImage  
-
-            });
+        if (modoEdicao) {
+            setDadosEditaveis({ ...pet });
         }
         setModoEdicao(!modoEdicao);
     };
@@ -103,107 +84,174 @@ export function DetalhesAnimal() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setDadosEditaveis(prev => ({ ...prev, [name]: value }));
+        console.log(name,value);
     };
 
     const handleSave = async () => {
         try {
-            const response = await api.put(`/user-update/${userId}`, dadosEditaveis);
             console.log(dadosEditaveis)
-            console.log('alo')
-            setMsgEdit(response.data.OK)
+            const response = await api.put(`/pet-update/${petId}`, dadosEditaveis);
+            setMsgEdit(response.data.OK);
             setStateEdit(true);
 
-            setDadosUser(dadosEditaveis);
+            setPet(dadosEditaveis);
             toggleEditMode();
-
+            setTimeout(() => setStateEdit(false), 3000);
         } catch (error) {
-            console.error('Error updating user info:', error);
+            console.error('Error updating pet info:', error);
             toggleEditMode();
         }
     };
 
-    if (!dadosUser) {
-        return <div className="modal-error">Erro ao carregar dados do usuário.</div>;
+    if (loading) {
+        return <ModalLoading spinner={loading} color="#cfe9e5" />;
     }
 
     return (
         <>
-            <Navbar title='Seu Perfil' />
-            <div className="profile-container">
-                <img src={dadosUser.image} alt="Profile" className="profile-image" />
-                <div className="profile-details">
-                    {modoEdicao ? (
-                        <div className="edit-user">
-                            <div>
-                                <p>NOME COMPLETO:</p>
-                                <InputData type="text" name="nome_completo" placeholder={dadosUser.nome_completo} onChange={handleChange} />
-                            </div>
-                            <div>
-                                <p>NOME DO USUARIO:</p>
-                                <InputData type="text" name="nome_usuario" placeholder={dadosUser.nome_usuario} onChange={handleChange} />
-                            </div>
-                            <div>
-                                <p>IDADE:</p>
-                                <InputData type="text" name="idade" placeholder={dadosUser.idade.toString()} onChange={handleChange} />
-                            </div>
-                            <div>
-                                <p>EMAIL:</p>
-                                <InputData type="text" name="email" placeholder={dadosUser.email} onChange={handleChange} />
-                            </div>
-                            <div>
-                                <p>ESTADO:</p>
-                                <InputData type="text" name="estado" placeholder={dadosUser.estado} onChange={handleChange} />
-                            </div>
-                            <div>
-                                <p>CIDADE:</p>
-                                <InputData type="text" name="cidade" placeholder={dadosUser.cidade} onChange={handleChange} />
-                            </div>
-                            <div>
-                                <p>ENDEREÇO:</p>
-                                <InputData type="text" name="endereco" placeholder={dadosUser.endereco} onChange={handleChange} />
-                            </div>
-                            <div>
-                                <p>TELEFONE:</p>
-                                <InputData type="text" name="telefone" placeholder={dadosUser.telefone} onChange={handleChange} />
-                            </div>
-                        </div>
+            <Navbar title={pet.nomeAnimal} />
+            <div style={{ backgroundColor: '#fafafa', overflowY: 'auto', height: '100vh' }}>
+                <div className='container'>
+                    
+                    <div className='image-container '>
+                        <img
+                            src={pet.animalFoto || defaultImage}
+                            alt={pet.nomeAnimal}
+                        />
+                    </div>
+                    <EditButton onClick={toggleEditMode} modoEdicao={modoEdicao}/>
+                    <div className='view_geral'>
+                        {modoEdicao ? (
+                            <>
+                                <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+                                    <h2 className='nomeAnimal'>{pet.nomeAnimal}</h2>
+                                    <div className='linha'></div>
 
-                    ) : (
-                        <div className='form-grid'>
-                            <div>
-                                <InfoTexts label='USUÁRIO' text={dadosUser.nome_usuario} />
-                                <InfoTexts label='NOME COMPLETO' text={dadosUser.nome_completo} />
-                                <InfoTexts label='E-MAIL' text={dadosUser.email} />
-                            </div>
-                            <div>
-                                <InfoTexts label='IDADE' text={dadosUser.idade.toString()} />
-                                <InfoTexts label='ENDEREÇO' text={dadosUser.endereco} />
-                                <InfoTexts label='TELEFONE' text={dadosUser.telefone} />
-                            </div>
-                            <div>
-                                <InfoTexts label='CIDADE' text={dadosUser.cidade} />
-                                <InfoTexts label='ESTADO' text={dadosUser.estado} />
-                                <InfoTexts label='HISTÓRICO' text='Adotou 1 gato' />
-                            </div>
-                        </div>
-                    )}
+                                    <div className='infoContainer'>
+                                        <div className='row'>
+                                            <div className='column'>
+                                                <p className='label'>SEXO</p>
+                                                <InputData type='text' name='sexo' placeholder={pet.sexo} onChange={handleChange} style={{ width: '55px'}}/>
+                                            </div>
+                                            <div className='column'>
+                                                <p className='label'>PORTE</p>
+                                                <InputData type='text' name='porte' placeholder='Porte' onChange={handleChange} style={{ width: '61px'}}/>
+                                            </div>
+                                            <div className='column'>
+                                                <p className='label'>IDADE</p>
+                                                <InputData type='text' name='idade' placeholder={pet.idade} onChange={handleChange} style={{ width: '55px'}}/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className='linha'></div>
+
+                                    <p className='label'>LOCALIZAÇÃO</p>
+                                    <p className='text'>{pet.cidade} - {pet.estado}</p>
+
+                                    <div className='row'>
+                                        <div className='column'>
+                                            <p className='label'>DISPONIVEL</p>
+                                            <p className='text'>{pet.disponivel}</p>
+                                        </div>
+                                        <div className='column'>
+                                            <p className='label'>VERMIFUGADO</p>
+                                            <p className='text'>Sim</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='row'>
+                                        <div className='column'>
+                                            <p className='label'>VACINADO</p>
+                                            <p className='text'>Não</p>
+                                        </div>
+                                        <div className='column'>
+                                            <p className='label'>DOENÇAS</p>
+                                            <p className='text'>Nenhuma</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='linha'></div>
+                                    <p className='label'>TEMPERAMENTO</p>
+                                    <p className='text'>{pet.temperamento}</p>
+
+                                    <div className='linha'></div>
+
+                                    <p className='text'>
+                                    <p className='label'>Mais sobre {pet.nomeAnimal}</p>
+                                    {pet.sobreAnimal}
+                                    </p>
+
+                                    <div className='removeButton '>
+                                        <GreenButton label='REMOVER PET' onClick={toggleEditMode} type='submit'/>
+                                    </div>
+                                </form>
+                             </>
+                        ):(
+                            <>
+                                <h2 className='nomeAnimal'>{pet.nomeAnimal}</h2>
+                                <div className='linha'></div>
+
+                                <div className='infoContainer'>
+                                    <div className='row'>
+                                        <div className='column'>
+                                            <p className='label'>SEXO</p>
+                                            <p className='text'>{pet.sexo}</p>
+                                        </div>
+                                        <div className='column'>
+                                            <p className='label'>PORTE</p>
+                                            <p className='text'>{pet.porte}</p>
+                                        </div>
+                                        <div className='column'>
+                                            <p className='label'>IDADE</p>
+                                            <p className='text'>{pet.idade}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className='linha'></div>
+
+                                <p className='label'>LOCALIZAÇÃO</p>
+                                <p className='text'>{pet.cidade} - {pet.estado}</p>
+
+                                <div className='row'>
+                                    <div className='column'>
+                                        <p className='label'>DISPONIVEL</p>
+                                        <p className='text'>{pet.disponivel}</p>
+                                    </div>
+                                    <div className='column'>
+                                        <p className='label'>VERMIFUGADO</p>
+                                        <p className='text'>Sim</p>
+                                    </div>
+                                </div>
+
+                                <div className='row'>
+                                    <div className='column'>
+                                        <p className='label'>VACINADO</p>
+                                        <p className='text'>Não</p>
+                                    </div>
+                                    <div className='column'>
+                                        <p className='label'>DOENÇAS</p>
+                                        <p className='text'>Nenhuma</p>
+                                    </div>
+                                </div>
+
+                                <div className='linha'></div>
+                                <p className='label'>TEMPERAMENTO</p>
+                                <p className='text'>{pet.temperamento}</p>
+
+                                <div className='linha'></div>
+
+                                <p className='text'>
+                                <p className='label'>Mais sobre {pet.nomeAnimal}</p>
+                                Pequi é um cão muito dócil e de fácil convivência. Adora caminhadas e se dá muito bem com crianças. Tem muito medo de raios e chuva. Está disponível para adoção pois eu e minha família o encontramos na rua e não podemos mantê-lo em nossa casa.
+                                </p>
+                            </>
+                        )}
+
+                    </div>
                 </div>
             </div>
-            <div className='edit-delete-btn'>
-                <div className="icon-wrapper" onClick={modoEdicao ? handleSave : toggleEditMode}>
-                    {modoEdicao ? <FaCheck /> : 'EDITAR'}
-                </div>
-                <button className="delete-user" onClick={openDeleteConfirm}>DELETAR</button>
-            </div>
-            <ModalConfirm
-                show={modalConfirm}
-                onConfirm={handleDelete}
-                onCancel={() => setModalConfirm(false)}
-                label="Deletar Usuário?"
-            />
-            {msgDel && (
-                <ModalMsg msg={msgDel} state={stateDel} />
-            )}
             {msgEdit && (
                 <ModalMsg msg={msgEdit} state={stateEdit} />
             )}

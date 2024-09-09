@@ -558,6 +558,136 @@ def get_favoritos(user_id):
         cursor.close()
         conn.close()
 
+@app.route('/pet-details/<int:pet_id>', methods=['GET'])
+def get_pet_details(pet_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT *
+            FROM animais
+            WHERE id = %s
+        """, (pet_id,))
+        pet = cursor.fetchone()
+        
+        if pet:
+            animal_foto_base64 = None
+            image_path = pet[9]  # Acesso ao caminho do arquivo
+
+            if isinstance(image_path, memoryview):
+                    image_path = image_path.tobytes().decode('utf-8')
+
+            # Certifique-se de que o caminho está correto
+            full_image_path = os.path.join('/app/uploads', image_path)
+
+            if os.path.isfile(full_image_path):
+                animal_foto_base64 = read_image_as_base64(full_image_path)
+                if animal_foto_base64:
+                    animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
+            else:
+                print(f'Caminho da imagem inválido: {full_image_path}', flush=True)
+
+            return jsonify({
+               'id': pet[0],
+                'nomeAnimal': pet[1],
+                'especie': pet[2],
+                'sexo': pet[3],
+                'porte': pet[4],
+                'idade': pet[5],
+                'temperamento': pet[6],
+                'saude': pet[7],
+                'sobreAnimal': pet[8],
+                'animalFoto': animal_foto_base64,
+                'userId': pet[10],
+                'disponivel' : pet[11]
+            }), 200
+        else:
+            return jsonify({'DENY': 'Pet not found'}), 404
+    except Exception as e:
+        return jsonify({'DENY': f'Error fetching pet details: {e}'}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/pet-update/<int:pet_id>', methods=['PUT'])
+def update_pet_details(pet_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    data = request.json
+
+    # Inicie a parte do SET da consulta SQL
+    set_clause = []
+    params = []
+
+    # Adicione os campos fornecidos à cláusula SET
+    if 'nomeAnimal' in data:
+        set_clause.append("nomeAnimal = %s")
+        params.append(data['nomeAnimal'])
+    if 'especie' in data:
+        set_clause.append("especie = %s")
+        params.append(data['especie'])
+    if 'sexo' in data:
+        set_clause.append("sexo = %s")
+        params.append(data['sexo'])
+    if 'porte' in data:
+        set_clause.append("porte = %s")
+        params.append(data['porte'])
+    if 'idade' in data:
+        set_clause.append("idade = %s")
+        params.append(data['idade'])
+    if 'temperamento' in data:
+        set_clause.append("temperamento = %s")
+        params.append(data['temperamento'])
+    if 'saude' in data:
+        set_clause.append("saude = %s")
+        params.append(data['saude'])
+    if 'sobreAnimal' in data:
+        set_clause.append("sobreAnimal = %s")
+        params.append(data['sobreAnimal'])
+
+    if not set_clause:
+        return jsonify({'DENY': 'No data provided for update'}), 400
+
+    # Construa a consulta SQL
+    sql = f"""
+        UPDATE animais
+        SET {', '.join(set_clause)}
+        WHERE id = %s
+    """
+    params.append(pet_id)
+
+    try:
+        cursor.execute(sql, tuple(params))
+        conn.commit()
+        
+        return jsonify({'OK': 'Pet details updated successfully'}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'DENY': f'Error updating pet details: {e}'}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/pet-delete/<int:pet_id>', methods=['DELETE'])
+def delete_pet(pet_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("DELETE FROM animais WHERE id = %s", (pet_id,))
+        if cursor.rowcount > 0:
+            conn.commit()
+            return jsonify({'OK': 'Pet deleted successfully'}), 200
+        else:
+            return jsonify({'DENY': 'Pet not found'}), 404
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'DENY': f'Error deleting pet: {e}'}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 
 if __name__ == '__main__':
