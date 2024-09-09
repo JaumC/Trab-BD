@@ -471,7 +471,7 @@ def remove_favorito(user_id, animal_id):
 def get_favoritos(user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
     try:
         cursor.execute("""
             SELECT a.id, a.nomeAnimal, a.animalFoto, a.disponivel
@@ -486,19 +486,22 @@ def get_favoritos(user_id):
             animal_foto_base64 = None
             image_path = pet[2]  # Acesso ao caminho do arquivo
 
-            # Verifique se o caminho da imagem está em formato binário
-            if isinstance(image_path, memoryview):
-                image_path = image_path.tobytes().decode('utf-8')
+            if image_path:
+                # Verifique se o caminho da imagem está em formato binário
+                if isinstance(image_path, memoryview):
+                    image_path = image_path.tobytes().decode('utf-8')
 
-            # Certifique-se de que o caminho está correto
-            full_image_path = os.path.join('/app/uploads', image_path)
+                # Certifique-se de que o caminho está correto
+                full_image_path = os.path.join('/app/uploads', image_path)
 
-            if os.path.isfile(full_image_path):
-                animal_foto_base64 = read_image_as_base64(full_image_path)
-                if animal_foto_base64:
-                    animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
+                if os.path.isfile(full_image_path):
+                    animal_foto_base64 = read_image_as_base64(full_image_path)
+                    if animal_foto_base64:
+                        animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
+                else:
+                    print(f'Caminho da imagem inválido: {full_image_path}', flush=True)
             else:
-                print(f'Caminho da imagem inválido: {full_image_path}', flush=True)
+                print(f'Nenhum caminho de imagem fornecido para o pet com ID: {pet[0]}', flush=True)
 
             pet_data = {
                 'id': pet[0],
@@ -510,10 +513,12 @@ def get_favoritos(user_id):
 
         return jsonify({'pets': favoritos_list}), 200
     except Exception as e:
+        print(f'Erro ao buscar favoritos: {e}', flush=True)
         return jsonify({'DENY': f'Erro ao buscar favoritos: {e}'}), 500
     finally:
         cursor.close()
         conn.close()
+
 
 
 if __name__ == '__main__':

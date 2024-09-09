@@ -56,6 +56,7 @@ export function CardAnimal({ key, id, nomeAnimal, animalFoto, color='#cfe9e5', d
                     await api.post('/favoritos', { usuarioId: userId, animalId: id });
                 } else {
                     await api.delete(`/favoritos/${userId}/${id}`);
+                    window.location.reload()
                 } 
  
             } catch (error){
