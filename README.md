@@ -25,7 +25,7 @@ sudo docker-compose up --build
 sudo docker exec -it postgresbd psql -U admin_user -d meau_pets
 ```
 
-**Ou substitua <nome do container docker> pelo nome do container referente ao banco de dados, você pode conferir usando:**
+**Ou se for diferente, substitua <postgresbd> pelo nome do container referente ao banco de dados, você pode conferir o nome do container usando:**
 ```sh
 sudo docker ps
 ```
