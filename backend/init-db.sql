@@ -73,6 +73,31 @@ INSERT INTO animais (
 ('Spike', 'Cachorro', 'Macho', 'Grande', 'Adulto', 'Guarda, Amoroso', 'Vacinado, Castrado', 'Spike é um cachorro grande e amoroso que gosta de brincar.', NULL, 1, TRUE);
 
 
+CREATE VIEW vw_detalhes_animal AS
+SELECT
+    a.id AS animal_id,
+    a.nomeAnimal,
+    a.especie,
+    a.sexo,
+    a.porte,
+    a.idade,
+    a.temperamento,
+    a.saude,
+    a.sobreAnimal,
+    CASE
+        WHEN a.animalFoto IS NOT NULL THEN 'Imagem Disponível'
+        ELSE 'Imagem Indisponível'
+    END AS animalFotoStatus,
+    a.userId AS dono_id,
+    u.nome_completo AS dono_nome,
+    a.disponivel
+FROM
+    animais a
+JOIN
+    usuarios u ON a.userId = u.id;
+
+
+
 CREATE TABLE IF NOT EXISTS favoritos (
     id SERIAL PRIMARY KEY,
     usuarioId INTEGER,

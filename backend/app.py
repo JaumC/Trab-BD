@@ -346,6 +346,44 @@ def meus_pets(user_id):
         cursor.close()
         conn.close()
 
+@app.route('/info-pets/<int:petId>', methods=['GET'])
+def info_pets(petId):
+    print('aa', flush=True)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM vw_detalhes_animal WHERE animal_id = %s", (petId,))
+        pet = cursor.fetchone()
+
+        if pet:
+            pet_data = {
+                'id': pet[0],
+                'nomeAnimal': pet[1],
+                'especie': pet[2],
+                'sexo': pet[3],
+                'porte': pet[4],
+                'idade': pet[5],
+                'temperamento': pet[6],
+                'saude': pet[7],
+                'sobreAnimal': pet[8],
+                'animalFotoStatus': pet[9],
+                'dono_id': pet[10],
+                'dono_nome': pet[11],
+                'disponivel': pet[12],
+            }
+
+            return jsonify({'OK': pet_data}), 200
+        
+        else:
+            return jsonify({'DENY': 'Pet não encontrando'}), 404
+    
+    except Exception as e:
+        return jsonify({'DENY': f'Erro ao buscar informações do pet{e}'})
+    finally:
+        cursor.close()
+        conn.close()
+
 
 @app.route('/animal-delete/<int:pet_id>', methods=['DELETE'])
 def pet_delete(pet_id):

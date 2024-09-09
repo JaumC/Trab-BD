@@ -210,3 +210,66 @@ export function DetalhesAnimal() {
         </>
     );
 }
+
+// import React, { useState, useEffect } from 'react';
+// import { useParams } from 'react-router-dom';
+// import { Navbar } from '../components/Navbar/Navbar';
+
+// export function DetalhesAnimal() {
+//     const { pet_id } = useParams();
+//     const petId = Number(pet_id);
+
+//     const [petData, setPetData] = useState(null);
+//     const [error, setError] = useState(null);
+//     const [loading, setLoading] = useState(true); // Estado de carregamento
+
+//     useEffect(() => {
+//         const fetchPetData = async () => {
+//             try {
+               
+//                 const response = await fetch(`http://localhost:50/info-pets/${petId}`, {
+//                     method: 'GET',
+//                 });
+    
+//                 const data = await response.json();
+
+//                 setPetData(data.OK); // Ajuste para refletir a estrutura dos dados
+//                 setLoading(false);
+//             } catch (err) {
+//                 console.error('Error fetching pet data:', err);
+//                 setError(err.response ? err.response.data.DENY : 'Erro ao buscar dados do pet');
+//                 setLoading(false);
+//             }
+//         };
+
+//         fetchPetData();
+//     }, [petId]);
+
+//     if (loading) {
+//         return <div>Carregando...</div>;
+//     }
+
+//     if (error) {
+//         return <div>{error}</div>;
+//     }
+
+//     if (!petData) {
+//         return <div>Pet não encontrado</div>;
+//     }
+
+//     return (
+//         <div>
+//             <Navbar title={petData.nomeAnimal} />
+//             <p>Espécie: {petData.especie}</p>
+//             <p>Sexo: {petData.sexo}</p>
+//             <p>Porte: {petData.porte}</p>
+//             <p>Idade: {petData.idade}</p>
+//             <p>Temperamento: {petData.temperamento}</p>
+//             <p>Saúde: {petData.saude}</p>
+//             <p>Sobre: {petData.sobreAnimal}</p>
+//             <p>Status da Imagem: {petData.animalFotoStatus}</p>
+//             <p>Dono: {petData.dono_nome}</p>
+//             <p>Disponível: {petData.disponivel ? 'Sim' : 'Não'}</p>
+//         </div>
+//     );
+// }
