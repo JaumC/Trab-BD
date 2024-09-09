@@ -94,7 +94,16 @@ export function DetalhesAnimal() {
             setMsgEdit(response.data.OK);
             setStateEdit(true);
 
-            setPet(dadosEditaveis);
+            setPet(prevPet => {
+                if (dadosEditaveis) {
+                    return {
+                        ...prevPet,
+                        ...dadosEditaveis
+                    };
+                } else {
+                    return prevPet;
+                }
+            });
             toggleEditMode();
             setTimeout(() => setStateEdit(false), 3000);
         } catch (error) {
