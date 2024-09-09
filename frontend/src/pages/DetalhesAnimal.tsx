@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import '../styles/MeuPerfil.css';
+import { useEffect, useState, useRef } from 'react';
+import '../styles/DetalhesAnimal.css';
 import defaultImage from '../assets/b.jpeg';
 import { Navbar } from "../components/Navbar/Navbar";
 import { useAuth } from '../AuthContext';
@@ -10,15 +10,39 @@ import { InputData } from '../components/InputData/InputData';
 import { FaPencilAlt, FaCheck } from 'react-icons/fa'; // Ícones para edição e confirmação
 import { ModalMsg } from '../components/ModalMsg/ModalMsg';
 import { ModalConfirm } from '../components/ModalConfirm/ModalConfirm';
+import { GreenButton } from '../components/GreenButton/GreenButton';
+import EditButton from '../components/EditButton/EditButton';
 import ModalLoading from '../components/ModalLoading/ModalLoading';
 
 
+interface AnimalData {
+    id: number;
+    nomeAnimal: string;
+    especie: string;
+    sexo: number;
+    porte: string;
+    idade: string;
+    temperamento: string;
+    saude: string;
+    sobreAnimal: string;
+    animalFoto: string;
+    userId?: string;
+    disponivel: boolean;
+}
+
 export function DetalhesAnimal() {
     let { petId } = useParams();
-    const [pet, setPet] = useState(null);
+    const [pet, setPet] = useState<AnimalData | null>(null);
     const [loading, setLoading] = useState(true);
+
     const [modoEdicao, setModoEdicao] = useState(false);
     const [dadosEditaveis, setDadosEditaveis] = useState(null);
+
+    const [msgEdit, setMsgEdit] = useState<string>('');
+    const [stateEdit, setStateEdit] = useState<boolean>(false);
+
+    const formRef = useRef<HTMLFormElement>(null);
+
     const navigate = useNavigate();
 
 
@@ -26,7 +50,19 @@ export function DetalhesAnimal() {
         const fetchPetDetails = async () => {
             try {
                 const response = await api.get(`/pet-details/${petId}`);
-                setPet(response.data);
+                setPet({
+                    nomeAnimal: response.data.nomeAnimal,
+                    especie: response.data.especie,
+                    sexo: response.data.sexo,
+                    porte: response.data.porte,
+                    idade: response.data.idade,
+                    temperamento: response.data.temperamento,
+                    saude: response.data.nomeAnimal,
+                    sobreAnimal: response.data.nomeAnimal,
+                    animalFoto: response.data.animalFoto,
+                    userId: response.data.nomeAnimal,
+                    disponivel: response.data.disponivel,
+                });
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching pet details:', error);
@@ -37,8 +73,9 @@ export function DetalhesAnimal() {
         fetchPetDetails();
     }, [petId]);
 
+
     const toggleEditMode = () => {
-        if (!modoEdicao) {
+        if (modoEdicao) {
             setDadosEditaveis({ ...pet });
         }
         setModoEdicao(!modoEdicao);
@@ -47,6 +84,23 @@ export function DetalhesAnimal() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setDadosEditaveis(prev => ({ ...prev, [name]: value }));
+        console.log(name,value);
+    };
+
+    const handleSave = async () => {
+        try {
+            console.log(dadosEditaveis)
+            const response = await api.put(`/pet-update/${petId}`, dadosEditaveis);
+            setMsgEdit(response.data.OK);
+            setStateEdit(true);
+
+            setPet(dadosEditaveis);
+            toggleEditMode();
+            setTimeout(() => setStateEdit(false), 3000);
+        } catch (error) {
+            console.error('Error updating pet info:', error);
+            toggleEditMode();
+        }
     };
 
     if (loading) {
@@ -59,70 +113,148 @@ export function DetalhesAnimal() {
             <div style={{ backgroundColor: '#fafafa', overflowY: 'auto', height: '100vh' }}>
                 <div className='container'>
                     
-                    <div className='imageContainerStyle'>
+                    <div className='image-container '>
                         <img
                             src={pet.animalFoto || defaultImage}
                             alt={pet.nomeAnimal}
                         />
                     </div>
-
+                    <EditButton onClick={toggleEditMode} modoEdicao={modoEdicao}/>
                     <div className='view_geral'>
-                        <h2 className='nomeAnimal'>{pet.nomeAnimal}</h2>
-                        <div className='linha'></div>
+                        {modoEdicao ? (
+                            <>
+                                <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+                                    <h2 className='nomeAnimal'>{pet.nomeAnimal}</h2>
+                                    <div className='linha'></div>
 
-                        <div className='infoContainer'>
-                            <div className='row'>
-                                <div className='column'>
-                                    <p className='label'>SEXO</p>
-                                    <p className='text'>{pet.sexo}</p>
+                                    <div className='infoContainer'>
+                                        <div className='row'>
+                                            <div className='column'>
+                                                <p className='label'>SEXO</p>
+                                                <InputData type='text' name='sexo' placeholder={pet.sexo} onChange={handleChange} style={{ width: '55px'}}/>
+                                            </div>
+                                            <div className='column'>
+                                                <p className='label'>PORTE</p>
+                                                <InputData type='text' name='porte' placeholder='Porte' onChange={handleChange} style={{ width: '61px'}}/>
+                                            </div>
+                                            <div className='column'>
+                                                <p className='label'>IDADE</p>
+                                                <InputData type='text' name='idade' placeholder={pet.idade} onChange={handleChange} style={{ width: '55px'}}/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className='linha'></div>
+
+                                    <p className='label'>LOCALIZAÇÃO</p>
+                                    <p className='text'>{pet.cidade} - {pet.estado}</p>
+
+                                    <div className='row'>
+                                        <div className='column'>
+                                            <p className='label'>DISPONIVEL</p>
+                                            <p className='text'>{pet.disponivel}</p>
+                                        </div>
+                                        <div className='column'>
+                                            <p className='label'>VERMIFUGADO</p>
+                                            <p className='text'>Sim</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='row'>
+                                        <div className='column'>
+                                            <p className='label'>VACINADO</p>
+                                            <p className='text'>Não</p>
+                                        </div>
+                                        <div className='column'>
+                                            <p className='label'>DOENÇAS</p>
+                                            <p className='text'>Nenhuma</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='linha'></div>
+                                    <p className='label'>TEMPERAMENTO</p>
+                                    <p className='text'>{pet.temperamento}</p>
+
+                                    <div className='linha'></div>
+
+                                    <p className='text'>
+                                    <p className='label'>Mais sobre {pet.nomeAnimal}</p>
+                                    {pet.sobreAnimal}
+                                    </p>
+
+                                    <div className='removeButton '>
+                                        <GreenButton label='REMOVER PET' onClick={toggleEditMode} type='submit'/>
+                                    </div>
+                                </form>
+                             </>
+                        ):(
+                            <>
+                                <h2 className='nomeAnimal'>{pet.nomeAnimal}</h2>
+                                <div className='linha'></div>
+
+                                <div className='infoContainer'>
+                                    <div className='row'>
+                                        <div className='column'>
+                                            <p className='label'>SEXO</p>
+                                            <p className='text'>{pet.sexo}</p>
+                                        </div>
+                                        <div className='column'>
+                                            <p className='label'>PORTE</p>
+                                            <p className='text'>{pet.porte}</p>
+                                        </div>
+                                        <div className='column'>
+                                            <p className='label'>IDADE</p>
+                                            <p className='text'>{pet.idade}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className='column'>
-                                    <p className='label'>PORTE</p>
-                                    <p className='text'>{pet.porte}</p>
+
+                                <div className='linha'></div>
+
+                                <p className='label'>LOCALIZAÇÃO</p>
+                                <p className='text'>{pet.cidade} - {pet.estado}</p>
+
+                                <div className='row'>
+                                    <div className='column'>
+                                        <p className='label'>DISPONIVEL</p>
+                                        <p className='text'>{pet.disponivel}</p>
+                                    </div>
+                                    <div className='column'>
+                                        <p className='label'>VERMIFUGADO</p>
+                                        <p className='text'>Sim</p>
+                                    </div>
                                 </div>
-                                <div className='column'>
-                                    <p className='label'>IDADE</p>
-                                    <p className='text'>{pet.idade}</p>
+
+                                <div className='row'>
+                                    <div className='column'>
+                                        <p className='label'>VACINADO</p>
+                                        <p className='text'>Não</p>
+                                    </div>
+                                    <div className='column'>
+                                        <p className='label'>DOENÇAS</p>
+                                        <p className='text'>Nenhuma</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
 
+                                <div className='linha'></div>
+                                <p className='label'>TEMPERAMENTO</p>
+                                <p className='text'>{pet.temperamento}</p>
 
-                        <p className='label'>LOCALIZAÇÃO</p>
-                        <p className='text'>{pet.cidade} - {pet.estado}</p>
+                                <div className='linha'></div>
 
-                        <div className='row'>
-                            <div className='column'>
-                                <p className='label'>CASTRADO</p>
-                                <p className='text'>Não</p>
-                            </div>
-                            <div className='column'>
-                                <p className='label'>VERMIFUGADO</p>
-                                <p className='text'>Sim</p>
-                            </div>
-                        </div>
-
-                        <div className='row'>
-                            <div className='column'>
-                                <p className='label'>VACINADO</p>
-                                <p className='text'>Não</p>
-                            </div>
-                            <div className='column'>
-                                <p className='label'>DOENÇAS</p>
-                                <p className='text'>Nenhuma</p>
-                            </div>
-                        </div>
-
-                        <p className='label'>TEMPERAMENTO</p>
-                        <p className='text'>Brincalhão e Dócil</p>
-
-                        <p className='text'>
-                         Pequi é um cão muito dócil e de fácil convivência. Adora caminhadas e se dá muito bem com crianças. Tem muito medo de raios e chuva. Está disponível para adoção pois eu e minha família o encontramos na rua e não podemos mantê-lo em nossa casa.
-                        </p>
+                                <p className='text'>
+                                <p className='label'>Mais sobre {pet.nomeAnimal}</p>
+                                Pequi é um cão muito dócil e de fácil convivência. Adora caminhadas e se dá muito bem com crianças. Tem muito medo de raios e chuva. Está disponível para adoção pois eu e minha família o encontramos na rua e não podemos mantê-lo em nossa casa.
+                                </p>
+                            </>
+                        )}
 
                     </div>
                 </div>
             </div>
+            {msgEdit && (
+                <ModalMsg msg={msgEdit} state={stateEdit} />
+            )}
         </>
     );
 }

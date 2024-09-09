@@ -495,15 +495,51 @@ def update_pet_details(pet_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     
+    data = request.json
+
+    # Inicie a parte do SET da consulta SQL
+    set_clause = []
+    params = []
+
+    # Adicione os campos fornecidos à cláusula SET
+    if 'nomeAnimal' in data:
+        set_clause.append("nomeAnimal = %s")
+        params.append(data['nomeAnimal'])
+    if 'especie' in data:
+        set_clause.append("especie = %s")
+        params.append(data['especie'])
+    if 'sexo' in data:
+        set_clause.append("sexo = %s")
+        params.append(data['sexo'])
+    if 'porte' in data:
+        set_clause.append("porte = %s")
+        params.append(data['porte'])
+    if 'idade' in data:
+        set_clause.append("idade = %s")
+        params.append(data['idade'])
+    if 'temperamento' in data:
+        set_clause.append("temperamento = %s")
+        params.append(data['temperamento'])
+    if 'saude' in data:
+        set_clause.append("saude = %s")
+        params.append(data['saude'])
+    if 'sobreAnimal' in data:
+        set_clause.append("sobreAnimal = %s")
+        params.append(data['sobreAnimal'])
+
+    if not set_clause:
+        return jsonify({'DENY': 'No data provided for update'}), 400
+
+    # Construa a consulta SQL
+    sql = f"""
+        UPDATE animais
+        SET {', '.join(set_clause)}
+        WHERE id = %s
+    """
+    params.append(pet_id)
+
     try:
-        data = request.json
-        cursor.execute("""
-            UPDATE animais
-            SET nomeAnimal = %s, disponivel = %s, idade = %s, raca = %s, 
-                cor = %s, sexo = %s, porte = %s, descricao = %s
-            WHERE id = %s
-        """, (data['nomeAnimal'], data['disponivel'], data['idade'], data['raca'],
-              data['cor'], data['sexo'], data['porte'], data['descricao'], pet_id))
+        cursor.execute(sql, tuple(params))
         conn.commit()
         
         return jsonify({'OK': 'Pet details updated successfully'}), 200

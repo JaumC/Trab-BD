@@ -1,9 +1,9 @@
 .container {
     display: flex;
-    
     background-color: #fafafa;
     align-items: center;
-    height: 100%;
+    flex-direction:column;
+    
 }
 
 .view_geral {
@@ -105,7 +105,9 @@
 }
 
 .removeButton {
-    background-color: #e57373;
+    justify-content: center;
+    padding: 10px;
+    margin-left: 15%;
 }
 
 .removeButtonText {
@@ -126,4 +128,15 @@
     color: #434343;
     margin-top: 16px;
     align-items: center;
+}
+
+.image-container {
+    width: 100%;
+    max-width: 400px; /* Aumenta a largura máxima */
+    height: 10%;
+    max-height: 400px; /* Aumenta a altura máxima */
+    margin-top: 8px;
+    left: 10px;
+    border: 1px solid #e0e1e1;
+    border-radius: 8px;
 }
