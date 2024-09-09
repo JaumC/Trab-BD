@@ -1,128 +1,129 @@
-.profile-container{
-    flex: auto ;
+.container {
+    display: flex;
+    
     background-color: #fafafa;
     align-items: center;
+    height: 100%;
+}
+
+.view_geral {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    width: 90%;
+    background-color: #fafafa;
+    align-items: flex-start;
 }
 
-.profile-image{
-    width: 112px;
-    height: 112px;
-    border-radius: 100px;
-    background-color: black;
-    margin-top: 16px;
-
-}
-
-.profile-details{
+.row {
     display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
     width: 100%;
-    text-align: center;
-    gap: 1rem;
+    margin-bottom: 16px;
+}
+
+.column {
+    display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    margin-right: 50px;
 }
 
-.profile-details p {
-    font-size: 14px;
-    color: #434343;
-    margin-top: 8px;
+.caixaFoto {
+    width: 100%;
+    height: 184px;
+    border-radius: 0;
+    background-color: red;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 2px solid black;
 }
 
-.modal-loading {
-    position: fixed;
+.caixaFoto2 {
+    width: 100%;
+    height: 2%;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    position: absolute;
     top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+}
+
+.infoContainer {
+    margin-top: 16px;
+}
+
+.name {
+    font-size: 30px;
+    font-weight: bold;
+    color: #434343;
+    margin-bottom: 10px;
+}
+
+.label {
+    font-size: 12px;
+    color: #589b9b;
+}
+
+.text {
+    font-size: 14px;
+    color: #757575;
+    margin-bottom: 8px;
+}
+
+.description {
+    font-size: 14px;
+    color: #757575;
+    margin-bottom: 16px;
+}
+
+.buttonsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 28px;
+    margin-bottom: 28px;
+}
+
+.button {
+    width: 148px;
+    height: 40px;
+    background-color: #88c9bf;
+    border: 2px solid #88c9bf;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 2px;
+    flex: 1;
+    margin: 5px;
 }
 
-.icon-wrapper {
-    background-color: #88c9bf;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    border: none; 
-    padding: 10px 20px; 
-    text-align: center; 
-    font-size: 16px; 
-    font-weight: bold; 
-    cursor: pointer; 
-    border-radius: 12px; 
-    width: 150px; 
-    height: 100%; 
-    transition: background-color 0.3s ease;
+.buttonText {
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+}
+
+.removeButton {
+    background-color: #e57373;
+}
+
+.removeButtonText {
+    color: #fff;
+}
+
+.linha {
+    width: 90%;
+    height: 0.8px;
+    background-color: #e6e7e8;
+    margin-top: 8px;
     display: flex;
+    justify-content: flex-start;
+}
+
+.nomeAnimal {
+    font-size: 20px;
+    color: #434343;
+    margin-top: 16px;
     align-items: center;
-    justify-content: center; 
-}
-
-.icon-wrapper:hover {
-    background-color: #33a897;
-}
-
-.edit-delete-btn{
-    padding: 25px 0;
-    width: 100%;
-    height: 100px;
-    display: flex;
-    justify-content: space-evenly;
-}
-
-.delete-user {
-    background-color: rgb(173, 14, 14); 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center; 
-    color: white; 
-    border: none; 
-    padding: 10px 20px; 
-    text-align: center; 
-    font-size: 16px; 
-    font-weight: bold; 
-    cursor: pointer; 
-    border-radius: 12px; 
-    width: 150px; 
-    height: 100%; 
-    transition: background-color 0.3s ease; 
-}
-
-.delete-user:hover {
-    background-color: darkred; /* Muda para um tom mais escuro de vermelho no hover */
-}
-
-.form-grid {
-    margin-top: 40px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Divide em 3 colunas de largura igual */
-    gap: 20px; /* Espaçamento entre os itens */
-}
-
-.form-grid div {
-    display: flex;
-    flex-direction: column; /* Mantém os textos e inputs alinhados verticalmente */
-}
-
-.form-grid p {
-    margin-bottom: 5px;
-}
-
-.edit-user{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 25px 0; 
-}
-
-.edit-user p{
-    align-self: start;
-    width: 312px;
-    text-align: start;
-    margin-bottom: 8px;
-    padding-left: 5px;
 }

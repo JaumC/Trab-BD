@@ -24,7 +24,7 @@ export function CardAnimal({ key, id, nomeAnimal, animalFoto, color='#cfe9e5', d
     const navigate = useNavigate();
 
     const navigateToDetails = () => {
-        navigate (`/DetalhesAnimal`);
+        navigate (`/DetalhesAnimal/${id}`);
     };
 
     useEffect(() => {

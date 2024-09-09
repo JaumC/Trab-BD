@@ -22,7 +22,9 @@ export function AppRoutes(){
             <Route path="/PreencherCadastroPets" element={<PreencherPet/>} />
             <Route path="/MeusPets" element={<MeusPets/>} />
             <Route path="/Adotar" element={<Adotar/>} />
-            <Route path="/DetalhesAnimal" element={<DetalhesAnimal/>} />
+            <Route path="DetalhesAnimal">
+                <Route path=":petId" element={<DetalhesAnimal />} />
+            </Route>
             <Route path="/Favoritos" element={<Favoritos/>} />
         </Routes>
     )
