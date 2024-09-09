@@ -61,7 +61,6 @@ export function Sidecontent() {
                         <NavLink to="/MeuPerfil">Meu perfil</NavLink>
                         <NavLink to="/MeusPets">Meus Pets</NavLink>
                         <NavLink to="/Favoritos">Favoritos</NavLink>
-                        <NavLink to="/Login">Organização</NavLink>
                         <div className="drawerItem drawerItem-yellow" onClick={toggleMenus}>
                             Menus <span>{isMenuOpen ? '▲' : '▼'}</span>
                         </div>

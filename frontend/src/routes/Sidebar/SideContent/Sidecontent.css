@@ -2,12 +2,14 @@
     position: fixed;
     top: 0px;
     left: 0px;
-    width: 304px;
+    width: 70%;
     height: 100%;
     background-color: #f7f7f7;
     z-index: 1000;
     transition: 2s ease-in-out;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .userSection {
@@ -38,6 +40,7 @@
 .menuContainer {
     flex-direction: column;
     display: flex;
+    justify-content: space-between;
 }
 
 .menuContainer a {
@@ -95,17 +98,20 @@
     background-color: #fee29b;
 }
 
-.btnSair{
-    flex-direction: column;
+
+.btnSair {
     display: flex;
-    align-items: center;
+    margin-bottom: 16px;
+    position: absolute;
     bottom: 0;
+    width: 100%;
 }
 
-.btnSair a{
+.btnSair a {
     padding: 12px 20px;
     background-color: #88c9bf;
     width: 100%;
+    
 }
 
 .menuContainer {
