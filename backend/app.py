@@ -22,9 +22,9 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Configurações do banco de dados
 db_config = {
-    'dbname': 'nome_do_banco',
-    'user': 'usuario_do_banco',
-    'password': 'senha_do_banco',
+    'dbname': 'meau_pets',
+    'user': 'admin_user',
+    'password': 'admin',
     'host': 'db',  # ou 'db' se estiver usando Docker
     'port': '5432'
 }

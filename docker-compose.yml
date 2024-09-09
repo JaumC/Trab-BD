@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   backend:
+    container_name: pythonbc
     build: ./backend
     ports:
       - "50:5000"  
@@ -15,6 +16,7 @@ services:
       - db
 
   frontend:
+    container_name: reactft
     build: ./frontend
     ports:
       - "3000:5173"
@@ -32,13 +34,14 @@ services:
       - backend
 
   db:
+    container_name: postgresbd
     image: postgres:15
     ports:
       - "3040:5432" 
     environment:
-      POSTGRES_DB: nome_do_banco
-      POSTGRES_USER: usuario_do_banco
-      POSTGRES_PASSWORD: senha_do_banco
+      POSTGRES_DB: meau_pets
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: admin
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backend/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql # Ao inicializar o docker pela primeira vez: cria as tabelas definidas em init-db.sql
