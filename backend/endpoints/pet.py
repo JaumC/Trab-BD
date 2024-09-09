@@ -55,7 +55,7 @@ def register_animal():
 
         unique_filename = f"{uuid.uuid4().hex}.jpeg"
         safe_filename = secure_filename(unique_filename)
-        file_path = os.path.join(Config['UPLOAD_FOLDER'], safe_filename)
+        file_path = os.path.join(Config.UPLOAD_FOLDER, safe_filename)
 
         with open(file_path, 'wb') as f:
             f.write(image_bytes)
@@ -207,93 +207,57 @@ def delete_pet(pet_id):
         conn.close()
 
 
-@pet_blueprint.route('/pet-details/<int:pet_id>', methods=['PUT'])
-def get_pet_details(pet_id):
-    data = request.json
-
+@pet_blueprint.route('/pet-details/<int:petId>', methods=['GET'])
+def get_pet_details(petId):
     conn = get_db_connection()
     cursor = conn.cursor()
-
+    
     try:
-        # Construindo a string SQL de atualização com os dados recebidos
-        update_parts = [f"{key} = %s" for key in data.keys()]
-        update_statement = ", ".join(update_parts)
-
-        # Valores a serem inseridos na query
-        values = list(data.values())
-
-        print(values, flush=True)
-        # Executando a atualização no banco de dados
-        cursor.execute(
-            f"UPDATE animais SET {update_statement} WHERE id = %s",
-            (*values, pet_id)
-        )
-        conn.commit()
+        cursor.execute("""
+            SELECT *
+            FROM animais
+            WHERE id = %s
+        """, (petId,))
+        pet = cursor.fetchone()
         
-        if cursor.rowcount == 0:
-            return jsonify({'DENY': 'Pet não encontrado.'}), 404
+        if pet:
+            animal_foto_base64 = None
+            image_path = pet[9]  # Acesso ao caminho do arquivo
 
-        return jsonify({'OK': 'Dados do pet atualizados com sucesso.'}), 200
+            if isinstance(image_path, memoryview):
+                    image_path = image_path.tobytes().decode('utf-8')
+
+            # Certifique-se de que o caminho está correto
+            full_image_path = os.path.join('/app/uploads', image_path)
+
+            if os.path.isfile(full_image_path):
+                animal_foto_base64 = read_image_as_base64(full_image_path)
+                if animal_foto_base64:
+                    animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
+            else:
+                print(f'Caminho da imagem inválido: {full_image_path}', flush=True)
+
+            return jsonify({
+               'id': pet[0],
+                'nomeAnimal': pet[1],
+                'especie': pet[2],
+                'sexo': pet[3],
+                'porte': pet[4],
+                'idade': pet[5],
+                'temperamento': pet[6],
+                'saude': pet[7],
+                'sobreAnimal': pet[8],
+                'animalFoto': animal_foto_base64,
+                'userId': pet[10],
+                'disponivel' : pet[11]
+            }), 200
+        else:
+            return jsonify({'DENY': 'Pet não encontrado'}), 404
     except Exception as e:
-        conn.rollback()
-        return jsonify({'DENY': 'Erro ao atualizar os dados do pet.', 'error': str(e)}), 500
+        return jsonify({'DENY': f'Erro ao atualizar detalhes do pet: {e}'}), 500
     finally:
         cursor.close()
         conn.close()
-
-
-# @app.route('/pet-details/<int:pet_id>', methods=['GET'])
-# def get_pet_details(pet_id):
-#     conn = get_db_connection()
-#     cursor = conn.cursor()
-    
-#     try:
-#         cursor.execute("""
-#             SELECT *
-#             FROM animais
-#             WHERE id = %s
-#         """, (pet_id,))
-#         pet = cursor.fetchone()
-        
-#         if pet:
-#             animal_foto_base64 = None
-#             image_path = pet[9]  # Acesso ao caminho do arquivo
-
-#             if isinstance(image_path, memoryview):
-#                     image_path = image_path.tobytes().decode('utf-8')
-
-#             # Certifique-se de que o caminho está correto
-#             full_image_path = os.path.join('/app/uploads', image_path)
-
-#             if os.path.isfile(full_image_path):
-#                 animal_foto_base64 = read_image_as_base64(full_image_path)
-#                 if animal_foto_base64:
-#                     animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
-#             else:
-#                 print(f'Caminho da imagem inválido: {full_image_path}', flush=True)
-
-#             return jsonify({
-#                'id': pet[0],
-#                 'nomeAnimal': pet[1],
-#                 'especie': pet[2],
-#                 'sexo': pet[3],
-#                 'porte': pet[4],
-#                 'idade': pet[5],
-#                 'temperamento': pet[6],
-#                 'saude': pet[7],
-#                 'sobreAnimal': pet[8],
-#                 'animalFoto': animal_foto_base64,
-#                 'userId': pet[10],
-#                 'disponivel' : pet[11]
-#             }), 200
-#         else:
-#             return jsonify({'DENY': 'Pet not found'}), 404
-#     except Exception as e:
-#         return jsonify({'DENY': f'Error fetching pet details: {e}'}), 500
-#     finally:
-#         cursor.close()
-#         conn.close()
-
 
 
 @pet_blueprint.route('/pet-update/<int:pet_id>', methods=['PUT'])
@@ -334,7 +298,7 @@ def update_pet_details(pet_id):
         params.append(data['sobreAnimal'])
 
     if not set_clause:
-        return jsonify({'DENY': 'No data provided for update'}), 400
+        return jsonify({'DENY': 'Sem alterações fornecidas'}), 400
 
     # Construa a consulta SQL
     sql = f"""
@@ -348,10 +312,10 @@ def update_pet_details(pet_id):
         cursor.execute(sql, tuple(params))
         conn.commit()
         
-        return jsonify({'OK': 'Pet details updated successfully'}), 200
+        return jsonify({'OK': 'Pet atualizado com sucesso!'}), 200
     except Exception as e:
         conn.rollback()
-        return jsonify({'DENY': f'Error updating pet details: {e}'}), 500
+        return jsonify({'DENY': f'Erro ao atualizar pet: {e}'}), 500
     finally:
         cursor.close()
         conn.close()

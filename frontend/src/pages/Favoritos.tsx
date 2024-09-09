@@ -14,7 +14,7 @@ export function Favoritos() {
 
     const fetchFavoritePets = async (userId) => {
         try {
-            const response = await api.get(`/favoritos/${userId}`);
+            const response = await api.get(`/favs/favoritos/${userId}`);
             const data = response.data;
 
             // Clean the pet data by removing curly braces

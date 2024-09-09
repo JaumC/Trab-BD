@@ -72,7 +72,7 @@ export function SignData() {
         }
 
         try {
-            const response = await api.post('/sign-data', signData)
+            const response = await api.post('/user/sign-data', signData)
             setMsgSign(response.data.OK)
             setStateSign(true)
         }catch(error){

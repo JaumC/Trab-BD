@@ -1,6 +1,5 @@
 # backend/app.py
 
-import base64
 from flask import Flask
 from flask_cors import CORS
 from config import Config
@@ -23,8 +22,8 @@ from endpoints.favoritos import favoritos_blueprint
 
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
-app.register_blueprint(pet_blueprint, url_prefix='/pet')
-app.register_blueprint(favoritos_blueprint, url_prefix='/favoritos')
+app.register_blueprint(pet_blueprint, url_prefix='/animals')
+app.register_blueprint(favoritos_blueprint, url_prefix='/favs')
 
 
 if __name__ == '__main__':

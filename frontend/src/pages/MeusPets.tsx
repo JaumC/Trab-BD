@@ -15,7 +15,7 @@ export default function MeusPets() {
 
     const fetchMyPets = async (userId) => {
         try {
-            const response = await api.get(`/meus-pets/${userId}`);
+            const response = await api.get(`/animals/meus-pets/${userId}`);
             console.log('Resposta completa:', response);
     
             if (response.status === 200) {

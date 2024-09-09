@@ -1,16 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import '../styles/DetalhesAnimal.css';
-import defaultImage from '../assets/b.jpeg';
 import { Navbar } from "../components/Navbar/Navbar";
-import { useAuth } from '../AuthContext';
 import { api } from '../axiosConfig';
 import { useNavigate, useParams } from 'react-router-dom';
-import { InfoTexts } from '../components/InfoTexts/InfoTexts';
 import { InputData } from '../components/InputData/InputData';
-import { FaPencilAlt, FaCheck } from 'react-icons/fa'; // Ícones para edição e confirmação
 import { ModalMsg } from '../components/ModalMsg/ModalMsg';
 import { ModalConfirm } from '../components/ModalConfirm/ModalConfirm';
-import { GreenButton } from '../components/GreenButton/GreenButton';
 import EditButton from '../components/EditButton/EditButton';
 import ModalLoading from '../components/ModalLoading/ModalLoading';
 
@@ -30,13 +25,20 @@ interface AnimalData {
     disponivel: boolean;
 }
 
+
 export function DetalhesAnimal() {
-    let { petId } = useParams();
+    let { pet_id } = useParams();
+    const petId = Number(pet_id)
     const [pet, setPet] = useState<AnimalData | null>(null);
     const [loading, setLoading] = useState(true);
 
     const [modoEdicao, setModoEdicao] = useState(false);
     const [dadosEditaveis, setDadosEditaveis] = useState(null);
+
+    const [modalConfirm, setModalConfirm] = useState(false);  
+
+    const [msgDel, setMsgDel] = useState<string>('');
+    const [stateDel, setStateDel] = useState<boolean>(false);
 
     const [msgEdit, setMsgEdit] = useState<string>('');
     const [stateEdit, setStateEdit] = useState<boolean>(false);
@@ -49,20 +51,22 @@ export function DetalhesAnimal() {
     useEffect(() => {
         const fetchPetDetails = async () => {
             try {
-                const response = await api.get(`/pet-details/${petId}`);
+                const response = await api.get(`/animals/pet-details/${petId}`,)
+                
                 setPet({
-                    nomeAnimal: response.data.nomeAnimal,
-                    especie: response.data.especie,
-                    sexo: response.data.sexo,
-                    porte: response.data.porte,
-                    idade: response.data.idade,
-                    temperamento: response.data.temperamento,
-                    saude: response.data.nomeAnimal,
-                    sobreAnimal: response.data.nomeAnimal,
                     animalFoto: response.data.animalFoto,
-                    userId: response.data.nomeAnimal,
+                    nomeAnimal: response.data.nomeAnimal.replace(/{|}/g, ''),
+                    especie: response.data.especie.replace(/{|}/g, ''),
+                    sexo: response.data.sexo.replace(/{|}/g, ''),
+                    porte: response.data.porte.replace(/{|}/g, ''),
+                    idade: response.data.idade.replace(/{|}/g, ''),
+                    temperamento: response.data.temperamento.replace(/{|}/g, ''),
+                    saude: response.data.saude.replace(/{|}/g, ''),
+                    sobreAnimal: response.data.sobreAnimal.replace(/{|}/g, ''),
+                    userId: response.data.userId,
                     disponivel: response.data.disponivel,
                 });
+                
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching pet details:', error);
@@ -81,6 +85,22 @@ export function DetalhesAnimal() {
         setModoEdicao(!modoEdicao);
     };
 
+    const openDeleteConfirm = () => {
+        setModalConfirm(true);
+    };
+
+    const handleDelete = async () => {
+        setModalConfirm(false);
+        const response = await api.delete(`/animals/pet-delete/${petId}`)
+
+        setMsgDel(response.data.OK);
+        setStateDel(true);
+
+        setTimeout(() => {
+            navigate('/MeusPets'); 
+        }, 1500);
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setDadosEditaveis(prev => ({ ...prev, [name]: value }));
@@ -90,15 +110,17 @@ export function DetalhesAnimal() {
     const handleSave = async () => {
         try {
             console.log(dadosEditaveis)
-            const response = await api.put(`/pet-update/${petId}`, dadosEditaveis);
+            const response = await api.put(`/animals/pet-update/${petId}`, dadosEditaveis);
             setMsgEdit(response.data.OK);
             setStateEdit(true);
 
             setPet(dadosEditaveis);
             toggleEditMode();
-            setTimeout(() => setStateEdit(false), 3000);
+            setTimeout(() => {
+                window.location.reload()
+            }, 100)
         } catch (error) {
-            console.error('Error updating pet info:', error);
+            console.error('Erro ao atualizar pet: ', error);
             toggleEditMode();
         }
     };
@@ -110,88 +132,81 @@ export function DetalhesAnimal() {
     return (
         <>
             <Navbar title={pet.nomeAnimal} />
-            <div style={{ backgroundColor: '#fafafa', overflowY: 'auto', height: '100vh' }}>
+            <div style={{ backgroundColor: '#fafafa', overflowY: 'auto', minHeight: '100vh' }}>
                 <div className='container'>
-                    
-                    <div className='image-container '>
-                        <img
-                            src={pet.animalFoto || defaultImage}
+                    <div className='image-container-d'>
+                        <img className='image-in'
+                            src={pet.animalFoto}
                             alt={pet.nomeAnimal}
                         />
                     </div>
-                    <EditButton onClick={toggleEditMode} modoEdicao={modoEdicao}/>
+                    <EditButton onClick={toggleEditMode} modoEdicao={modoEdicao} />
                     <div className='view_geral'>
                         {modoEdicao ? (
-                            <>
-                                <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
-                                    <h2 className='nomeAnimal'>{pet.nomeAnimal}</h2>
-                                    <div className='linha'></div>
-
-                                    <div className='infoContainer'>
-                                        <div className='row'>
-                                            <div className='column'>
-                                                <p className='label'>SEXO</p>
-                                                <InputData type='text' name='sexo' placeholder={pet.sexo} onChange={handleChange} style={{ width: '55px'}}/>
-                                            </div>
-                                            <div className='column'>
-                                                <p className='label'>PORTE</p>
-                                                <InputData type='text' name='porte' placeholder='Porte' onChange={handleChange} style={{ width: '61px'}}/>
-                                            </div>
-                                            <div className='column'>
-                                                <p className='label'>IDADE</p>
-                                                <InputData type='text' name='idade' placeholder={pet.idade} onChange={handleChange} style={{ width: '55px'}}/>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className='linha'></div>
-
-                                    <p className='label'>LOCALIZAÇÃO</p>
-                                    <p className='text'>{pet.cidade} - {pet.estado}</p>
-
+                            <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+                                <h2 className='nomeAnimal'>{pet.nomeAnimal}</h2>
+                                <div className='linha'></div>
+    
+                                <div className='infoContainer'>
                                     <div className='row'>
                                         <div className='column'>
-                                            <p className='label'>DISPONIVEL</p>
-                                            <p className='text'>{pet.disponivel}</p>
+                                            <p className='label'>SEXO</p>
+                                            <InputData type='text' name='sexo' placeholder={pet.sexo} onChange={handleChange} />
                                         </div>
                                         <div className='column'>
-                                            <p className='label'>VERMIFUGADO</p>
-                                            <p className='text'>Sim</p>
-                                        </div>
-                                    </div>
-
-                                    <div className='row'>
-                                        <div className='column'>
-                                            <p className='label'>VACINADO</p>
-                                            <p className='text'>Não</p>
+                                            <p className='label'>PORTE</p>
+                                            <InputData type='text' name='porte' placeholder={pet.porte} onChange={handleChange} />
                                         </div>
                                         <div className='column'>
-                                            <p className='label'>DOENÇAS</p>
-                                            <p className='text'>Nenhuma</p>
+                                            <p className='label'>IDADE</p>
+                                            <InputData type='text' name='idade' placeholder={pet.idade} onChange={handleChange} />
                                         </div>
                                     </div>
-
-                                    <div className='linha'></div>
-                                    <p className='label'>TEMPERAMENTO</p>
-                                    <p className='text'>{pet.temperamento}</p>
-
-                                    <div className='linha'></div>
-
-                                    <p className='text'>
-                                    <p className='label'>Mais sobre {pet.nomeAnimal}</p>
-                                    {pet.sobreAnimal}
-                                    </p>
-
-                                    <div className='removeButton '>
-                                        <GreenButton label='REMOVER PET' onClick={toggleEditMode} type='submit'/>
+                                </div>
+    
+                                <div className='linha'></div>
+    
+                                <p className='label'>LOCALIZAÇÃO</p>
+                                <p className='text'>{pet.cidade} - {pet.estado}</p>
+    
+                                <div className='row'>
+                                    <div className='column'>
+                                        <p className='label'>DISPONIVEL</p>
+                                        <p className='text'>{pet.disponivel}</p>
                                     </div>
-                                </form>
-                             </>
-                        ):(
+                                    <div className='column'>
+                                        <p className='label'>VERMIFUGADO</p>
+                                        <p className='text'>Sim</p>
+                                    </div>
+                                </div>
+    
+                                <div className='row'>
+                                    <div className='column'>
+                                        <p className='label'>VACINADO</p>
+                                        <p className='text'>Não</p>
+                                    </div>
+                                    <div className='column'>
+                                        <p className='label'>DOENÇAS</p>
+                                        <p className='text'>Nenhuma</p>
+                                    </div>
+                                </div>
+    
+                                <div className='linha'></div>
+                                <p className='label'>TEMPERAMENTO</p>
+                                <p className='text'>{pet.temperamento}</p>
+    
+                                <div className='linha'></div>
+    
+                                <p className='text'>
+                                    <span className='label'>Mais sobre {pet.nomeAnimal}</span>
+                                    <p>{pet.sobreAnimal}</p>
+                                </p>
+                            </form>
+                        ) : (
                             <>
                                 <h2 className='nomeAnimal'>{pet.nomeAnimal}</h2>
                                 <div className='linha'></div>
-
+    
                                 <div className='infoContainer'>
                                     <div className='row'>
                                         <div className='column'>
@@ -208,12 +223,12 @@ export function DetalhesAnimal() {
                                         </div>
                                     </div>
                                 </div>
-
+    
                                 <div className='linha'></div>
-
+    
                                 <p className='label'>LOCALIZAÇÃO</p>
                                 <p className='text'>{pet.cidade} - {pet.estado}</p>
-
+    
                                 <div className='row'>
                                     <div className='column'>
                                         <p className='label'>DISPONIVEL</p>
@@ -224,7 +239,7 @@ export function DetalhesAnimal() {
                                         <p className='text'>Sim</p>
                                     </div>
                                 </div>
-
+    
                                 <div className='row'>
                                     <div className='column'>
                                         <p className='label'>VACINADO</p>
@@ -235,89 +250,37 @@ export function DetalhesAnimal() {
                                         <p className='text'>Nenhuma</p>
                                     </div>
                                 </div>
-
+    
                                 <div className='linha'></div>
                                 <p className='label'>TEMPERAMENTO</p>
                                 <p className='text'>{pet.temperamento}</p>
-
+    
                                 <div className='linha'></div>
-
+    
                                 <p className='text'>
-                                <p className='label'>Mais sobre {pet.nomeAnimal}</p>
-                                Pequi é um cão muito dócil e de fácil convivência. Adora caminhadas e se dá muito bem com crianças. Tem muito medo de raios e chuva. Está disponível para adoção pois eu e minha família o encontramos na rua e não podemos mantê-lo em nossa casa.
+                                    <span className='label'>Mais sobre {pet.nomeAnimal}</span>
+                                    <p>{pet.sobreAnimal}</p>
                                 </p>
                             </>
                         )}
-
                     </div>
                 </div>
             </div>
+            <div className='delete-btn'>
+                <button className="delete-pet" onClick={openDeleteConfirm}>DELETAR</button>
+            </div>
+            <ModalConfirm
+                show={modalConfirm}
+                onConfirm={handleDelete}
+                onCancel={() => setModalConfirm(false)}
+                label="Deletar Pet?"
+            />
+            {msgDel && (
+                <ModalMsg msg={msgDel} state={stateDel} />
+            )}
             {msgEdit && (
                 <ModalMsg msg={msgEdit} state={stateEdit} />
             )}
         </>
-    );
-}
-
-// import React, { useState, useEffect } from 'react';
-// import { useParams } from 'react-router-dom';
-// import { Navbar } from '../components/Navbar/Navbar';
-
-// export function DetalhesAnimal() {
-//     const { pet_id } = useParams();
-//     const petId = Number(pet_id);
-
-//     const [petData, setPetData] = useState(null);
-//     const [error, setError] = useState(null);
-//     const [loading, setLoading] = useState(true); // Estado de carregamento
-
-//     useEffect(() => {
-//         const fetchPetData = async () => {
-//             try {
-               
-//                 const response = await fetch(`http://localhost:50/info-pets/${petId}`, {
-//                     method: 'GET',
-//                 });
-    
-//                 const data = await response.json();
-
-//                 setPetData(data.OK); // Ajuste para refletir a estrutura dos dados
-//                 setLoading(false);
-//             } catch (err) {
-//                 console.error('Error fetching pet data:', err);
-//                 setError(err.response ? err.response.data.DENY : 'Erro ao buscar dados do pet');
-//                 setLoading(false);
-//             }
-//         };
-
-//         fetchPetData();
-//     }, [petId]);
-
-//     if (loading) {
-//         return <div>Carregando...</div>;
-//     }
-
-//     if (error) {
-//         return <div>{error}</div>;
-//     }
-
-//     if (!petData) {
-//         return <div>Pet não encontrado</div>;
-//     }
-
-//     return (
-//         <div>
-//             <Navbar title={petData.nomeAnimal} />
-//             <p>Espécie: {petData.especie}</p>
-//             <p>Sexo: {petData.sexo}</p>
-//             <p>Porte: {petData.porte}</p>
-//             <p>Idade: {petData.idade}</p>
-//             <p>Temperamento: {petData.temperamento}</p>
-//             <p>Saúde: {petData.saude}</p>
-//             <p>Sobre: {petData.sobreAnimal}</p>
-//             <p>Status da Imagem: {petData.animalFotoStatus}</p>
-//             <p>Dono: {petData.dono_nome}</p>
-//             <p>Disponível: {petData.disponivel ? 'Sim' : 'Não'}</p>
-//         </div>
-//     );
-// }
+    );    
+}    

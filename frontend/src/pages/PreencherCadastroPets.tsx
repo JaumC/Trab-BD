@@ -83,7 +83,7 @@ export function PreencherPet() {
         }
 
         try {
-            const response = await fetch('http://localhost:50/register-animal', {
+            const response = await fetch('http://localhost:50/animals/register-animal', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

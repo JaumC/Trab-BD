@@ -30,7 +30,7 @@ export function LoginData(){
             return;
         }
         try{
-            const response = await api.post('/login-data', logData)
+            const response = await api.post('/user/login-data', logData)
 
             if (!response.data.OK) {
                 setMsglog(response.data.DENY);

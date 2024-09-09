@@ -41,7 +41,7 @@ export function MeuPerfil() {
 
     const handleDelete = async () => {
         setModalConfirm(false);
-        const response = await api.delete(`/user-delete/${userId}`)
+        const response = await api.delete(`/user/user-delete/${userId}`)
 
         setMsgDel(response.data.OK);
         setStateDel(true);
@@ -65,7 +65,7 @@ export function MeuPerfil() {
 
     const fetchUserData = async () => {
         try {
-            const response = await api.get(`/user-info/${userId}`);
+            const response = await api.get(`/user/user-info/${userId}`);
             setDadosUser({
                 nome_completo: response.data.nome_completo,
                 data: response.data.idade,
@@ -107,7 +107,7 @@ export function MeuPerfil() {
 
     const handleSave = async () => {
         try {
-            const response = await api.put(`/user-update/${userId}`, dadosEditaveis);
+            const response = await api.put(`/user/user-update/${userId}`, dadosEditaveis);
             
             setDadosUser(dadosEditaveis);
             toggleEditMode();
