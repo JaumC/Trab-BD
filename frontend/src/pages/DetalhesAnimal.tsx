@@ -9,7 +9,6 @@ import { ModalConfirm } from '../components/ModalConfirm/ModalConfirm';
 import EditButton from '../components/EditButton/EditButton';
 import ModalLoading from '../components/ModalLoading/ModalLoading';
 
-
 interface AnimalData {
     id: number;
     nomeAnimal: string;
@@ -25,34 +24,27 @@ interface AnimalData {
     disponivel: boolean;
 }
 
-
 export function DetalhesAnimal() {
     let { pet_id } = useParams();
-    const petId = Number(pet_id)
+    const petId = Number(pet_id);
     const [pet, setPet] = useState<AnimalData | null>(null);
     const [loading, setLoading] = useState(true);
-
     const [modoEdicao, setModoEdicao] = useState(false);
-    const [dadosEditaveis, setDadosEditaveis] = useState(null);
+    const [dadosEditaveis, setDadosEditaveis] = useState<Partial<AnimalData> | null>(null);
 
-    const [modalConfirm, setModalConfirm] = useState(false);  
-
+    const [modalConfirm, setModalConfirm] = useState(false);
     const [msgDel, setMsgDel] = useState<string>('');
     const [stateDel, setStateDel] = useState<boolean>(false);
-
     const [msgEdit, setMsgEdit] = useState<string>('');
     const [stateEdit, setStateEdit] = useState<boolean>(false);
 
     const formRef = useRef<HTMLFormElement>(null);
-
     const navigate = useNavigate();
-
 
     useEffect(() => {
         const fetchPetDetails = async () => {
             try {
-                const response = await api.get(`/animals/pet-details/${petId}`,)
-                
+                const response = await api.get(`/animals/pet-details/${petId}`);
                 setPet({
                     animalFoto: response.data.animalFoto,
                     nomeAnimal: response.data.nomeAnimal.replace(/{|}/g, ''),
@@ -66,7 +58,7 @@ export function DetalhesAnimal() {
                     userId: response.data.userId,
                     disponivel: response.data.disponivel,
                 });
-                
+                setDadosEditaveis(response.data); // Inicializa dadosEditaveis
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching pet details:', error);
@@ -77,12 +69,11 @@ export function DetalhesAnimal() {
         fetchPetDetails();
     }, [petId]);
 
-
     const toggleEditMode = () => {
-        if (modoEdicao) {
-            setDadosEditaveis({ ...pet });
+        setModoEdicao(prev => !prev);
+        if (!modoEdicao) {
+            setDadosEditaveis(pet); // Atualiza dadosEditaveis ao ativar edição
         }
-        setModoEdicao(!modoEdicao);
     };
 
     const openDeleteConfirm = () => {
@@ -91,37 +82,38 @@ export function DetalhesAnimal() {
 
     const handleDelete = async () => {
         setModalConfirm(false);
-        const response = await api.delete(`/animals/pet-delete/${petId}`)
-
-        setMsgDel(response.data.OK);
-        setStateDel(true);
-
-        setTimeout(() => {
-            navigate('/MeusPets'); 
-        }, 1500);
+        try {
+            const response = await api.delete(`/animals/pet-delete/${petId}`);
+            setMsgDel(response.data.OK);
+            setStateDel(true);
+            setTimeout(() => {
+                navigate('/MeusPets');
+            }, 500);
+        } catch (error) {
+            console.error('Error deleting pet:', error);
+        }
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setDadosEditaveis(prev => ({ ...prev, [name]: value }));
-        console.log(name,value);
     };
 
     const handleSave = async () => {
-        try {
-            console.log(dadosEditaveis)
-            const response = await api.put(`/animals/pet-update/${petId}`, dadosEditaveis);
-            setMsgEdit(response.data.OK);
-            setStateEdit(true);
-
-            setPet(dadosEditaveis);
-            toggleEditMode();
-            setTimeout(() => {
-                window.location.reload()
-            }, 100)
-        } catch (error) {
-            console.error('Erro ao atualizar pet: ', error);
-            toggleEditMode();
+        if (dadosEditaveis) {
+            try {
+                const response = await api.put(`/animals/pet-update/${petId}`, dadosEditaveis);
+                setMsgEdit(response.data.OK);
+                setStateEdit(true);
+                setPet(dadosEditaveis as AnimalData);
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1500);
+                toggleEditMode();
+            } catch (error) {
+                console.error('Erro ao atualizar pet:', error);
+                toggleEditMode();
+            }
         }
     };
 
@@ -131,115 +123,98 @@ export function DetalhesAnimal() {
 
     return (
         <>
-            <Navbar title={pet.nomeAnimal} />
+            <Navbar title={pet?.nomeAnimal || 'Detalhes do Pet'} />
             <div style={{ backgroundColor: '#fafafa', overflowY: 'auto', minHeight: '100vh' }}>
                 <div className='container'>
                     <div className='image-container-d'>
-                        <img className='image-in'
-                            src={pet.animalFoto}
-                            alt={pet.nomeAnimal}
-                        />
+                        <img className='image-in' src={pet?.animalFoto || ''} alt={pet?.nomeAnimal || 'Foto do Pet'} />
                     </div>
                     <EditButton onClick={toggleEditMode} modoEdicao={modoEdicao} />
                     <div className='view_geral'>
                         {modoEdicao ? (
-                            <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
-                                <h2 className='nomeAnimal'>{pet.nomeAnimal}</h2>
+                            <form ref={formRef} onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+                                <div className='form-group'>
+                                    <label className='label'>Nome do Pet</label>
+                                    <InputData type='text' name='nomeAnimal' value={dadosEditaveis?.nomeAnimal || ''} onChange={handleChange} />
+                                </div>
                                 <div className='linha'></div>
-    
                                 <div className='infoContainer'>
                                     <div className='row'>
                                         <div className='column'>
                                             <p className='label'>SEXO</p>
-                                            <InputData type='text' name='sexo' placeholder={pet.sexo} onChange={handleChange} />
+                                            <InputData type='text' name='sexo' value={dadosEditaveis?.sexo || ''} onChange={handleChange} />
                                         </div>
                                         <div className='column'>
                                             <p className='label'>PORTE</p>
-                                            <InputData type='text' name='porte' placeholder={pet.porte} onChange={handleChange} />
+                                            <InputData type='text' name='porte' value={dadosEditaveis?.porte || ''} onChange={handleChange} />
                                         </div>
                                         <div className='column'>
                                             <p className='label'>IDADE</p>
-                                            <InputData type='text' name='idade' placeholder={pet.idade} onChange={handleChange} />
+                                            <InputData type='text' name='idade' value={dadosEditaveis?.idade || ''} onChange={handleChange} />
                                         </div>
                                     </div>
                                 </div>
-    
                                 <div className='linha'></div>
-    
-                                <p className='label'>LOCALIZAÇÃO</p>
-                                <p className='text'>{pet.cidade} - {pet.estado}</p>
-    
                                 <div className='row'>
                                     <div className='column'>
                                         <p className='label'>DISPONIVEL</p>
-                                        <p className='text'>{pet.disponivel}</p>
+                                        <InputData type='text' name='disponivel' value={dadosEditaveis?.disponivel ? 'Sim' : 'Não'} onChange={handleChange} />
                                     </div>
                                     <div className='column'>
                                         <p className='label'>VERMIFUGADO</p>
-                                        <p className='text'>Sim</p>
+                                        <InputData type='text' name='vermifugado' value='Sim' onChange={handleChange} />
                                     </div>
                                 </div>
-    
                                 <div className='row'>
                                     <div className='column'>
                                         <p className='label'>VACINADO</p>
-                                        <p className='text'>Não</p>
+                                        <InputData type='text' name='vacinado' value='Não' onChange={handleChange} />
                                     </div>
                                     <div className='column'>
                                         <p className='label'>DOENÇAS</p>
-                                        <p className='text'>Nenhuma</p>
+                                        <InputData type='text' name='doencas' value='Nenhuma' onChange={handleChange} />
                                     </div>
                                 </div>
-    
                                 <div className='linha'></div>
                                 <p className='label'>TEMPERAMENTO</p>
-                                <p className='text'>{pet.temperamento}</p>
-    
+                                <InputData type='text' name='temperamento' value={dadosEditaveis?.temperamento || ''} onChange={handleChange} />
                                 <div className='linha'></div>
-    
                                 <p className='text'>
-                                    <span className='label'>Mais sobre {pet.nomeAnimal}</span>
-                                    <p>{pet.sobreAnimal}</p>
+                                    <span className='label'>Mais sobre {dadosEditaveis?.nomeAnimal}</span>
+                                    <InputData type='text' name='sobreAnimal' value={dadosEditaveis?.sobreAnimal || ''} onChange={handleChange} />
                                 </p>
                             </form>
                         ) : (
                             <>
-                                <h2 className='nomeAnimal'>{pet.nomeAnimal}</h2>
+                                <h2 className='nomeAnimal'>{pet?.nomeAnimal}</h2>
                                 <div className='linha'></div>
-    
                                 <div className='infoContainer'>
                                     <div className='row'>
                                         <div className='column'>
                                             <p className='label'>SEXO</p>
-                                            <p className='text'>{pet.sexo}</p>
+                                            <p className='text'>{pet?.sexo}</p>
                                         </div>
                                         <div className='column'>
                                             <p className='label'>PORTE</p>
-                                            <p className='text'>{pet.porte}</p>
+                                            <p className='text'>{pet?.porte}</p>
                                         </div>
                                         <div className='column'>
                                             <p className='label'>IDADE</p>
-                                            <p className='text'>{pet.idade}</p>
+                                            <p className='text'>{pet?.idade}</p>
                                         </div>
                                     </div>
                                 </div>
-    
                                 <div className='linha'></div>
-    
-                                <p className='label'>LOCALIZAÇÃO</p>
-                                <p className='text'>{pet.cidade} - {pet.estado}</p>
-    
                                 <div className='row'>
                                     <div className='column'>
                                         <p className='label'>DISPONIVEL</p>
-                                        <p className='text'>{pet.disponivel}</p>
+                                        <p className='text'>{pet?.disponivel ? 'Sim' : 'Não'}</p>
                                     </div>
                                     <div className='column'>
                                         <p className='label'>VERMIFUGADO</p>
                                         <p className='text'>Sim</p>
                                     </div>
                                 </div>
-    
                                 <div className='row'>
                                     <div className='column'>
                                         <p className='label'>VACINADO</p>
@@ -250,16 +225,13 @@ export function DetalhesAnimal() {
                                         <p className='text'>Nenhuma</p>
                                     </div>
                                 </div>
-    
                                 <div className='linha'></div>
                                 <p className='label'>TEMPERAMENTO</p>
-                                <p className='text'>{pet.temperamento}</p>
-    
+                                <p className='text'>{pet?.temperamento}</p>
                                 <div className='linha'></div>
-    
                                 <p className='text'>
-                                    <span className='label'>Mais sobre {pet.nomeAnimal}</span>
-                                    <p>{pet.sobreAnimal}</p>
+                                    <span className='label'>Mais sobre {pet?.nomeAnimal}</span>
+                                    <p>{pet?.sobreAnimal}</p>
                                 </p>
                             </>
                         )}
@@ -282,5 +254,5 @@ export function DetalhesAnimal() {
                 <ModalMsg msg={msgEdit} state={stateEdit} />
             )}
         </>
-    );    
-}    
+    );
+}
