@@ -36,18 +36,30 @@ def sign_data():
         else:
             # Inserir os dados no banco de dados
             cursor.execute("""
-                INSERT INTO usuarios (nome_completo, data_nasc, email, estado, cidade, endereco, telefone, nome_usuario, senha)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO usuarios (nome_completo, data_nasc, email, telefone, nome_usuario, senha)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING id
             """, (
                 data['nome_completo'],
                 data['data'],
                 data['email'],
-                data['estado'],
-                data['cidade'],
-                data['endereco'],
                 data['telefone'],
                 data['nome_usuario'],
                 data['senha']
+            ))
+
+            userID = cursor.fetchone()[0]
+
+            cursor.execute("""
+                INSERT INTO endereco (rua, quadra, cidade, estado, casa, usuarioId)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (
+                data['endereco']['rua'],
+                data['endereco']['quadra'],
+                data['endereco']['cidade'],
+                data['endereco']['estado'],
+                data['endereco']['casa'],
+                userID
             ))
 
             conn.commit()
@@ -97,39 +109,42 @@ def login_data():
 
 @user_blueprint.route('/user-info/<int:user_id>', methods=['GET'])
 def user_info(user_id):
-
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
-        user_id = int(user_id)
-    except ValueError:
-        return jsonify({'DENY': 'User ID inválido'}), 400
+        # Verificar se o user_id é um número inteiro
+        if not isinstance(user_id, int):
+            return jsonify({'DENY': 'ID do usuário deve ser um número inteiro'}), 400
 
-
-    try:
+        # Executar a consulta
         cursor.execute("""
-            SELECT *, calcIdade(data_nasc) AS idade
-            FROM usuarios
-            WHERE id = %s
+            SELECT u.*, calcIdade(u.data_nasc) AS idade, e.estado, e.cidade, e.quadra
+            FROM usuarios u
+            LEFT JOIN endereco e ON u.id = e.usuarioId
+            WHERE u.id = %s
         """, (user_id,))
+        
         user = cursor.fetchone()
 
         if user:
-            return jsonify({                
+            data = {
                 'user_id': user[0],
                 'nome_completo': user[1],
-                'data_nasc': user[2],
-                'idade': user[10],
+                'idade': user[7], 
                 'email': user[3],
-                'estado': user[4],
-                'cidade': user[5],
-                'endereco': user[6],
-                'telefone': user[7],
-                'nome_usuario': user[8]}), 200
+                'telefone': user[4],
+                'nome_usuario': user[5],
+                'endereco': {
+                    'estado': user[8], 
+                    'cidade': user[9], 
+                    'quadra': user[10] 
+                }
+            }
+            return jsonify({'OK': data})
         else:
             return jsonify({'DENY': 'Usuário não encontrado'}), 404
-        
+
     except Exception as e:
         return jsonify({'DENY': f'Erro ao buscar informações do usuário: {e}'}), 500
 
@@ -146,21 +161,30 @@ def update_user(user_id):
     cursor = conn.cursor()
 
     try:
-        # Construindo a string SQL de atualização com os dados recebidos
-        update_parts = [f"{key} = %s" for key in data.keys()]
-        update_statement = ", ".join(update_parts)
-
-        # Valores a serem inseridos na query
-        values = list(data.values())
-
-        print(values, flush=True)
-        # Executando a atualização no banco de dados
-        cursor.execute(
-            f"UPDATE usuarios SET {update_statement} WHERE id = %s",
-            (*values, user_id)
-        )
-        conn.commit()
+        # Separar dados de usuário e de endereço
+        user_data = {key: value for key, value in data.items() if key in ['nome_completo', 'email', 'telefone', 'nome_usuario']}
+        endereco_data = {key: value for key, value in data.items() if key in ['estado', 'cidade', 'quadra']}
         
+        # Atualizar dados do usuário
+        if user_data:
+            update_parts = [f"{key} = %s" for key in user_data.keys()]
+            update_statement = ", ".join(update_parts)
+            cursor.execute(
+                f"UPDATE usuarios SET {update_statement} WHERE id = %s",
+                (*user_data.values(), user_id)
+            )
+        
+        # Atualizar dados de endereço
+        if endereco_data:
+            update_parts = [f"{key} = %s" for key in endereco_data.keys()]
+            update_statement = ", ".join(update_parts)
+            cursor.execute(
+                f"UPDATE endereco SET {update_statement} WHERE usuarioId = %s",
+                (*endereco_data.values(), user_id)
+            )
+        
+        conn.commit()
+
         if cursor.rowcount == 0:
             return jsonify({'DENY': 'Usuário não encontrado.'}), 404
 
@@ -173,17 +197,24 @@ def update_user(user_id):
         conn.close()
 
 
+
 @user_blueprint.route('/user-delete/<int:user_id>', methods=['DELETE'])
 def user_delete(user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
+        # Verificar se o usuário existe
         cursor.execute("SELECT id, nome_usuario FROM usuarios WHERE id = %s", (user_id,))
         user = cursor.fetchone()
 
         if user:
             user_id, nome_usuario = user
+            
+            # Primeiro, deletar o endereço associado ao usuário
+            cursor.execute("DELETE FROM endereco WHERE usuarioId = %s", (user_id,))
+            
+            # Em seguida, deletar o usuário
             cursor.execute("DELETE FROM usuarios WHERE id = %s", (user_id,))
             conn.commit()
 

@@ -4,9 +4,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
     nome_completo VARCHAR(255) NOT NULL,
     data_nasc DATE NOT NULL,
     email VARCHAR(255) NOT NULL,
-    estado VARCHAR(50),
-    cidade VARCHAR(50),
-    endereco TEXT,
     telefone VARCHAR(20),
     nome_usuario VARCHAR(50) NOT NULL,
     senha VARCHAR(255) NOT NULL
@@ -15,9 +12,11 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
 CREATE TABLE IF NOT EXISTS endereco (
     id SERIAL PRIMARY KEY,
-    rua VARCHAR(255) NOT NULL,
-    estado VARCHAR(50) NOT NULL,
+    rua VARCHAR(50) NOT NULL,
+    quadra VARCHAR(40) NOT NULL,
     cidade VARCHAR(50) NOT NULL,
+    estado VARCHAR(50) NOT NULL,
+    casa VARCHAR(30) NOT NULL, 
     usuarioId INTEGER,
     CONSTRAINT fk_usuario_endereco
         FOREIGN KEY (usuarioId) 
@@ -147,6 +146,32 @@ CREATE TABLE IF NOT EXISTS necessidades (
 
 ----------------------------------------------------------------------
 
+-- Criação da Procedure que calcula a idade
+CREATE OR REPLACE FUNCTION calcIdade(data_nasc DATE)
+RETURNS INTEGER AS $$
+DECLARE 
+    idade INTEGER;
+BEGIN
+    idade := EXTRACT(YEAR FROM AGE(data_nasc));
+    RETURN idade;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- Criação da Procedure que forma o Enderço Completo
+CREATE OR REPLACE FUNCTION endereco_completo(usuario_id INTEGER)
+RETURNS TEXT AS $$
+DECLARE
+    endereco_txt TEXT;
+BEGIN
+    SELECT CONCAT(rua, ', ', quadra, ', ', cidade, ', ', estado, ', ', casa) INTO endereco_txt
+    FROM endereco
+    WHERE usuarioId = usuario_id;
+    RETURN endereco_txt;
+END;
+$$ LANGUAGE plpgsql;
+
+
 -- View responsavel por mostrar informações extra dos pets e usuários
 CREATE VIEW vw_detalhes_animal AS
 SELECT
@@ -165,43 +190,34 @@ SELECT
     END AS animalFotoStatus,
     a.usuarioId AS dono_id,
     u.nome_completo AS dono_nome,
+    endereco_completo(u.id) AS dono_endereco,
     a.disponivel
 FROM
     animais a
 JOIN
     usuarios u ON a.usuarioId = u.id;
 
-
--- Criação da Procedure que calcula a idade
-CREATE OR REPLACE FUNCTION calcIdade(data_nasc DATE)
-RETURNS INTEGER AS $$
-DECLARE 
-    idade INTEGER;
-BEGIN
-    idade := EXTRACT(YEAR FROM AGE(data_nasc));
-    RETURN idade;
-END;
-$$ LANGUAGE plpgsql;
-
 --------------------------------------------------------------------------------------------
 
 -- Usuários
-INSERT INTO usuarios (nome_completo, data_nasc, email, estado, cidade, endereco, telefone, nome_usuario, senha) 
+INSERT INTO usuarios (nome_completo, data_nasc, email, telefone, nome_usuario, senha) 
 VALUES 
-('Pedro Henrique', '2008-08-15', 'PedroHH@hotmail.com', 'BH', 'Porto de Galinhas', 'Quadra 14', '9898989898', 'PedroH', 'P3dr0@@$'),
-('Maria Silva', '2001-08-22', 'MariaS22@gmail.com', 'SP', 'São Paulo', 'Avenida Paulista', '9797979797', 'MariaS', 'S3nh@_Maria'),
-('João Oliveira', '1993-08-30', 'JoaoO30@yahoo.com', 'RJ', 'Rio de Janeiro', 'Rua das Flores', '9696969696', 'JoaoO', 'Joao#2024'),
-('Mateus Machado', '2008-08-15', 'MachadoMateus@gmail.com', 'DF', 'Ceilândia', 'Q.5', '555555555', 'Machadinho', 'm@ch4d1nh0##'),
-('Ana Paula', '1985-12-05', 'AnaPaula@example.com', 'MG', 'Belo Horizonte', 'Rua das Acácias', '988888888', 'AnaP', 'AnaP@ss2024');
+('Pedro Henrique', '2008-08-15', 'PedroHH@hotmail.com', '9898989898', 'PedroH', 'P3dr0@@$'),
+('Maria Silva', '2001-08-22', 'MariaS22@gmail.com', '9797979797', 'MariaS', 'S3nh@_Maria'),
+('João Oliveira', '1993-08-30', 'JoaoO30@yahoo.com', '9696969696', 'JoaoO', 'Joao#2024'),
+('Mateus Machado', '2008-08-15', 'MachadoMateus@gmail.com', '555555555', 'Machadinho', 'm@ch4d1nh0##'),
+('Ana Paula', '1985-12-05', 'AnaPaula@example.com', '988888888', 'AnaP', 'AnaP@ss2024');
+
 
 -- Endereços
-INSERT INTO endereco (rua, estado, cidade, usuarioId)
+INSERT INTO endereco (rua, quadra, estado, cidade, casa, usuarioId)
 VALUES 
-('Rua das Acácias', 'MG', 'Belo Horizonte', 1),
-('Rua das Flores', 'RJ', 'Rio de Janeiro', 2),
-('Avenida Paulista', 'SP', 'São Paulo', 3),
-('Quadra 14', 'BH', 'Porto de Galinhas', 4),
-('Rua São José', 'MG', 'Belo Horizonte', 5);
+('Rua das Acácias', 'Quadra 14', 'MG', 'Belo Horizonte', '12', 1),
+('Rua das Flores', 'Quadra 7', 'RJ', 'Rio de Janeiro', '20', 2),
+('Avenida Paulista', 'Avenida 3', 'SP', 'São Paulo', '50', 3),
+('Quadra 14', 'Quadra 5', 'BH', 'Porto de Galinhas', '17', 4),
+('Rua São José', 'Quadra 2', 'MG', 'Belo Horizonte', '21', 5);
+
 
 -- Animais
 INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, usuarioId, disponivel)

@@ -66,22 +66,26 @@ export function MeuPerfil() {
     const fetchUserData = async () => {
         try {
             const response = await api.get(`/user/user-info/${userId}`);
+            const userData = response.data.OK;
+    
+            // Ajuste para combinar os dados do usuário e do endereço
             setDadosUser({
-                nome_completo: response.data.nome_completo,
-                data: response.data.idade,
-                email: response.data.email,
-                estado: response.data.estado,
-                cidade: response.data.cidade,
-                endereco: response.data.endereco,
-                telefone: response.data.telefone,
-                nome_usuario: response.data.nome_usuario,
-                image: response.data.image || defaultImage  
+                nome_completo: userData.nome_completo,
+                data: userData.idade,
+                email: userData.email,
+                telefone: userData.telefone,
+                nome_usuario: userData.nome_usuario,
+                estado: userData.endereco.estado,
+                cidade: userData.endereco.cidade,
+                quadra: userData.endereco.quadra,
+                image: defaultImage  
             });
         } catch (error) {
             console.error('Error fetching user info:', error);
         }
     };
-
+    
+    
     const toggleEditMode = () => {
         if (!modoEdicao) {
             setDadosEditaveis({
@@ -90,10 +94,9 @@ export function MeuPerfil() {
                 email: dadosUser?.email,
                 estado: dadosUser?.estado,
                 cidade: dadosUser?.cidade,
-                endereco: dadosUser?.endereco,
+                quadra: dadosUser?.quadra,
                 telefone: dadosUser?.telefone,
                 nome_usuario: dadosUser?.nome_usuario,
-                // image: dadosUser?.image || defaultImage  
 
             });
         }
@@ -161,8 +164,8 @@ export function MeuPerfil() {
                                 <InputData type="text" name="cidade" placeholder={dadosUser.cidade} onChange={handleChange} />
                             </div>
                             <div>
-                                <p>ENDEREÇO:</p>
-                                <InputData type="text" name="endereco" placeholder={dadosUser.endereco} onChange={handleChange} />
+                                <p>QUADRA:</p>
+                                <InputData type="text" name="quadra" placeholder={dadosUser.quadra} onChange={handleChange} />
                             </div>
                             <div>
                                 <p>TELEFONE:</p>
@@ -178,13 +181,13 @@ export function MeuPerfil() {
                                 <InfoTexts label='E-MAIL' text={dadosUser.email} />
                             </div>
                             <div>
-                                <InfoTexts label='IDADE' text={dadosUser.data} />
-                                <InfoTexts label='ENDEREÇO' text={dadosUser.endereco} />
-                                <InfoTexts label='TELEFONE' text={dadosUser.telefone} />
+                                <InfoTexts label='ESTADO' text={dadosUser.estado} />
+                                <InfoTexts label='CIDADE' text={dadosUser.cidade} />
+                                <InfoTexts label='QUADRA' text={dadosUser.quadra} />
                             </div>
                             <div>
-                                <InfoTexts label='CIDADE' text={dadosUser.cidade} />
-                                <InfoTexts label='ESTADO' text={dadosUser.estado} />
+                                <InfoTexts label='TELEFONE' text={dadosUser.telefone} />
+                                <InfoTexts label='IDADE' text={dadosUser.data} />
                                 <InfoTexts label='HISTÓRICO' text='Adotou 1 gato' />
                             </div>
                         </div>

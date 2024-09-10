@@ -10,13 +10,17 @@ type signData = {
     nome_completo: string;
     data: string;
     email: string;
-    estado: string;
-    cidade: string;
-    endereco: string;
     telefone: string;
     nome_usuario: string;
     senha: string;
     confirmacao_senha: string;
+    endereco: {
+        rua: string;
+        quadra: string;
+        cidade: string;
+        estado: string;
+        casa: string;
+    };
 };
 
 export function SignData() {
@@ -24,20 +28,38 @@ export function SignData() {
         nome_completo: '',
         data: '',
         email: '',
-        estado: '',
-        cidade: '',
-        endereco: '',
         telefone: '',
         nome_usuario: '',
         senha: '',
-        confirmacao_senha: ''
+        confirmacao_senha: '',
+        endereco: {
+            rua: '',
+            quadra: '',
+            cidade: '',
+            estado: '',
+            casa: '',
+        }
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setsignData({
-            ...signData,
-            [e.target.name]: e.target.value
-        });
+        const { name, value } = e.target;
+
+        if (name in signData.endereco) {
+            // Atualiza o campo de endereço separadamente
+            setsignData({
+                ...signData,
+                endereco: {
+                    ...signData.endereco,
+                    [name]: value
+                }
+            });
+        } else {
+            // Atualiza os outros campos do usuário
+            setsignData({
+                ...signData,
+                [name]: value
+            });
+        }
     };
 
     const [msgSign, setMsgSign] = useState<string>('')
@@ -48,20 +70,27 @@ export function SignData() {
             'nome_completo',
             'data',
             'email',
-            'estado',
-            'cidade',
-            'endereco',
             'telefone',
             'nome_usuario',
             'senha',
             'confirmacao_senha'
         ];
 
+        const addressFields: (keyof signData['endereco'])[] = [
+            'rua',
+            'quadra',
+            'cidade',
+            'estado',
+            'casa'
+        ]
+
 
 
         const hasEmptyFields = requiredFields.some(field => !signData[field]);
+        const hasEmptyAddressFields = addressFields.some(field => !signData.endereco[field]);
+
     
-        if (hasEmptyFields) {
+        if (hasEmptyFields || hasEmptyAddressFields) {
             setMsgSign("Existem campos não preenchidos, por favor preencha todos");
             return;
         }
@@ -102,11 +131,18 @@ export function SignData() {
                 <InputData type='text' name='nome_completo' placeholder='Nome Completo' onChange={handleChange}/>
                 <InputData type='date' name='data' placeholder='Idade' onChange={handleChange}/>
                 <InputData type='text' name='email' placeholder='E-mail' onChange={handleChange}/>
-                <InputData type='text' name='estado' placeholder='Estado' onChange={handleChange}/>
-                <InputData type='text' name='cidade' placeholder='Cidade' onChange={handleChange}/>
-                <InputData type='text' name='endereco' placeholder='Endereço' onChange={handleChange}/>
                 <InputData type='text' name='telefone' placeholder='Telefone' onChange={handleChange}/>
+            </div>    
+
+            <div className="inputsinfo">
+                <p>INFORMAÇÕES DE ENDEREÇO</p>
+                <InputData type='text' name='rua' placeholder='Rua' onChange={handleChange} />
+                <InputData type='text' name='quadra' placeholder='Quadra' onChange={handleChange} />
+                <InputData type='text' name='casa' placeholder='Número da Casa' onChange={handleChange} />
+                <InputData type='text' name='cidade' placeholder='Cidade' onChange={handleChange} />
+                <InputData type='text' name='estado' placeholder='Estado' onChange={handleChange} />
             </div>
+                
             <div className="inputsinfo">
                 <p>INFORMAÇÕES DE PERFIL</p>
                 <InputData type='text' name='nome_usuario' placeholder='Nome de Usuário' onChange={handleChange}/>

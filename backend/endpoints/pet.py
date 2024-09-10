@@ -167,7 +167,8 @@ def info_pets(petId):
                 'animalFotoStatus': pet[9],
                 'dono_id': pet[10],
                 'dono_nome': pet[11],
-                'disponivel': pet[12],
+                'dono_endereco': pet[12],
+                'disponivel': pet[13],
             }
 
             return jsonify({'OK': pet_data}), 200
