@@ -9,6 +9,7 @@ import { DetalhesAnimal } from "../pages/DetalhesAnimal";
 import { Favoritos } from "../pages/Favoritos";
 import MeusPets from "../pages/MeusPets";
 import Adotar from "../pages/Adotar";
+import { Ops } from "../pages/Ops";
 
 
 export function AppRoutes(){
@@ -24,6 +25,7 @@ export function AppRoutes(){
             <Route path="/Adotar" element={<Adotar/>} />
             <Route path="/DetalhesAnimal/:pet_id" element={<DetalhesAnimal />} />
             <Route path="/Favoritos" element={<Favoritos/>} />
+            <Route path="/Ops" element={<Ops/>} />
         </Routes>
     )
 }

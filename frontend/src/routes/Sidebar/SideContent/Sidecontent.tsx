@@ -61,16 +61,16 @@ export function Sidecontent() {
                         <NavLink to="/MeuPerfil">Meu perfil</NavLink>
                         <NavLink to="/MeusPets">Meus Pets</NavLink>
                         <NavLink to="/Favoritos">Favoritos</NavLink>
-                        <NavLink to="/Login">Organização</NavLink>
+                        <NavLink to="/Ops">Organização</NavLink>
                         <div className="drawerItem drawerItem-yellow" onClick={toggleMenus}>
                             Menus <span>{isMenuOpen ? '▲' : '▼'}</span>
                         </div>
                         {isMenuOpen && (
                             <div className="collapsibleMenu">
                                 <NavLink to="/PreencherCadastroPets">Cadastrar um pet</NavLink>
-                                <NavLink to="/Adotar">Adotar um Pet</NavLink>
-                                <NavLink to="/Home">Ajudar um pet</NavLink>
-                                <NavLink to="/Home">Apadrinhar um pet</NavLink>
+                                <NavLink to="/Ops">Adotar um Pet</NavLink>
+                                <NavLink to="/Ops">Ajudar um pet</NavLink>
+                                <NavLink to="/Ops">Apadrinhar um pet</NavLink>
                             </div>
                         )}
                         <div className='drawerItem drawerItem-blue' onClick={toggleInfo}>
@@ -78,11 +78,11 @@ export function Sidecontent() {
                         </div>
                         {isInfoOpen && (
                             <div className="collapsibleMenu">
-                                <NavLink to="/Login">Dicas</NavLink>
-                                <NavLink to="/Login">Eventos</NavLink>
-                                <NavLink to="/Login">Legislação</NavLink>
-                                <NavLink to="/Login">Termos de Adoção</NavLink>
-                                <NavLink to="/Login">Historias de Adoção</NavLink>
+                                <NavLink to="/Ops">Dicas</NavLink>
+                                <NavLink to="/Ops">Eventos</NavLink>
+                                <NavLink to="/Ops">Legislação</NavLink>
+                                <NavLink to="/Ops">Termos de Adoção</NavLink>
+                                <NavLink to="/Ops">Historias de Adoção</NavLink>
                             </div>
                         )}
                     </div>
