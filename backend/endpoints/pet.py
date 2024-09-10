@@ -65,7 +65,7 @@ def register_animal():
 
     try:
         cursor.execute("""
-            INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, userId)
+            INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, usuarioId)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, binary_file_path, userId))
         conn.commit()
@@ -89,7 +89,7 @@ def meus_pets(user_id):
         return jsonify({'DENY': 'User ID inválido'}), 400
 
     try:
-        cursor.execute("SELECT * FROM animais WHERE userId = %s", (user_id,))
+        cursor.execute("SELECT * FROM animais WHERE usuarioId = %s", (user_id,))
         pets = cursor.fetchall()
 
         if pets:

@@ -163,13 +163,13 @@ SELECT
         WHEN a.animalFoto IS NOT NULL THEN 'Imagem Disponível'
         ELSE 'Imagem Indisponível'
     END AS animalFotoStatus,
-    a.userId AS dono_id,
+    a.usuarioId AS dono_id,
     u.nome_completo AS dono_nome,
     a.disponivel
 FROM
     animais a
 JOIN
-    usuarios u ON a.userId = u.id;
+    usuarios u ON a.usuarioId = u.id;
 
 
 -- Criação da Procedure que calcula a idade
