@@ -17,7 +17,6 @@ def get_db_connection():
     conn = psycopg2.connect(**db_config)
     return conn
     
-
 def read_image_as_base64(file_path):
     try:
         with open(file_path, "rb") as image_file:
@@ -25,8 +24,8 @@ def read_image_as_base64(file_path):
             return base64.b64encode(image_bytes).decode('utf-8')
     except FileNotFoundError:
         return None
-
-
+    
+    
 @pet_blueprint.route('/register-animal', methods=['POST'])
 def register_animal():
     data = request.json
@@ -59,13 +58,16 @@ def register_animal():
 
         with open(file_path, 'wb') as f:
             f.write(image_bytes)
-        file_url = safe_filename
+        file_url = safe_filename  # Caminho da imagem
+
+    # Converter caminho do arquivo para binário
+    binary_file_path = file_url.encode('utf-8')
 
     try:
         cursor.execute("""
             INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, userId)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, file_url, userId))
+        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, binary_file_path, userId))
         conn.commit()
         return jsonify({'OK': 'Animal cadastrado com sucesso!'})
     except Exception as e:

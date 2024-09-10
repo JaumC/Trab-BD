@@ -57,9 +57,16 @@
 .modal-confirm-info .infoLabel {
     font-weight: bold;
     color: #555; /* Cor das labels dos campos */
+    font-weight: bold;
 }
 
 .top-modal-info{
     display: flex;
     justify-content: space-between;
 }
+
+.sobreAnimal {
+    overflow-wrap: break-word; /* Quebra palavras longas para evitar estouro */
+    word-wrap: break-word; /* Quebra palavras longas para evitar estouro */
+  }
+  
