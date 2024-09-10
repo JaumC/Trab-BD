@@ -109,7 +109,7 @@
     background-color: darkred;
 }
 
-input[type='text'] {
+.input-forms {
     font-size: 16px;
     padding: 8px;
     border: 1px solid #e0e1e1;
