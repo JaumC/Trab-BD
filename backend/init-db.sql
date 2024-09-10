@@ -1,3 +1,4 @@
+-- Criação das Tabelas
 CREATE TABLE IF NOT EXISTS usuarios (
     id SERIAL PRIMARY KEY,
     nome_completo VARCHAR(255) NOT NULL,
@@ -144,7 +145,9 @@ CREATE TABLE IF NOT EXISTS necessidades (
         ON DELETE CASCADE
 );
 
+----------------------------------------------------------------------
 
+-- View responsavel por mostrar informações extra dos pets e usuários
 CREATE VIEW vw_detalhes_animal AS
 SELECT
     a.id AS animal_id,
@@ -169,6 +172,7 @@ JOIN
     usuarios u ON a.userId = u.id;
 
 
+-- Criação da Procedure que calcula a idade
 CREATE OR REPLACE FUNCTION calcIdade(data_nasc DATE)
 RETURNS INTEGER AS $$
 DECLARE 
@@ -179,22 +183,94 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+--------------------------------------------------------------------------------------------
 
-INSERT INTO animais (
-    nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, userId, disponivel
-) VALUES
-('Bolinha', 'Cachorro', 'Fêmea', 'Pequeno', 'Adulto', 'Brincalhão, Amoroso', 'Vacinado', 'Bolinha é um cachorro pequeno e muito brincalhão. Adora estar perto de pessoas e brincar com brinquedos.', NULL, 34, TRUE),
-('Sombra', 'Gato', 'Macho', 'Médio', 'Idoso', 'Calmo, Preguiçoso', 'Castrado, Vermifugado', 'Sombra é um gato idoso, muito calmo e preguiçoso. Passa a maior parte do tempo dormindo em lugares quentinhos.', NULL, 35, TRUE),
-('Thor', 'Cachorro', 'Macho', 'Pequeno', 'Filhote', 'Guarda, Brincalhão', 'Vacinado, Castrado', 'Thor é um cachorro adulto, muito leal e protetor. Gosta de brincar, mas também de ficar alerta.', NULL, 1, TRUE),
-('Spike', 'Cachorro', 'Macho', 'Grande', 'Adulto', 'Guarda, Amoroso', 'Vacinado, Castrado', 'Spike é um cachorro grande e amoroso que gosta de brincar.', NULL, 1, TRUE);
-
-
-
-
+-- Usuários
 INSERT INTO usuarios (nome_completo, data_nasc, email, estado, cidade, endereco, telefone, nome_usuario, senha) 
 VALUES 
 ('Pedro Henrique', '2008-08-15', 'PedroHH@hotmail.com', 'BH', 'Porto de Galinhas', 'Quadra 14', '9898989898', 'PedroH', 'P3dr0@@$'),
 ('Maria Silva', '2001-08-22', 'MariaS22@gmail.com', 'SP', 'São Paulo', 'Avenida Paulista', '9797979797', 'MariaS', 'S3nh@_Maria'),
 ('João Oliveira', '1993-08-30', 'JoaoO30@yahoo.com', 'RJ', 'Rio de Janeiro', 'Rua das Flores', '9696969696', 'JoaoO', 'Joao#2024'),
-('Mateus Machado', '2008-08-15', 'MachadoMateus@gmail.com', 'DF', 'Ceilândia', 'Q.5', '555555555', 'Machadinho', 'm@ch4d1nh0##');
+('Mateus Machado', '2008-08-15', 'MachadoMateus@gmail.com', 'DF', 'Ceilândia', 'Q.5', '555555555', 'Machadinho', 'm@ch4d1nh0##'),
+('Ana Paula', '1985-12-05', 'AnaPaula@example.com', 'MG', 'Belo Horizonte', 'Rua das Acácias', '988888888', 'AnaP', 'AnaP@ss2024');
 
+-- Endereços
+INSERT INTO endereco (rua, estado, cidade, usuarioId)
+VALUES 
+('Rua das Acácias', 'MG', 'Belo Horizonte', 1),
+('Rua das Flores', 'RJ', 'Rio de Janeiro', 2),
+('Avenida Paulista', 'SP', 'São Paulo', 3),
+('Quadra 14', 'BH', 'Porto de Galinhas', 4),
+('Rua São José', 'MG', 'Belo Horizonte', 5);
+
+-- Animais
+INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, usuarioId, disponivel)
+VALUES 
+('Bolinha', 'Cachorro', 'Fêmea', 'Pequeno', 'Adulto', 'Brincalhão, Amoroso', 'Vacinado', 'Bolinha é um cachorro pequeno e muito brincalhão. Adora estar perto de pessoas e brincar com brinquedos.', NULL, 1, TRUE),
+('Sombra', 'Gato', 'Macho', 'Médio', 'Idoso', 'Calmo, Preguiçoso', 'Castrado, Vermifugado', 'Sombra é um gato idoso, muito calmo e preguiçoso. Passa a maior parte do tempo dormindo em lugares quentinhos.', NULL, 2, TRUE),
+('Thor', 'Cachorro', 'Macho', 'Pequeno', 'Filhote', 'Guarda, Brincalhão', 'Vacinado, Castrado', 'Thor é um cachorro adulto, muito leal e protetor. Gosta de brincar, mas também de ficar alerta.', NULL, 3, TRUE),
+('Spike', 'Cachorro', 'Macho', 'Grande', 'Adulto', 'Guarda, Amoroso', 'Vacinado, Castrado', 'Spike é um cachorro grande e amoroso que gosta de brincar.', NULL, 4, TRUE),
+('Luna', 'Gato', 'Fêmea', 'Pequeno', 'Adulto', 'Curiosa, Afetuosa', 'Castrada', 'Luna é uma gata curiosa e muito afetuosa. Adora brincar com brinquedos e receber carinho.', NULL, 5, TRUE);
+
+-- Favoritos
+INSERT INTO favoritos (usuarioId, animalId)
+VALUES 
+(1, 1),
+(1, 2),
+(2, 3),
+(3, 4),
+(4, 5);
+
+-- Adoção
+INSERT INTO adocao (dataAdocao, statusAdocao, animalId, usuarioId)
+VALUES 
+('2024-08-01', 'Concluída', 1, 1),
+('2024-08-15', 'Pendente', 2, 2),
+('2024-09-01', 'Concluída', 3, 3),
+('2024-09-10', 'Cancelada', 4, 4),
+('2024-09-20', 'Pendente', 5, 5);
+
+-- Chat
+INSERT INTO chat (usuario1, usuario2)
+VALUES 
+(1, 2),
+(2, 3),
+(3, 4),
+(4, 5),
+(5, 1);
+
+-- Mensagem
+INSERT INTO mensagem (chatId, usuarioId, conteudo, dataEnvio)
+VALUES 
+(1, 1, 'Oi, tudo bem?', '2024-09-01 10:00:00'),
+(1, 2, 'Tudo sim, e você?', '2024-09-01 10:05:00'),
+(2, 2, 'Vamos marcar uma visita?', '2024-09-02 11:00:00'),
+(3, 3, 'Olha esse animal que encontrei!', '2024-09-03 12:00:00'),
+(4, 4, 'Preciso de informações sobre a adoção.', '2024-09-04 13:00:00');
+
+-- Visita
+INSERT INTO visita (animalId, usuarioId, data_visita)
+VALUES 
+(1, 1, '2024-08-10'),
+(2, 2, '2024-08-20'),
+(3, 3, '2024-09-05'),
+(4, 4, '2024-09-15'),
+(5, 5, '2024-09-25');
+
+-- Histórico Médico
+INSERT INTO historico_medico (animalId, doenças)
+VALUES 
+(1, 'Nenhuma'),
+(2, 'Felicidade em dia'),
+(3, 'Alergia leve'),
+(4, 'Castrado recentemente'),
+(5, 'Vermifugação');
+
+-- Necessidades
+INSERT INTO necessidades (animalId, objeto, medicamentos)
+VALUES 
+(1, 'Coleira', 'Nenhum'),
+(2, 'Brinquedo', 'Vitaminas'),
+(3, 'Cama', 'Anti-inflamatório'),
+(4, 'Ração', 'Suplemento'),
+(5, 'Arranhador', 'Nenhum');
