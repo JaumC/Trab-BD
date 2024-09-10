@@ -51,14 +51,14 @@ def sign_data():
             userID = cursor.fetchone()[0]
 
             cursor.execute("""
-                INSERT INTO endereco (rua, quadra, cidade, estado, casa, usuarioId)
+                INSERT INTO endereco (rua, quadra, cidade, estado, complemento, usuarioId)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """, (
                 data['endereco']['rua'],
                 data['endereco']['quadra'],
                 data['endereco']['cidade'],
                 data['endereco']['estado'],
-                data['endereco']['casa'],
+                data['endereco']['complemento'],
                 userID
             ))
 

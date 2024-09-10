@@ -19,7 +19,7 @@ type signData = {
         quadra: string;
         cidade: string;
         estado: string;
-        casa: string;
+        complemento: string;
     };
 };
 
@@ -37,7 +37,7 @@ export function SignData() {
             quadra: '',
             cidade: '',
             estado: '',
-            casa: '',
+            complemento: '',
         }
     });
 
@@ -81,7 +81,7 @@ export function SignData() {
             'quadra',
             'cidade',
             'estado',
-            'casa'
+            'complemento'
         ]
 
 
@@ -138,7 +138,7 @@ export function SignData() {
                 <p>INFORMAÇÕES DE ENDEREÇO</p>
                 <InputData type='text' name='rua' placeholder='Rua' onChange={handleChange} />
                 <InputData type='text' name='quadra' placeholder='Quadra' onChange={handleChange} />
-                <InputData type='text' name='casa' placeholder='Número da Casa' onChange={handleChange} />
+                <InputData type='text' name='complemento' placeholder='Complemento' onChange={handleChange} />
                 <InputData type='text' name='cidade' placeholder='Cidade' onChange={handleChange} />
                 <InputData type='text' name='estado' placeholder='Estado' onChange={handleChange} />
             </div>

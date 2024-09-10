@@ -17,8 +17,8 @@ export function Home(){
                 </div>
                 {isLogged ? 
                 <div className='buttonField'>
-                    <a href="/adotar" className='actionButton'>ADOTAR</a>
-                    <a href="/ajudar" className='actionButton'>AJUDAR</a>
+                    <a href="/Ops" className='actionButton'>ADOTAR</a>
+                    <a href="/Ops" className='actionButton'>AJUDAR</a>
                     <a href="/PreencherCadastroPets" className='actionButton'>CADASTRAR ANIMAL</a>
                 </div>
                 :

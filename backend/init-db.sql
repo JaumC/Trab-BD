@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS endereco (
     quadra VARCHAR(40) NOT NULL,
     cidade VARCHAR(50) NOT NULL,
     estado VARCHAR(50) NOT NULL,
-    casa VARCHAR(30) NOT NULL, 
+    complemento VARCHAR(30) NOT NULL, 
     usuarioId INTEGER,
     CONSTRAINT fk_usuario_endereco
         FOREIGN KEY (usuarioId) 
@@ -164,7 +164,7 @@ RETURNS TEXT AS $$
 DECLARE
     endereco_txt TEXT;
 BEGIN
-    SELECT CONCAT(rua, ', ', quadra, ', ', cidade, ', ', estado, ', ', casa) INTO endereco_txt
+    SELECT CONCAT(rua, ', ', quadra, ', ', cidade, ', ', estado, ', ', complemento) INTO endereco_txt
     FROM endereco
     WHERE usuarioId = usuario_id;
     RETURN endereco_txt;
@@ -210,7 +210,7 @@ VALUES
 
 
 -- Endereços
-INSERT INTO endereco (rua, quadra, estado, cidade, casa, usuarioId)
+INSERT INTO endereco (rua, quadra, estado, cidade, complemento, usuarioId)
 VALUES 
 ('Rua das Acácias', 'Quadra 14', 'MG', 'Belo Horizonte', '12', 1),
 ('Rua das Flores', 'Quadra 7', 'RJ', 'Rio de Janeiro', '20', 2),
