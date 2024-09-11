@@ -218,8 +218,8 @@ def get_pet_details(petId):
             image_data = pet[9]  # Acesso ao campo de dados binários da imagem
 
             if image_data:
-                    animal_foto_base64 = base64.b64encode(image_data).decode('utf-8')
-                    animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
+                animal_foto_base64 = base64.b64encode(image_data).decode('utf-8')
+                animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
             else:
                 print(f'Imagem não configurada: {animal_foto_base64}', flush=True)
 
