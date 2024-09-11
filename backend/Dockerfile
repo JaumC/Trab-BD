@@ -13,14 +13,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Criar o diretório de uploads
 RUN mkdir -p /app/uploads
 
-# Definir variáveis de ambiente
-ENV UPLOAD_FOLDER=/app/uploads
-
 # Copie o código da aplicação para o diretório de trabalho
 COPY . .
 
 # Defina a variável de ambiente para o Flask
-ENV FLASK_APP=app.py
+ENV FLASK_APP=app.py 
 
 # Comando para rodar o Flask
 CMD ["flask", "run", "--host=0.0.0.0"]

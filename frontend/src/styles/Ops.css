@@ -1,0 +1,19 @@
+/* Ops.css */
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.message {
+    text-align: center;
+    border-radius: 10px; /* Bordas arredondadas */
+    padding: 20px; /* Espaçamento interno */
+}
+
+.message h1 {
+    font-size: 2em;
+    color: #333; /* Cor do texto */
+    margin: 0;
+}

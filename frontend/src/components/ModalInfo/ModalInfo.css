@@ -1,0 +1,72 @@
+/* Estilos gerais do modal */
+.modal-overlay-info {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Fundo escuro com maior opacidade */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Estilos do conteúdo do modal */
+.modal-confirm-info {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: left; /* Alinhamento do texto à esquerda */
+    width: 90%;
+    max-width: 600px; /* Largura máxima */
+    overflow-y: auto; /* Rolagem vertical se necessário */
+}
+
+/* Estilos dos parágrafos dentro do modal */
+.modal-confirm-info p {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Estilo do botão de fechar */
+.modal-confirm-info button {
+    text-align: center;
+    width: 25px;
+    height: 25px;
+    border: 2px solid gray;
+    border-radius: 50%;
+    color: #b81010; /* Cor do texto branca */
+    cursor: pointer;
+}
+
+.modal-confirm-info button:hover {
+    background-color: #0056b3; /* Cor de fundo azul escuro ao passar o mouse */
+}
+
+/* Estilos para o título */
+.modal-confirm-info h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+/* Estilos adicionais */
+.modal-confirm-info .infoLabel {
+    font-weight: bold;
+    color: #555; /* Cor das labels dos campos */
+    font-weight: bold;
+}
+
+.top-modal-info{
+    display: flex;
+    justify-content: space-between;
+}
+
+.sobreAnimal {
+    overflow-wrap: break-word; /* Quebra palavras longas para evitar estouro */
+    word-wrap: break-word; /* Quebra palavras longas para evitar estouro */
+  }
+  

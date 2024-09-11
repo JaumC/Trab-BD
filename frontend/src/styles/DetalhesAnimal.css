@@ -1,23 +1,61 @@
 .container {
     display: flex;
-    background-color: #fafafa;
+    flex-direction: column;
     align-items: center;
-    flex-direction:column;
-    
+    background-color: #fafafa;
+    padding: 16px;
+    padding-bottom: 120px; /* Adiciona espaço suficiente para o botão fixo */
+    box-sizing: border-box;
+    max-width: 100vw; /* Garante que o contêiner não exceda a largura da viewport */
+    overflow-x: hidden; /* Evita overflow horizontal dentro do contêiner */
+}
+
+.image-container-d {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border: 1px solid #e0e1e1;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.image-in {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
 }
 
 .view_geral {
     display: flex;
     flex-direction: column;
-    width: 90%;
+    width: 100%;
+    max-width: 800px;
     background-color: #fafafa;
     align-items: flex-start;
 }
 
+.nomeAnimal {
+    font-size: 24px;
+    color: #434343;
+    margin-top: 16px;
+}
+
+.linha {
+    width: 100%;
+    height: 1px;
+    background-color: #e6e7e8;
+    margin: 16px 0;
+}
+
+.infoContainer {
+    margin-top: 16px;
+    width: 100%;
+}
+
 .row {
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
+    flex-wrap: wrap;
     width: 100%;
     margin-bottom: 16px;
 }
@@ -25,120 +63,59 @@
 .column {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    margin-right: 50px;
-}
-
-.caixaFoto {
-    width: 100%;
-    height: 184px;
-    border-radius: 0;
-    background-color: red;
-    display: flex;
-    flex-direction: row;
-    border-bottom: 2px solid black;
-}
-
-.caixaFoto2 {
-    width: 100%;
-    height: 2%;
-    border-radius: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    position: absolute;
-    top: 0;
-}
-
-.infoContainer {
-    margin-top: 16px;
-}
-
-.name {
-    font-size: 30px;
-    font-weight: bold;
-    color: #434343;
-    margin-bottom: 10px;
+    margin-right: 20px;
+    flex: 1;
+    box-sizing: border-box;
 }
 
 .label {
-    font-size: 12px;
+    font-size: 14px;
     color: #589b9b;
 }
 
 .text {
-    font-size: 14px;
+    font-size: 16px;
     color: #757575;
-    margin-bottom: 8px;
 }
 
-.description {
-    font-size: 14px;
-    color: #757575;
-    margin-bottom: 16px;
-}
-
-.buttonsContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-top: 28px;
-    margin-bottom: 28px;
-}
-
-.button {
-    width: 148px;
-    height: 40px;
-    background-color: #88c9bf;
-    border: 2px solid #88c9bf;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    border-radius: 2px;
-    flex: 1;
-    margin: 5px;
-}
-
-.buttonText {
-    color: #fff;
-    text-align: center;
-    font-weight: bold;
-}
-
-.removeButton {
-    justify-content: center;
-    padding: 10px;
-    margin-left: 15%;
-}
-
-.removeButtonText {
-    color: #fff;
-}
-
-.linha {
-    width: 90%;
-    height: 0.8px;
-    background-color: #e6e7e8;
-    margin-top: 8px;
-    display: flex;
-    justify-content: flex-start;
-}
-
-.nomeAnimal {
-    font-size: 20px;
-    color: #434343;
-    margin-top: 16px;
-    align-items: center;
-}
-
-.image-container {
+.delete-btn {
     width: 100%;
-    max-width: 400px; /* Aumenta a largura máxima */
-    height: 10%;
-    max-height: 400px; /* Aumenta a altura máxima */
-    margin-top: 8px;
-    left: 10px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: #fafafa;
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.2);
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.delete-pet {
+    background-color: rgb(173, 14, 14);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.delete-pet:hover {
+    background-color: darkred;
+}
+
+.input-forms {
+    font-size: 16px;
+    padding: 8px;
     border: 1px solid #e0e1e1;
-    border-radius: 8px;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
 }
 .image-container img {
     object-fit: cover;

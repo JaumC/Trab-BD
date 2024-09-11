@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const fetchUserInfo = async () => {
         try {
             setLoading(true);
-            const response = await api.get(`/user-info/${userId}`);  // URL da API que retorna as informações do usuário
+            const response = await api.get(`/user/user-info/${userId}`);  // URL da API que retorna as informações do usuário
             const userData = response.data;
             
             if (userData) {

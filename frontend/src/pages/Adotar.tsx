@@ -13,7 +13,7 @@ export default function Adotar() {
 
     const buscarAnimais = async () => {
         try {
-            const response = await api.get(`/meus-pets/`);
+            const response = await api.get(`/animals/meus-pets/`);
             const data = response.data;
 
             // Limpar os dados dos pets removendo as chaves
