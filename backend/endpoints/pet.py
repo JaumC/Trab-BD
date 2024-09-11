@@ -52,22 +52,22 @@ def register_animal():
         image_data = imagem_base64.split(",")[1]
         image_bytes = base64.b64decode(image_data)
 
-        unique_filename = f"{uuid.uuid4().hex}.jpeg"
-        safe_filename = secure_filename(unique_filename)
-        file_path = os.path.join(Config.UPLOAD_FOLDER, safe_filename)
+        #unique_filename = f"{uuid.uuid4().hex}.jpeg"
+        #safe_filename = secure_filename(unique_filename)
+        #file_path = os.path.join(Config.UPLOAD_FOLDER, safe_filename)
 
-        with open(file_path, 'wb') as f:
-            f.write(image_bytes)
-        file_url = safe_filename  # Caminho da imagem
+        #with open(file_path, 'wb') as f:
+        #    f.write(image_bytes)
+        #file_url = safe_filename  # Caminho da imagem
 
     # Converter caminho do arquivo para binário
-    binary_file_path = file_url.encode('utf-8')
+    #binary_file_path = file_url.encode('utf-8')
 
     try:
         cursor.execute("""
             INSERT INTO animais (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, animalFoto, usuarioId)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, binary_file_path, userId))
+        """, (nomeAnimal, especie, sexo, porte, idade, temperamento, saude, sobreAnimal, psycopg2.Binary(image_bytes), userId))
         conn.commit()
         return jsonify({'OK': 'Animal cadastrado com sucesso!'})
     except Exception as e:
@@ -96,21 +96,11 @@ def meus_pets(user_id):
             pets_list = []
             for pet in pets:
                 animal_foto_base64 = None
-                image_path = pet[9]  # Acesso ao caminho do arquivo
+                image_data = pet[9]  # Acesso ao campo de dados binários da imagem
 
-                if image_path:
-                    if isinstance(image_path, memoryview):
-                        image_path = image_path.tobytes().decode('utf-8')
-
-                    # Certifique-se de que o caminho está correto
-                    full_image_path = os.path.join('/app/uploads', image_path)
-
-                    if os.path.isfile(full_image_path):
-                        animal_foto_base64 = read_image_as_base64(full_image_path)
-                        if animal_foto_base64:
-                            animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
-                    else:
-                        print(f'Caminho da imagem inválido: {full_image_path}', flush=True)
+                if image_data:
+                    animal_foto_base64 = base64.b64encode(image_data).decode('utf-8')
+                    animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
                 else:
                     print(f'Nenhum caminho de imagem fornecido para o pet com ID: {pet[0]}', flush=True)
 
@@ -225,20 +215,13 @@ def get_pet_details(petId):
         
         if pet:
             animal_foto_base64 = None
-            image_path = pet[9]  # Acesso ao caminho do arquivo
+            image_data = pet[9]  # Acesso ao campo de dados binários da imagem
 
-            if isinstance(image_path, memoryview):
-                    image_path = image_path.tobytes().decode('utf-8')
-
-            # Certifique-se de que o caminho está correto
-            full_image_path = os.path.join('/app/uploads', image_path)
-
-            if os.path.isfile(full_image_path):
-                animal_foto_base64 = read_image_as_base64(full_image_path)
-                if animal_foto_base64:
+            if image_data:
+                    animal_foto_base64 = base64.b64encode(image_data).decode('utf-8')
                     animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
             else:
-                print(f'Caminho da imagem inválido: {full_image_path}', flush=True)
+                print(f'Imagem não configurada: {animal_foto_base64}', flush=True)
 
             return jsonify({
                'id': pet[0],
