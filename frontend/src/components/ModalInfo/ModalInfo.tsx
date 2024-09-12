@@ -74,7 +74,7 @@ export function ModalInfo({ show, onClose, petId }: ModalConfirmProps) {
                 <p><span className="infoLabel">Dono:</span> {petData.dono_nome}</p>
                 <p><span className="infoLabel">Endereço:</span> {petData.dono_endereco}</p>
                 <p>
-                    <span className="infoLabel">Sobre:</span>
+                    <span className="infoLabel">Sobre: </span>
                     <span className="sobreAnimal">{petData.sobreAnimal}</span>
                 </p>
                 <p><span className="infoLabel">Status da Imagem:</span> {petData.animalFotoStatus}</p>

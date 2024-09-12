@@ -8,7 +8,7 @@ from config import db_config
 user_blueprint = Blueprint('user', __name__)
 
 
-# Conectar ao banco de dados
+# Função para conectar ao banco de dados
 def get_db_connection():
     conn = psycopg2.connect(**db_config)
     return conn
@@ -18,93 +18,72 @@ def get_db_connection():
 def sign_data():
     data = request.json  # Recebe os dados do React em formato JSON
     
-    # Conectar ao banco de dados
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
         # Verificar se o e-mail já existe no banco de dados
         cursor.execute("SELECT id FROM usuarios WHERE email = %s", (data['email'],))
-
-        # Pega a primeira ocorrencia encontrada
         existing_user = cursor.fetchone()
 
         if existing_user:
-            response = {'DENY': 'Este e-mail já está cadastrado. Por favor, insira outro'}
-            return jsonify(response)
+            return jsonify({'DENY': 'Este e-mail já está cadastrado. Por favor, insira outro'})
 
-        else:
-            # Inserir os dados no banco de dados
-            cursor.execute("""
-                INSERT INTO usuarios (nome_completo, data_nasc, email, telefone, nome_usuario, senha)
-                VALUES (%s, %s, %s, %s, %s, %s)
-                RETURNING id
-            """, (
-                data['nome_completo'],
-                data['data'],
-                data['email'],
-                data['telefone'],
-                data['nome_usuario'],
-                data['senha']
-            ))
+        # Inserir os dados do usuário
+        cursor.execute("""
+            INSERT INTO usuarios (nome_completo, data_nasc, email, telefone, nome_usuario, senha)
+            VALUES (%s, %s, %s, %s, %s, %s) RETURNING id
+        """, (
+            data['nome_completo'], data['data_nasc'], data['email'], data['telefone'], data['nome_usuario'], data['senha']
+        ))
+        user_id = cursor.fetchone()[0]
 
-            userID = cursor.fetchone()[0]
+        # Inserir os dados de endereço
+        cursor.execute("""
+            INSERT INTO endereco (rua, quadra, cidade, estado, complemento, usuarioId)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (
+            data['endereco']['rua'], data['endereco']['quadra'], data['endereco']['cidade'], 
+            data['endereco']['estado'], data['endereco']['complemento'], user_id
+        ))
 
-            cursor.execute("""
-                INSERT INTO endereco (rua, quadra, cidade, estado, complemento, usuarioId)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            """, (
-                data['endereco']['rua'],
-                data['endereco']['quadra'],
-                data['endereco']['cidade'],
-                data['endereco']['estado'],
-                data['endereco']['complemento'],
-                userID
-            ))
+        # Atualiza a tabela usuarios com idade e endereço completo
+        cursor.execute("CALL atualizar_usuarios()")
 
-            conn.commit()
-            response = {'OK': 'Dados cadastrados com sucesso!'}
+        conn.commit()
+        return jsonify({'OK': 'Dados cadastrados com sucesso!'})
 
     except Exception as e:
         conn.rollback()
-        response = {'DENY': f'Erro ao cadastrar os dados: {e}'}
+        return jsonify({'DENY': f'Erro ao cadastrar os dados: {e}'})
     finally:
         cursor.close()
         conn.close()
-
-    return jsonify(response)
 
 
 @user_blueprint.route('/login-data', methods=['POST'])
 def login_data():
-    data = request.json  # Recebe os dados do React em formato JSON
-
-    # Conectar ao banco de dados
+    data = request.json
+    
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
-        cursor.execute("SELECT id, nome_usuario FROM usuarios WHERE nome_usuario = %s AND senha = %s", (data['nome_usuario'], data['senha']))
-
-        # Pega a primeira ocorrencia encontrada
+        cursor.execute("SELECT id, nome_usuario FROM usuarios WHERE nome_usuario = %s AND senha = %s", 
+                       (data['nome_usuario'], data['senha']))
         user = cursor.fetchone()
 
         if user:
             user_id, nome_usuario = user
-            response = {'OK': 'Login realizado com sucesso!', 'user_id': user_id, 'nome_usuario': nome_usuario}
-            return jsonify(response), 200
+            return jsonify({'OK': 'Login realizado com sucesso!', 'user_id': user_id, 'nome_usuario': nome_usuario}), 200
         else:
-            response = {'DENY': 'Nome de usuários não encontrados.'}
-            return jsonify(response), 401
+            return jsonify({'DENY': 'Nome de usuário ou senha incorretos.'}), 401
 
     except Exception as e:
-        response = {'DENY': f'Erro ao realizar login: {e}'}
-        return jsonify(response), 500
-
+        return jsonify({'DENY': f'Erro ao realizar login: {e}'}), 500
     finally:
         cursor.close()
         conn.close()
-
 
 
 @user_blueprint.route('/user-info/<int:user_id>', methods=['GET'])
@@ -113,13 +92,9 @@ def user_info(user_id):
     cursor = conn.cursor()
 
     try:
-        # Verificar se o user_id é um número inteiro
-        if not isinstance(user_id, int):
-            return jsonify({'DENY': 'ID do usuário deve ser um número inteiro'}), 400
-
-        # Executar a consulta
         cursor.execute("""
-            SELECT u.*, calcIdade(u.data_nasc) AS idade, e.estado, e.cidade, e.quadra
+            SELECT u.id, u.nome_completo, u.idade, u.email, u.telefone, u.nome_usuario, 
+                   e.estado, e.cidade, e.quadra
             FROM usuarios u
             LEFT JOIN endereco e ON u.id = e.usuarioId
             WHERE u.id = %s
@@ -131,14 +106,14 @@ def user_info(user_id):
             data = {
                 'user_id': user[0],
                 'nome_completo': user[1],
-                'idade': user[7], 
+                'idade': user[2],
                 'email': user[3],
                 'telefone': user[4],
                 'nome_usuario': user[5],
                 'endereco': {
-                    'estado': user[8], 
-                    'cidade': user[9], 
-                    'quadra': user[10] 
+                    'estado': user[6], 
+                    'cidade': user[7], 
+                    'quadra': user[8]
                 }
             }
             return jsonify({'OK': data})
@@ -147,7 +122,6 @@ def user_info(user_id):
 
     except Exception as e:
         return jsonify({'DENY': f'Erro ao buscar informações do usuário: {e}'}), 500
-
     finally:
         cursor.close()
         conn.close()
@@ -162,26 +136,27 @@ def update_user(user_id):
 
     try:
         # Separar dados de usuário e de endereço
-        user_data = {key: value for key, value in data.items() if key in ['nome_completo', 'email', 'telefone', 'nome_usuario']}
+        user_data = {key: value for key, value in data.items() if key in ['nome_completo', 'data_nasc','email', 'telefone', 'nome_usuario']}
         endereco_data = {key: value for key, value in data.items() if key in ['estado', 'cidade', 'quadra']}
         
         # Atualizar dados do usuário
         if user_data:
             update_parts = [f"{key} = %s" for key in user_data.keys()]
-            update_statement = ", ".join(update_parts)
             cursor.execute(
-                f"UPDATE usuarios SET {update_statement} WHERE id = %s",
+                f"UPDATE usuarios SET {', '.join(update_parts)} WHERE id = %s",
                 (*user_data.values(), user_id)
             )
         
         # Atualizar dados de endereço
         if endereco_data:
             update_parts = [f"{key} = %s" for key in endereco_data.keys()]
-            update_statement = ", ".join(update_parts)
             cursor.execute(
-                f"UPDATE endereco SET {update_statement} WHERE usuarioId = %s",
+                f"UPDATE endereco SET {', '.join(update_parts)} WHERE usuarioId = %s",
                 (*endereco_data.values(), user_id)
             )
+        
+        # Chamar a procedure para atualizar a idade e o endereço completo
+        cursor.execute("CALL atualizar_usuarios()")
         
         conn.commit()
 
@@ -197,33 +172,27 @@ def update_user(user_id):
         conn.close()
 
 
-
 @user_blueprint.route('/user-delete/<int:user_id>', methods=['DELETE'])
 def user_delete(user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
-        # Verificar se o usuário existe
         cursor.execute("SELECT id, nome_usuario FROM usuarios WHERE id = %s", (user_id,))
         user = cursor.fetchone()
 
         if user:
             user_id, nome_usuario = user
-            
-            # Primeiro, deletar o endereço associado ao usuário
+
+            # Deletar o endereço e o usuário
             cursor.execute("DELETE FROM endereco WHERE usuarioId = %s", (user_id,))
-            
-            # Em seguida, deletar o usuário
             cursor.execute("DELETE FROM usuarios WHERE id = %s", (user_id,))
             conn.commit()
 
-            response = {'OK': f'{nome_usuario} excluído! Redirecionando...'}
-            return jsonify(response), 200
-        
+            return jsonify({'OK': f'{nome_usuario} excluído!'}), 200
         else:
             return jsonify({'DENY': 'Usuário não encontrado!'}), 404
-        
+
     except Exception as e:
         return jsonify({'Erro': f'Ocorreu um erro: {str(e)}'}), 500
     finally:

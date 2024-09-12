@@ -16,11 +16,9 @@ export default function MeusPets() {
     const fetchMyPets = async (userId) => {
         try {
             const response = await api.get(`/animals/meus-pets/${userId}`);
-            console.log('Resposta completa:', response);
     
             if (response.status === 200) {
                 const data = response.data;
-                console.log('Dados recebidos:', data);
     
                 const cleanedPets = data.pets.map(pet => {
                     return {
@@ -31,8 +29,6 @@ export default function MeusPets() {
                 });
     
                 setMeusPets(cleanedPets);
-            } else {
-                console.log('Resposta com status não esperado:', response);
             }
         } catch (error) {
             console.error('Erro ao buscar pets:', error);

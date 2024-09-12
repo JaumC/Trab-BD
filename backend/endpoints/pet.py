@@ -1,12 +1,9 @@
 # backend/endpoints/pet.py
 
 from flask import Blueprint, request, jsonify
-from werkzeug.utils import secure_filename
 from config import Config, db_config
 import psycopg2
 import base64
-import uuid
-import os
 
 
 pet_blueprint = Blueprint('pet', __name__)
@@ -16,14 +13,6 @@ pet_blueprint = Blueprint('pet', __name__)
 def get_db_connection():
     conn = psycopg2.connect(**db_config)
     return conn
-    
-def read_image_as_base64(file_path):
-    try:
-        with open(file_path, "rb") as image_file:
-            image_bytes = image_file.read()
-            return base64.b64encode(image_bytes).decode('utf-8')
-    except FileNotFoundError:
-        return None
     
     
 @pet_blueprint.route('/register-animal', methods=['POST'])
@@ -46,22 +35,10 @@ def register_animal():
     userId = data.get('usuario_id')
 
     image_bytes = None
-    file_url = ''
 
     if imagem_base64:
         image_data = imagem_base64.split(",")[1]
         image_bytes = base64.b64decode(image_data)
-
-        #unique_filename = f"{uuid.uuid4().hex}.jpeg"
-        #safe_filename = secure_filename(unique_filename)
-        #file_path = os.path.join(Config.UPLOAD_FOLDER, safe_filename)
-
-        #with open(file_path, 'wb') as f:
-        #    f.write(image_bytes)
-        #file_url = safe_filename  # Caminho da imagem
-
-    # Converter caminho do arquivo para binário
-    #binary_file_path = file_url.encode('utf-8')
 
     try:
         cursor.execute("""
@@ -96,7 +73,7 @@ def meus_pets(user_id):
             pets_list = []
             for pet in pets:
                 animal_foto_base64 = None
-                image_data = pet[9]  # Acesso ao campo de dados binários da imagem
+                image_data = pet[9]
 
                 if image_data:
                     animal_foto_base64 = base64.b64encode(image_data).decode('utf-8')
@@ -135,7 +112,6 @@ def meus_pets(user_id):
 
 @pet_blueprint.route('/info-pets/<int:petId>', methods=['GET'])
 def info_pets(petId):
-    print('aa', flush=True)
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -157,8 +133,8 @@ def info_pets(petId):
                 'animalFotoStatus': pet[9],
                 'dono_id': pet[10],
                 'dono_nome': pet[11],
-                'dono_endereco': pet[12],
-                'disponivel': pet[13],
+                'dono_endereco': pet[13],
+                'disponivel': pet[14],
             }
 
             return jsonify({'OK': pet_data}), 200
@@ -215,7 +191,7 @@ def get_pet_details(petId):
         
         if pet:
             animal_foto_base64 = None
-            image_data = pet[9]  # Acesso ao campo de dados binários da imagem
+            image_data = pet[9] 
 
             if image_data:
                 animal_foto_base64 = base64.b64encode(image_data).decode('utf-8')
@@ -253,11 +229,9 @@ def update_pet_details(pet_id):
     
     data = request.json
 
-    # Inicie a parte do SET da consulta SQL
     set_clause = []
     params = []
 
-    # Adicione os campos fornecidos à cláusula SET
     if 'nomeAnimal' in data:
         set_clause.append("nomeAnimal = %s")
         params.append(data['nomeAnimal'])
@@ -286,7 +260,7 @@ def update_pet_details(pet_id):
     if not set_clause:
         return jsonify({'DENY': 'Sem alterações fornecidas'}), 400
 
-    # Construa a consulta SQL
+
     sql = f"""
         UPDATE animais
         SET {', '.join(set_clause)}

@@ -120,7 +120,6 @@ export function PreencherPet() {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const base64String = reader.result;
-                console.log("Arquivo para upload: ", file);
                 setAnimalData({ ...AnimalData, animalFoto: base64String });
                 setImageSrc(URL.createObjectURL(file)); // Armazena o arquivo no estado
             }

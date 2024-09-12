@@ -4,7 +4,6 @@ from flask import Blueprint, request, jsonify
 from config import db_config
 import psycopg2
 import base64
-import os
 
 
 favoritos_blueprint = Blueprint('favoritos', __name__)
@@ -14,15 +13,6 @@ favoritos_blueprint = Blueprint('favoritos', __name__)
 def get_db_connection():
     conn = psycopg2.connect(**db_config)
     return conn
-
-
-def read_image_as_base64(file_path):
-    try:
-        with open(file_path, "rb") as image_file:
-            image_bytes = image_file.read()
-            return base64.b64encode(image_bytes).decode('utf-8')
-    except FileNotFoundError:
-        return None
     
 
 @favoritos_blueprint.route('/favoritos', methods=['POST'])
@@ -97,35 +87,25 @@ def get_favoritos(user_id):
         """, (user_id,))
         favoritos = cursor.fetchall()
 
-        favoritos_list = []
-        for pet in favoritos:
-            animal_foto_base64 = None
-            image_path = pet[2]  # Acesso ao caminho do arquivo
+        if favoritos:
+            favoritos_list = []
+            for pet in favoritos:
+                animal_foto_base64 = None
+                image_data = pet[2] 
 
-            if image_path:
-                # Verifique se o caminho da imagem está em formato binário
-                if isinstance(image_path, memoryview):
-                    image_path = image_path.tobytes().decode('utf-8')
-
-                # Certifique-se de que o caminho está correto
-                full_image_path = os.path.join('/app/uploads', image_path)
-
-                if os.path.isfile(full_image_path):
-                    animal_foto_base64 = read_image_as_base64(full_image_path)
-                    if animal_foto_base64:
-                        animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
+                if image_data:
+                    animal_foto_base64 = base64.b64encode(image_data).decode('utf-8')
+                    animal_foto_base64 = f"data:image/jpeg;base64,{animal_foto_base64}"
                 else:
-                    print(f'Caminho da imagem inválido: {full_image_path}', flush=True)
-            else:
-                print(f'Nenhum caminho de imagem fornecido para o pet com ID: {pet[0]}', flush=True)
+                    print(f'Nenhum caminho de imagem fornecido para o pet com ID: {pet[0]}', flush=True)
 
-            pet_data = {
-                'id': pet[0],
-                'nomeAnimal': pet[1],
-                'animalFoto': animal_foto_base64,
-                'disponivel': pet[3]
-            }
-            favoritos_list.append(pet_data)
+                pet_data = {
+                    'id': pet[0],
+                    'nomeAnimal': pet[1],
+                    'animalFoto': animal_foto_base64,
+                    'disponivel': pet[3]
+                }
+                favoritos_list.append(pet_data)
 
         return jsonify({'pets': favoritos_list}), 200
     except Exception as e:

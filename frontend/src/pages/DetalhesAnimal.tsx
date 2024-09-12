@@ -104,10 +104,10 @@ export function DetalhesAnimal() {
 
     const handleSave = async () => {
         try {
-            console.log(dadosEditaveis)
-            const response = await api.put(`/pet-update/${petId}`, dadosEditaveis);
+            const response = await api.put(`/animals/pet-update/${petId}`, dadosEditaveis);
             setMsgEdit(response.data.OK);
             setStateEdit(true);
+            setTimeout(() => window.location.reload(), 300);
 
             setPet(prevPet => {
                 if (dadosEditaveis) {

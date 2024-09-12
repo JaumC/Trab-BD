@@ -6,9 +6,9 @@ import { api } from '../../axiosConfig';
 import { ModalMsg } from '../ModalMsg/ModalMsg';
 import axios from 'axios';
 
-type signData = {
+type SignData = {
     nome_completo: string;
-    data: string;
+    data_nasc: string;  // Ajustado para 'data_nasc'
     email: string;
     telefone: string;
     nome_usuario: string;
@@ -24,9 +24,9 @@ type signData = {
 };
 
 export function SignData() {
-    const [signData, setsignData] = useState<signData>({
+    const [signData, setsignData] = useState<SignData>({
         nome_completo: '',
-        data: '',
+        data_nasc: '',  // Ajustado para 'data_nasc'
         email: '',
         telefone: '',
         nome_usuario: '',
@@ -45,7 +45,6 @@ export function SignData() {
         const { name, value } = e.target;
 
         if (name in signData.endereco) {
-            // Atualiza o campo de endereço separadamente
             setsignData({
                 ...signData,
                 endereco: {
@@ -54,7 +53,6 @@ export function SignData() {
                 }
             });
         } else {
-            // Atualiza os outros campos do usuário
             setsignData({
                 ...signData,
                 [name]: value
@@ -62,13 +60,13 @@ export function SignData() {
         }
     };
 
-    const [msgSign, setMsgSign] = useState<string>('')
-    const [stateSign , setStateSign] = useState<boolean>(false)
+    const [msgSign, setMsgSign] = useState<string>('');
+    const [stateSign, setStateSign] = useState<boolean>(false);
     
     const handleSubmit = async () => {
-        const requiredFields: (keyof signData)[] = [
+        const requiredFields: (keyof SignData)[] = [
             'nome_completo',
-            'data',
+            'data_nasc',  // Ajustado para 'data_nasc'
             'email',
             'telefone',
             'nome_usuario',
@@ -76,20 +74,17 @@ export function SignData() {
             'confirmacao_senha'
         ];
 
-        const addressFields: (keyof signData['endereco'])[] = [
+        const addressFields: (keyof SignData['endereco'])[] = [
             'rua',
             'quadra',
             'cidade',
             'estado',
             'complemento'
-        ]
-
-
+        ];
 
         const hasEmptyFields = requiredFields.some(field => !signData[field]);
         const hasEmptyAddressFields = addressFields.some(field => !signData.endereco[field]);
 
-    
         if (hasEmptyFields || hasEmptyAddressFields) {
             setMsgSign("Existem campos não preenchidos, por favor preencha todos");
             return;
@@ -101,11 +96,14 @@ export function SignData() {
         }
 
         try {
-            const response = await api.post('/user/sign-data', signData)
-            setMsgSign(response.data.OK)
-            setStateSign(true)
-        }catch(error){
-            if (axios.isAxiosError(error)){
+            const response = await api.post('user/sign-data', {
+                ...signData,
+                data_nasc: signData.data_nasc  // Ajuste o nome do campo aqui
+            });
+            setMsgSign(response.data.OK);
+            setStateSign(true);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
                 if (error.response) {
                     setMsgSign(error.response.data?.DENY || "Erro ao Cadastrar. Tente novamente.");
                 } else {
@@ -129,7 +127,7 @@ export function SignData() {
             <div className="inputsinfo">
                 <p>INFORMAÇÕES PESSOAIS</p>
                 <InputData type='text' name='nome_completo' placeholder='Nome Completo' onChange={handleChange}/>
-                <InputData type='date' name='data' placeholder='Idade' onChange={handleChange}/>
+                <InputData type='date' name='data_nasc' placeholder='Data de Nascimento' onChange={handleChange}/>
                 <InputData type='text' name='email' placeholder='E-mail' onChange={handleChange}/>
                 <InputData type='text' name='telefone' placeholder='Telefone' onChange={handleChange}/>
             </div>    
@@ -152,7 +150,7 @@ export function SignData() {
             <div className="signField">
                 <GreenButton label='FAZER CADASTRO' onClick={handleSubmit}/>
             </div>
-            { msgSign && (
+            {msgSign && (
                 <ModalMsg msg={msgSign} state={stateSign}/>
             )}
         </>

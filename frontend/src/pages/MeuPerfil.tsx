@@ -68,7 +68,6 @@ export function MeuPerfil() {
             const response = await api.get(`/user/user-info/${userId}`);
             const userData = response.data.OK;
     
-            // Ajuste para combinar os dados do usuário e do endereço
             setDadosUser({
                 nome_completo: userData.nome_completo,
                 data: userData.idade,
@@ -92,11 +91,11 @@ export function MeuPerfil() {
                 nome_completo: dadosUser?.nome_completo,
                 data_nasc: dadosUser?.data_nasc,
                 email: dadosUser?.email,
+                telefone: dadosUser?.telefone,
+                nome_usuario: dadosUser?.nome_usuario,
                 estado: dadosUser?.estado,
                 cidade: dadosUser?.cidade,
                 quadra: dadosUser?.quadra,
-                telefone: dadosUser?.telefone,
-                nome_usuario: dadosUser?.nome_usuario,
 
             });
         }

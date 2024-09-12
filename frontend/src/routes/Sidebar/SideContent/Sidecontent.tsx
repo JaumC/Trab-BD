@@ -16,7 +16,6 @@ export function Sidecontent() {
         // A função será chamada sempre que isLogged ou userInfo mudarem
         if (isLogged) {
             if(!userInfo|| shouldRecheck){
-                console.log('Tentando buscar as informações recentes...');
                 fetchUserInfo(); 
                 setShouldRecheck(false); //Reset após buscar
             } else {
@@ -31,10 +30,6 @@ export function Sidecontent() {
             },1000);
         }
     }, [isMenuOpen]); // useEffect é disparado quando isMenuOpen é true
-
-    console.log('isLogged: ',isLogged);
-    console.log('isLogged: ',userInfo);
-
 
     const toggleMenus = () => setMenuOpen(!isMenuOpen);
     const toggleInfo = () => setInfoOpen(!isInfoOpen);
